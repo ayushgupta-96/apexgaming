@@ -1,0 +1,141 @@
+server:
+  port: 8081
+  shutdown: graceful
+
+spring:
+  application:
+    name: rmg-platform
+  profiles:
+    active: dev
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5434/rmg_db}
+    username: ${SPRING_DATASOURCE_USERNAME:rmg_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:rmg_secret}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 1200000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 50
+          time_zone: Asia/Kolkata
+        order_inserts: true
+        order_updates: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:localhost}
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD:}
+      timeout: 2000ms
+
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:localhost}
+    port: ${SPRING_RABBITMQ_PORT:5672}
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD:guest}
+
+# Security & JWT
+security:
+  jwt:
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+    access-token-expiration-ms: 3600000 # 1 hour
+    refresh-token-expiration-ms: 604800000 # 7 days
+  admin:
+    two-factor:
+      issuer: "AntigravityRMG"
+
+# RMG Legal & Compliance Guardrails
+rmg:
+  compliance:
+    minimum-age: 18
+    restricted-jurisdictions:
+      - ASSAM
+      - ODISHA
+      - TELANGANA
+      - ANDHRA_PRADESH
+      - NAGALAND
+      - SIKKIM
+    aml:
+      single-transaction-alert-threshold: 50000.00
+      daily-deposit-limit-count: 10
+      daily-cumulative-deposit-threshold: 100000.00
+      wagering-turnover-requirement-multiplier: 1.0 # 100% turnover before withdrawal
+    responsible-gaming:
+      default-daily-deposit-limit: 25000.00
+      default-daily-loss-limit: 15000.00
+      cool-off-options-hours: [24, 168, 720] # 1 day, 7 days, 30 days
+
+  whatsapp:
+    enabled: true
+    official-number: "+919876543210"
+    official-upi-id: "rmgfinance@icici"
+    official-bank-name: "HDFC Bank"
+    official-account-no: "50200012345678"
+    official-ifsc: "HDFC0001234"
+    webhook-verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:rmg_secure_webhook_verify_token_2026}
+    api-token: ${WHATSAPP_API_TOKEN:mock_whatsapp_cloud_token}
+
+  games:
+    ludo:
+      enabled: true
+      house-commission-rate: 0.08 # 8%
+      turn-timeout-seconds: 15
+      reconnect-timeout-seconds: 45
+    aviator:
+      enabled: true
+      house-edge: 0.03 # 3%
+      bet-phase-seconds: 10
+      tick-interval-ms: 100
+      min-multiplier: 1.00
+      max-multiplier: 1000.00
+    colour-prediction:
+      enabled: true
+      round-duration-seconds: 60
+      lock-duration-seconds: 10
+      payout-single-colour: 2.0
+      payout-violet: 4.5
+      payout-half-colour: 1.5
+      payout-number: 9.0
+
+# Management & Observability
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+# Springdoc OpenAPI UI
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha

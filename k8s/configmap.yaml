@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rmg-config
+  namespace: default
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  SPRING_REDIS_HOST: "redis-service"
+  SPRING_REDIS_PORT: "6379"
+  SPRING_RABBITMQ_HOST: "rabbitmq-service"
+  SPRING_RABBITMQ_PORT: "5672"
+  RMG_COMPLIANCE_MINIMUM_AGE: "18"
+  RMG_COMPLIANCE_RESTRICTED_JURISDICTIONS: "ASSAM,ODISHA,TELANGANA,ANDHRA_PRADESH,NAGALAND,SIKKIM"

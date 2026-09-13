@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  rmg-db:
+    image: postgres:16
+    container_name: rmg-postgres
+    #restart: unless-stopped
+    environment:
+      POSTGRES_DB: rmg_db
+      POSTGRES_USER: rmg_user
+      POSTGRES_PASSWORD: rmg_secret
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rmg_user -d rmg_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rmg-redis:
+    image: redis:7-alpine
+    container_name: rmg-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rmg-rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: rmg-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672" # RabbitMQ Management Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  rmg-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rmg-app
+    restart: unless-stopped
+    depends_on:
+      rmg-db:
+        condition: service_healthy
+      rmg-redis:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://rmg-db:5432/rmg_db
+      SPRING_DATASOURCE_USERNAME: rmg_user
+      SPRING_DATASOURCE_PASSWORD: rmg_secret
+      SPRING_REDIS_HOST: rmg-redis
+      SPRING_REDIS_PORT: 6379
+      SPRING_RABBITMQ_HOST: rmg-rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      JWT_SECRET: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: rmg-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+volumes:
+  postgres_data:
+  redis_data:
+  rabbitmq_data:

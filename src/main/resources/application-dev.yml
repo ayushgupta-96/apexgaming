@@ -1,0 +1,11 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+logging:
+  level:
+    com.gaming.platform: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: WARN

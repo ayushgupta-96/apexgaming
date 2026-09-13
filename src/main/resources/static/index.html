@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Apex Gaming | Licensed Real-Money Gaming Platform</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand" aria-label="Apex Gaming">
+      <span class="brand-mark">A</span>
+      <div class="brand-copy">
+        <span>APEX GAMING</span>
+        <span class="brand-badge">LICENSED RMG</span>
+      </div>
+    </div>
+
+    <div class="nav-wallets" id="navWallets" style="display: none;">
+      <button class="wallet-total" onclick="switchTab('wallet')" aria-label="Open wallet">
+        <span class="wallet-label">Wallet</span>
+        <span class="wallet-amount">Rs <span id="txtDepositBal">0.00</span></span>
+      </button>
+      <div class="balance-strip">
+        <div class="balance-chip">
+          <span class="label">Winnings</span>
+          <span class="amount amount-winnings">Rs <span id="txtWinningsBal">0.00</span></span>
+        </div>
+        <div class="balance-chip">
+          <span class="label">Bonus</span>
+          <span class="amount amount-bonus">Rs <span id="txtBonusBal">0.00</span></span>
+        </div>
+      </div>
+      <span id="kycBadge" class="badge badge-pending">KYC Pending</span>
+      <button class="btn btn-primary nav-deposit" onclick="switchTab('wallet')">Deposit</button>
+      <button class="btn btn-danger nav-logout" onclick="logout()">Logout</button>
+    </div>
+
+    <div id="authButtons" class="auth-actions">
+      <button class="btn btn-secondary" onclick="openModal('loginModal')">Login</button>
+      <button class="btn btn-primary" onclick="openModal('registerModal')">Join</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="announcement" aria-label="Announcements">
+      <span class="announcement-dot"></span>
+      <p>Manual WhatsApp deposits, live rounds, and responsible gaming controls are active.</p>
+    </section>
+
+    <section class="hero-stats" aria-label="Platform highlights">
+      <article class="stat-pill">
+        <span class="stat-kicker">Live</span>
+        <strong>24/7 tables</strong>
+      </article>
+      <article class="stat-pill">
+        <span class="stat-kicker">Payout</span>
+        <strong>2 min review</strong>
+      </article>
+      <article class="stat-pill">
+        <span class="stat-kicker">Fairness</span>
+        <strong>Provably fair</strong>
+      </article>
+    </section>
+
+    <section class="promo-panel" aria-label="Apex Gaming promotion">
+      <div class="promo-copy">
+        <span class="eyebrow">Live real-money gaming</span>
+        <h1>Play fast rounds. Keep control.</h1>
+        <p>Provably fair games, wallet ledger protection, KYC, and manual payment verification in one mobile-first experience.</p>
+        <div class="promo-actions">
+          <button class="btn btn-gold" onclick="switchTab('aviator')">Play Aviator</button>
+          <button class="btn btn-light" onclick="switchTab('wallet')">Add Cash</button>
+        </div>
+      </div>
+      <div class="promo-visual" aria-hidden="true">
+        <div class="phone-card">
+          <div class="plane-line"></div>
+          <span class="multiplier-chip">2.48x</span>
+          <span class="mini-chip chip-one">Colour</span>
+          <span class="mini-chip chip-two">Ludo</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="reward-grid" aria-label="Rewards and quick actions">
+      <article class="reward-card">
+        <span class="reward-kicker">Bonus</span>
+        <strong>Welcome credits</strong>
+        <small>Use bonus balance where eligible.</small>
+      </article>
+      <article class="reward-card">
+        <span class="reward-kicker">Fair play</span>
+        <strong>Seed verified</strong>
+        <small>Check round fairness anytime.</small>
+      </article>
+      <article class="reward-card">
+        <span class="reward-kicker">Limits</span>
+        <strong>Responsible play</strong>
+        <small>Set daily deposit and loss caps.</small>
+      </article>
+    </section>
+
+    <section class="money-actions" aria-label="Deposit and withdrawal actions">
+      <button class="money-action deposit-action" onclick="switchTab('wallet')">
+        <span>Deposit</span>
+        <strong>WhatsApp payment</strong>
+      </button>
+      <button class="money-action withdraw-action" onclick="switchTab('wallet')">
+        <span>Withdraw</span>
+        <strong>Manual payout</strong>
+      </button>
+    </section>
+
+    <nav class="tabs-header" aria-label="Game and account categories">
+      <button class="tab-btn active" onclick="switchTab('aviator')">Aviator</button>
+      <button class="tab-btn" onclick="switchTab('colour')">Colour</button>
+      <button class="tab-btn" onclick="switchTab('ludo')">Ludo</button>
+      <button class="tab-btn" onclick="switchTab('wallet')">Wallet</button>
+      <button class="tab-btn" onclick="switchTab('kyc')">KYC</button>
+    </nav>
+
+    <section class="game-summary-grid" aria-label="Available games">
+      <button class="game-tile tile-aviator" onclick="switchTab('aviator')">
+        <span class="game-icon">A</span>
+        <span>
+          <strong>Aviator</strong>
+          <small>Crash multiplier</small>
+        </span>
+      </button>
+      <button class="game-tile tile-colour" onclick="switchTab('colour')">
+        <span class="game-icon">C</span>
+        <span>
+          <strong>Colour</strong>
+          <small>60s prediction</small>
+        </span>
+      </button>
+      <button class="game-tile tile-ludo" onclick="switchTab('ludo')">
+        <span class="game-icon">L</span>
+        <span>
+          <strong>Ludo</strong>
+          <small>2-4 player rooms</small>
+        </span>
+      </button>
+    </section>
+
+    <section id="tab-aviator" class="tab-content">
+      <div class="card game-card">
+        <div class="card-title">
+          <span>Aviator Provably Fair Crash</span>
+          <span class="seed-line">Seed: <span id="aviatorSeedHash">Connecting...</span></span>
+        </div>
+
+        <div class="history-ribbon" id="aviatorHistoryRibbon"></div>
+
+        <div class="aviator-stage">
+          <canvas id="aviatorCanvas" class="aviator-canvas"></canvas>
+          <div id="aviatorMultiplier" class="aviator-multiplier-display">1.00x</div>
+          <div id="aviatorStatusSubtitle" class="stage-subtitle">Connecting to game server...</div>
+        </div>
+
+        <div class="bet-panel two-column">
+          <div class="card compact-card">
+            <div class="bet-input-grid">
+              <div class="form-group">
+                <label class="form-label" for="aviatorBetAmount">Bet Amount (Rs)</label>
+                <input type="number" id="aviatorBetAmount" class="form-control" value="50" min="10" max="50000" step="10">
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="aviatorAutoCashout">Auto Cashout</label>
+                <input type="number" id="aviatorAutoCashout" class="form-control" placeholder="Optional" min="1.01" step="0.1">
+              </div>
+            </div>
+            <button id="btnAviatorBet" class="btn btn-success wide-btn" onclick="placeAviatorBet()">Place Bet</button>
+          </div>
+
+          <div class="card compact-card cashout-card">
+            <button id="btnAviatorCashout" class="btn btn-gold cashout-btn" style="display: none;" onclick="cashoutAviator()">
+              Cash Out Rs <span id="cashoutAmountDisplay">0.00</span>
+            </button>
+            <div id="aviatorNoBetNotice" class="muted-state">No active bet in current round</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-colour" class="tab-content" style="display: none;">
+      <div class="card game-card">
+        <div class="card-title">
+          <span>Colour Prediction</span>
+          <div class="round-meta">
+            <span id="colourRoundUuid">CP-00000000</span>
+            <span id="colourTimerBadge" class="badge badge-approved">00:60</span>
+          </div>
+        </div>
+
+        <div class="colour-btn-grid">
+          <button class="btn-bet-colour btn-green" onclick="openColourBetModal('COLOR', 'GREEN')">
+            <span>GREEN</span>
+            <small>2.0x Payout</small>
+          </button>
+          <button class="btn-bet-colour btn-violet" onclick="openColourBetModal('COLOR', 'VIOLET')">
+            <span>VIOLET</span>
+            <small>4.5x Payout</small>
+          </button>
+          <button class="btn-bet-colour btn-red" onclick="openColourBetModal('COLOR', 'RED')">
+            <span>RED</span>
+            <small>2.0x Payout</small>
+          </button>
+        </div>
+
+        <h2 class="section-label">Exact Numbers</h2>
+        <div class="number-grid">
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '0')">0</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '1')">1</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '2')">2</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '3')">3</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '4')">4</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '5')">5</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '6')">6</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '7')">7</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '8')">8</button>
+          <button class="btn-number" onclick="openColourBetModal('NUMBER', '9')">9</button>
+        </div>
+
+        <h2 class="section-label">Recent Results</h2>
+        <div class="history-ribbon" id="colourHistoryRibbon"></div>
+      </div>
+    </section>
+
+    <section id="tab-ludo" class="tab-content" style="display: none;">
+      <div class="card game-card">
+        <div class="card-title">
+          <span>Real-Money Ludo</span>
+          <span id="ludoMatchStatusBadge" class="badge badge-pending">Lobby</span>
+        </div>
+
+        <div id="ludoLobbySection" class="ludo-lobby">
+          <div class="form-group">
+            <label class="form-label" for="ludoStakeSelect">Stake Amount (Rs)</label>
+            <select id="ludoStakeSelect" class="form-control">
+              <option value="50">Rs 50 Stake (Prize: Rs 92)</option>
+              <option value="100">Rs 100 Stake (Prize: Rs 184)</option>
+              <option value="250">Rs 250 Stake (Prize: Rs 460)</option>
+              <option value="500">Rs 500 Stake (Prize: Rs 920)</option>
+            </select>
+          </div>
+          <button class="btn btn-primary wide-btn" onclick="createLudoMatch()">Create Match</button>
+        </div>
+
+        <div id="ludoGameSection" style="display: none;">
+          <div class="ludo-status">
+            <div>
+              <span>Match</span>
+              <b id="txtLudoMatchUuid">-</b>
+            </div>
+            <div>
+              <span>Pot</span>
+              <b class="amount-winnings">Rs <span id="txtLudoPot">0.00</span></b>
+            </div>
+            <div>
+              <span>Turn</span>
+              <b id="txtLudoTurnColor">RED</b>
+            </div>
+          </div>
+          <button id="btnLudoRoll" class="btn btn-gold wide-btn" onclick="rollLudoDice()">Roll Dice</button>
+
+          <div class="ludo-board-wrapper">
+            <canvas id="ludoCanvas" width="480" height="480" class="ludo-canvas"></canvas>
+          </div>
+
+          <div id="ludoTokenButtons" class="token-actions"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-wallet" class="tab-content" style="display: none;">
+      <div class="wallet-layout">
+        <div class="card">
+          <div class="card-title">
+            <span>Manual Deposit</span>
+            <span class="badge badge-verified">Zero Gateway Fees</span>
+          </div>
+
+          <p class="helper-text">Transactions are verified by the finance team on WhatsApp.</p>
+
+          <div class="form-group">
+            <label class="form-label" for="depositAmountInput">Deposit Amount (Rs)</label>
+            <input type="number" id="depositAmountInput" class="form-control" value="500" min="100" step="100">
+          </div>
+
+          <button class="btn btn-primary wide-btn" onclick="initiateDeposit()">Generate WhatsApp Payment Code</button>
+
+          <div id="depositResultBox" class="result-box" style="display: none;">
+            <div class="helper-text">Unique Reference Code</div>
+            <div id="dispDepRefCode" class="reference-code">DEP-000</div>
+
+            <div class="helper-text">Official Bank Details</div>
+            <div class="bank-details">
+              <div>UPI VPA: <b id="dispOfficialUpi">rmgfinance@icici</b></div>
+              <div>Account: <b id="dispOfficialAccount">50200012345678 (HDFC Bank)</b></div>
+              <div>IFSC: <b id="dispOfficialIfsc">HDFC0001234</b></div>
+            </div>
+
+            <a id="lnkWhatsApp" href="#" target="_blank" class="btn btn-whatsapp wide-btn">Open Official WhatsApp Chat</a>
+
+            <div class="simulator-box">
+              <div class="helper-text"><b>Simulator Mode</b>: send screenshot and UTR.</div>
+              <input type="text" id="simUtrInput" class="form-control" placeholder="12-digit Bank UTR">
+              <button class="btn btn-success wide-btn" onclick="simulateWhatsAppSubmission()">Simulate WhatsApp Screenshot Webhook</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>Request Withdrawal</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Withdrawable Winnings Balance</label>
+            <div class="big-balance">Rs <span id="txtWithdrawableBal">0.00</span></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wdrAmountInput">Withdrawal Amount (Rs)</label>
+            <input type="number" id="wdrAmountInput" class="form-control" placeholder="Min Rs 200" min="200" step="50">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wdrTypeSelect">Destination Type</label>
+            <select id="wdrTypeSelect" class="form-control">
+              <option value="UPI">UPI VPA</option>
+              <option value="BANK_ACCOUNT">Bank Account (IMPS)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wdrNameInput">Account Holder Name</label>
+            <input type="text" id="wdrNameInput" class="form-control" placeholder="As per bank records">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="wdrVpaInput">UPI VPA or Bank Account Number</label>
+            <input type="text" id="wdrVpaInput" class="form-control" placeholder="username@okhdfcbank or account number">
+          </div>
+
+          <button class="btn btn-primary wide-btn" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-kyc" class="tab-content" style="display: none;">
+      <div class="wallet-layout">
+        <div class="card">
+          <div class="card-title">
+            <span>Identity KYC Verification</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kycDocType">Document Type</label>
+            <select id="kycDocType" class="form-control">
+              <option value="PAN">PAN Card</option>
+              <option value="AADHAAR">Aadhaar Card</option>
+              <option value="PASSPORT">Passport</option>
+              <option value="VOTER_ID">Voter ID</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kycDocNumber">Document Number</label>
+            <input type="text" id="kycDocNumber" class="form-control" placeholder="ABCDE1234F">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kycFrontUrl">Document Front Photo URL</label>
+            <input type="text" id="kycFrontUrl" class="form-control" value="/uploads/kyc/sample_pan.jpg">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="kycSelfieUrl">Live Selfie Photo URL</label>
+            <input type="text" id="kycSelfieUrl" class="form-control" value="/uploads/kyc/sample_selfie.jpg">
+          </div>
+
+          <button class="btn btn-primary wide-btn" onclick="submitKycForm()">Submit KYC for Approval</button>
+        </div>
+
+        <div class="card">
+          <div class="card-title">
+            <span>Responsible Gaming Limits</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="limitDepositInput">Daily Deposit Limit (Rs)</label>
+            <input type="number" id="limitDepositInput" class="form-control" value="25000">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="limitLossInput">Daily Loss Limit (Rs)</label>
+            <input type="number" id="limitLossInput" class="form-control" value="15000">
+          </div>
+
+          <button class="btn btn-primary wide-btn" onclick="updateLimits()">Save Responsible Limits</button>
+
+          <div class="danger-zone">
+            <h2 class="section-label danger-label">Self-Exclusion / Cool-Off</h2>
+            <p class="helper-text">Block play and deposits immediately if you need a break.</p>
+            <button class="btn btn-danger wide-btn" onclick="requestSelfExclusion()">Activate 24-Hour Cool-Off</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="floating-actions" aria-label="Quick actions">
+    <button onclick="switchTab('wallet')" aria-label="Open wallet">Rs</button>
+    <button onclick="switchTab('kyc')" aria-label="Open KYC">ID</button>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Mobile bottom navigation">
+    <button class="bottom-nav-btn active" onclick="switchTab('aviator')" data-tab="aviator"><span>A</span>Aviator</button>
+    <button class="bottom-nav-btn" onclick="switchTab('colour')" data-tab="colour"><span>C</span>Colour</button>
+    <button class="bottom-nav-btn center-action" onclick="switchTab('wallet')" data-tab="wallet"><span>Rs</span>Deposit</button>
+    <button class="bottom-nav-btn" onclick="switchTab('ludo')" data-tab="ludo"><span>L</span>Ludo</button>
+    <button class="bottom-nav-btn" onclick="switchTab('kyc')" data-tab="kyc"><span>ID</span>KYC</button>
+  </nav>
+
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h3>Player Login</h3>
+      <div class="form-group">
+        <label class="form-label" for="loginUsername">Phone or Username</label>
+        <input type="text" id="loginUsername" class="form-control" value="demoplayer">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" class="form-control" value="Password@123">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('loginModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="doLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="registerModal" class="modal">
+    <div class="modal-content modal-wide">
+      <h3>Register (18+ Only)</h3>
+      <div class="form-group">
+        <label class="form-label" for="regUsername">Username</label>
+        <input type="text" id="regUsername" class="form-control" placeholder="johndoe">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="regPhone">Mobile Number</label>
+        <input type="text" id="regPhone" class="form-control" placeholder="+919876543210">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="regDob">Date of Birth</label>
+        <input type="date" id="regDob" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="regState">State / Jurisdiction</label>
+        <select id="regState" class="form-control">
+          <option value="MAHARASHTRA">Maharashtra (Permitted)</option>
+          <option value="DELHI">Delhi (Permitted)</option>
+          <option value="KARNATAKA">Karnataka (Permitted)</option>
+          <option value="UTTAR_PRADESH">Uttar Pradesh (Permitted)</option>
+          <option value="ASSAM">Assam (Restricted)</option>
+          <option value="ODISHA">Odisha (Restricted)</option>
+          <option value="TELANGANA">Telangana (Restricted)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="regPassword">Password</label>
+        <input type="password" id="regPassword" class="form-control" placeholder="Min 8 characters">
+      </div>
+      <label class="check-row">
+        <input type="checkbox" id="regAgeConfirm">
+        <span>I confirm that I am 18 years or older and legally eligible.</span>
+      </label>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('registerModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="doRegister()">Create Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="colourBetModal" class="modal">
+    <div class="modal-content">
+      <h3>Place Bet on <span id="modalBetTarget">-</span></h3>
+      <p class="helper-text">Estimated Payout: <b id="modalBetMultiplier" class="amount-winnings">-</b></p>
+      <div class="form-group">
+        <label class="form-label" for="colourModalAmount">Bet Amount (Rs)</label>
+        <input type="number" id="colourModalAmount" class="form-control" value="100" min="10" step="50">
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('colourBetModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="confirmColourBet()">Confirm Bet</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
