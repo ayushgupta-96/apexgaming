@@ -62,7 +62,13 @@ async function doRegister() {
   } catch (err) { alert("Network error during registration"); }
 }
 
-function onLoginSuccess() { document.getElementById("authButtons").style.display = "none"; document.getElementById("navWallets").style.display = "flex"; fetchWallet(); }
+function onLoginSuccess() {
+  const authButtons = document.getElementById("authButtons");
+  const navWallets = document.getElementById("navWallets");
+  if (authButtons) authButtons.style.display = "none";
+  if (navWallets) navWallets.style.display = "flex";
+  fetchWallet();
+}
 function logout() { localStorage.removeItem("rmg_token"); localStorage.removeItem("rmg_userId"); location.reload(); }
 
 async function fetchWallet() {
@@ -70,27 +76,60 @@ async function fetchWallet() {
   try {
     const res = await fetch("/api/wallet", { headers: { "Authorization": "Bearer " + token } });
     const data = await res.json();
-    if (data.success) { const w = data.data; document.getElementById("txtDepositBal").textContent = Number(w.depositBalance).toFixed(2); document.getElementById("txtWinningsBal").textContent = Number(w.winningsBalance).toFixed(2); document.getElementById("txtBonusBal").textContent = Number(w.bonusBalance).toFixed(2); document.getElementById("txtWithdrawableBal").textContent = Number(w.winningsBalance).toFixed(2); }
+    if (data.success) {
+      const w = data.data;
+      const deposit = document.getElementById("txtDepositBal");
+      const winnings = document.getElementById("txtWinningsBal");
+      const bonus = document.getElementById("txtBonusBal");
+      const withdrawable = document.getElementById("txtWithdrawableBal");
+      if (deposit) deposit.textContent = Number(w.depositBalance).toFixed(2);
+      if (winnings) winnings.textContent = Number(w.winningsBalance).toFixed(2);
+      if (bonus) bonus.textContent = Number(w.bonusBalance).toFixed(2);
+      if (withdrawable) withdrawable.textContent = Number(w.winningsBalance).toFixed(2);
+    }
   } catch (e) { console.error("Wallet error", e); }
 }
 
 async function initiateDeposit() {
+  if (!token) { window.location.href = "/"; return; }
   const amt = document.getElementById("depositAmountInput").value;
   try {
     const res = await fetch("/api/deposits", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({ amount: amt, paymentMethod: "UPI" }) });
     const data = await res.json();
-    if (data.success) { const dep = data.data; document.getElementById("dispDepRefCode").textContent = dep.referenceCode; document.getElementById("dispOfficialUpi").textContent = dep.officialUpiId; document.getElementById("dispOfficialAccount").textContent = dep.officialAccountNo + " (" + dep.officialBankName + ")"; document.getElementById("dispOfficialIfsc").textContent = dep.officialIfsc; document.getElementById("lnkWhatsApp").href = dep.whatsAppLink; document.getElementById("depositResultBox").style.display = "block"; } else alert("Deposit request error: " + data.message);
+    if (data.success) {
+      const dep = data.data;
+      document.getElementById("dispDepRefCode").textContent = dep.referenceCode;
+      document.getElementById("dispOfficialUpi").textContent = dep.officialUpiId;
+      document.getElementById("dispOfficialAccount").textContent = dep.officialAccountNo + " (" + dep.officialBankName + ")";
+      document.getElementById("dispOfficialIfsc").textContent = dep.officialIfsc;
+      document.getElementById("lnkWhatsApp").href = dep.whatsAppLink;
+      document.getElementById("depositResultBox").style.display = "block";
+    } else alert("Deposit request error: " + data.message);
   } catch (e) { alert("Failed to create deposit request"); }
 }
 
 async function simulateWhatsAppSubmission() {
-  const ref = document.getElementById("dispDepRefCode").textContent; const utr = document.getElementById("simUtrInput").value || "423456789012";
-  try { const res = await fetch("/api/webhooks/whatsapp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: "+919876500001", body: "Paid for " + ref + " UTR: " + utr, mediaUrl: "/uploads/whatsapp/screenshot_" + ref + ".jpg", mediaType: "IMAGE" }) }); const data = await res.json(); if (data.success) alert("WhatsApp payment proof received by webhook! Admin ticket created in queue."); } catch (e) { alert("Simulation webhook error"); }
+  const ref = document.getElementById("dispDepRefCode").textContent;
+  const utr = document.getElementById("simUtrInput").value || "423456789012";
+  try {
+    const res = await fetch("/api/webhooks/whatsapp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: "+919876500001", body: "Paid for " + ref + " UTR: " + utr, mediaUrl: "/uploads/whatsapp/screenshot_" + ref + ".jpg", mediaType: "IMAGE" }) });
+    const data = await res.json();
+    if (data.success) alert("WhatsApp payment proof received by webhook! Admin ticket created in queue.");
+  } catch (e) { alert("Simulation webhook error"); }
 }
 
 async function requestWithdrawal() {
-  const amt = document.getElementById("wdrAmountInput").value, type = document.getElementById("wdrTypeSelect").value, name = document.getElementById("wdrNameInput").value, vpa = document.getElementById("wdrVpaInput").value;
-  try { const res = await fetch("/api/withdrawals", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({ amount: amt, destinationType: type, accountHolderName: name, accountNumberOrVpa: vpa }) }); const data = await res.json(); if (data.success) { alert("Withdrawal request submitted! Funds locked via ledger pending manual payout."); fetchWallet(); } else alert("Withdrawal failed: " + data.message); } catch (e) { alert("Withdrawal error"); }
+  if (!token) { window.location.href = "/"; return; }
+  const amt = document.getElementById("wdrAmountInput").value;
+  const type = document.getElementById("wdrTypeSelect").value;
+  const name = document.getElementById("wdrNameInput").value;
+  const vpa = document.getElementById("wdrVpaInput").value;
+  try {
+    const res = await fetch("/api/withdrawals", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({ amount: amt, destinationType: type, accountHolderName: name, accountNumberOrVpa: vpa }) });
+    const data = await res.json();
+    if (data.success) { alert("Withdrawal request submitted! Funds locked via ledger pending manual payout."); fetchWallet(); }
+    else alert("Withdrawal failed: " + data.message);
+  } catch (e) { alert("Withdrawal error"); }
 }
 
 function connectWebSocket() {
@@ -103,11 +142,12 @@ function initAviatorCanvas() { canvas = document.getElementById("aviatorCanvas")
 function resizeCanvas() { if (!canvas) return; canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
 function handleAviatorTick(state) {
   currentAviatorState = state; const multDisplay = document.getElementById("aviatorMultiplier"), sub = document.getElementById("aviatorStatusSubtitle"), seedSpan = document.getElementById("aviatorSeedHash");
+  if (!multDisplay || !sub) return;
   if (seedSpan) seedSpan.textContent = state.serverSeedHash.substring(0, 24) + "...";
   if (state.status === "BETTING") { multDisplay.classList.remove("crashed"); multDisplay.textContent = state.countdownSeconds + "s"; sub.textContent = "NEXT ROUND STARTS IN..."; document.getElementById("btnAviatorBet").disabled = false; document.getElementById("btnAviatorCashout").style.display = "none"; document.getElementById("aviatorNoBetNotice").style.display = "block"; clearCanvas(); }
   else if (state.status === "FLYING") { multDisplay.classList.remove("crashed"); multDisplay.textContent = Number(state.currentMultiplier).toFixed(2) + "x"; sub.textContent = "PLANE IS IN FLIGHT!"; document.getElementById("btnAviatorBet").disabled = true; if (activeAviatorBet) { document.getElementById("btnAviatorCashout").style.display = "block"; document.getElementById("aviatorNoBetNotice").style.display = "none"; document.getElementById("cashoutAmountDisplay").textContent = (activeAviatorBet.amount * state.currentMultiplier).toFixed(2); } renderAviatorFlight(state.currentMultiplier); }
   else if (state.status === "CRASHED") { multDisplay.classList.add("crashed"); multDisplay.textContent = Number(state.crashMultiplier || state.currentMultiplier).toFixed(2) + "x"; sub.textContent = "FLEW AWAY!"; document.getElementById("btnAviatorCashout").style.display = "none"; document.getElementById("btnAviatorBet").disabled = true; activeAviatorBet = null; renderCrashExplosion(); }
-  if (state.recentHistory) { const ribbon = document.getElementById("aviatorHistoryRibbon"); ribbon.innerHTML = state.recentHistory.map(m => { const cls = m < 2.0 ? "pill-low" : (m < 10.0 ? "pill-med" : "pill-high"); return `<span class="history-pill ${cls}">${Number(m).toFixed(2)}x</span>`; }).join(""); }
+  if (state.recentHistory) { const ribbon = document.getElementById("aviatorHistoryRibbon"); if (ribbon) ribbon.innerHTML = state.recentHistory.map(m => { const cls = m < 2.0 ? "pill-low" : (m < 10.0 ? "pill-med" : "pill-high"); return `<span class="history-pill ${cls}">${Number(m).toFixed(2)}x</span>`; }).join(""); }
 }
 function renderAviatorFlight(mult) { if (!ctx || !canvas) return; ctx.clearRect(0,0,canvas.width,canvas.height); const w=canvas.width,h=canvas.height,progress=Math.min(1,(mult-1)/10),endX=w*0.1+progress*(w*0.75),endY=h*0.85-Math.pow(progress,1.2)*(h*0.65); ctx.beginPath(); ctx.moveTo(w*0.05,h*0.85); ctx.quadraticCurveTo(endX*0.6,h*0.85,endX,endY); ctx.strokeStyle="#f43f5e"; ctx.lineWidth=4; ctx.stroke(); ctx.fillStyle="#f59e0b"; ctx.beginPath(); ctx.arc(endX,endY,12,0,Math.PI*2); ctx.fill(); }
 function renderCrashExplosion() { if (!ctx || !canvas) return; ctx.fillStyle="rgba(244, 63, 94, 0.25)"; ctx.fillRect(0,0,canvas.width,canvas.height); }
@@ -119,13 +159,13 @@ async function placeAviatorBet() {
 }
 async function cashoutAviator() { if(!activeAviatorBet)return; try{const res=await fetch("/api/games/aviator/cashout",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({betUuid:activeAviatorBet.betUuid})});const data=await res.json();if(data.success){alert("Cashed out ₹"+data.data.bet.payoutAmount+" at "+data.data.cashedOutMultiplier+"x!");activeAviatorBet=null;document.getElementById("btnAviatorCashout").style.display="none";fetchWallet();}else alert("Cashout error: "+data.message);}catch(e){alert("Cashout failed");} }
 
-function handleColourTick(state) { currentColourState=state; document.getElementById("colourRoundUuid").textContent=state.roundUuid; const timer=document.getElementById("colourTimerBadge"); timer.textContent="00:"+(state.secondsRemaining<10?"0":"")+state.secondsRemaining; if(state.status==="LOCKED"){timer.className="badge badge-rejected";timer.textContent="LOCKED ("+state.secondsRemaining+"s)";}else if(state.status==="RESULT"){timer.className="badge badge-verified";timer.textContent="RESULT: "+state.winningNumber+" ("+state.winningColor+")";}else timer.className="badge badge-approved"; if(state.recentResults){document.getElementById("colourHistoryRibbon").innerHTML=state.recentResults.map(r=>{const cls=r.color.includes("GREEN")?"btn-green":(r.color.includes("RED")?"btn-red":"btn-violet");return `<span class="history-pill ${cls}" style="padding: 0.35rem 0.75rem; border-radius: 8px;">${r.number}</span>`;}).join("");} }
+function handleColourTick(state) { currentColourState=state; const round=document.getElementById("colourRoundUuid"), timer=document.getElementById("colourTimerBadge"); if(!round||!timer)return; round.textContent=state.roundUuid; timer.textContent="00:"+(state.secondsRemaining<10?"0":"")+state.secondsRemaining; if(state.status==="LOCKED"){timer.className="badge badge-rejected";timer.textContent="LOCKED ("+state.secondsRemaining+"s)";}else if(state.status==="RESULT"){timer.className="badge badge-verified";timer.textContent="RESULT: "+state.winningNumber+" ("+state.winningColor+")";}else timer.className="badge badge-approved"; if(state.recentResults){document.getElementById("colourHistoryRibbon").innerHTML=state.recentResults.map(r=>{const cls=r.color.includes("GREEN")?"btn-green":(r.color.includes("RED")?"btn-red":"btn-violet");return `<span class="history-pill ${cls}" style="padding: 0.35rem 0.75rem; border-radius: 8px;">${r.number}</span>`;}).join("");} }
 function openColourBetModal(type,val){if(!token){openModal("loginModal");return;}selectedColourTarget={type,value:val};document.getElementById("modalBetTarget").textContent=val;document.getElementById("modalBetMultiplier").textContent=type==="NUMBER"?"9.0x":(val==="VIOLET"?"4.5x":"2.0x");openModal("colourBetModal");}
 async function confirmColourBet(){const amt=document.getElementById("colourModalAmount").value;try{const res=await fetch("/api/games/colour/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentColourState.roundUuid,targetType:selectedColourTarget.type,targetValue:selectedColourTarget.value,amount:amt})});const data=await res.json();if(data.success){alert("Bet placed on "+selectedColourTarget.value+"!");closeModal("colourBetModal");fetchWallet();}else alert("Bet error: "+data.message);}catch(e){alert("Failed to submit bet");}}
 
 async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect").value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await res.json();if(data.success){currentLudoMatch=data.data;document.getElementById("ludoLobbySection").style.display="none";document.getElementById("ludoGameSection").style.display="block";document.getElementById("txtLudoMatchUuid").textContent=currentLudoMatch.matchUuid;document.getElementById("txtLudoPot").textContent=Number(currentLudoMatch.totalPot).toFixed(2);drawLudoBoard();stompClient.subscribe("/topic/games/ludo/"+currentLudoMatch.matchUuid,msg=>updateLudoGameState(JSON.parse(msg.body)));fetchWallet();}else alert("Ludo room error: "+data.message);}catch(e){alert("Error creating match");}}
 async function rollLudoDice(){if(!currentLudoMatch)return;try{const res=await fetch("/api/games/ludo/rooms/"+currentLudoMatch.matchUuid+"/roll",{method:"POST",headers:{"Authorization":"Bearer "+token}});const data=await res.json();if(data.success){alert("You rolled a "+data.data.diceRoll+"!");renderPawnButtons(data.data.movableTokenIndices);}else alert("Roll error: "+data.message);}catch(e){alert("Failed to roll dice");}}
-function renderPawnButtons(movable){const container=document.getElementById("ludoTokenButtons");container.innerHTML="";if(!movable||movable.length===0)return;movable.forEach(idx=>{const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent="Move Pawn #"+(idx+1);btn.onclick=()=>moveLudoPawn(idx);container.appendChild(btn);});}
+function renderPawnButtons(movable){const container=document.getElementById("ludoTokenButtons");if(!container)return;container.innerHTML="";if(!movable||movable.length===0)return;movable.forEach(idx=>{const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent="Move Pawn #"+(idx+1);btn.onclick=()=>moveLudoPawn(idx);container.appendChild(btn);});}
 async function moveLudoPawn(tokenIndex){try{const res=await fetch("/api/games/ludo/rooms/move",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({matchUuid:currentLudoMatch.matchUuid,tokenIndex})});const data=await res.json();if(data.success){document.getElementById("ludoTokenButtons").innerHTML="";updateLudoGameState(data.data);}}catch(e){alert("Error moving pawn");}}
 function updateLudoGameState(state){document.getElementById("txtLudoTurnColor").textContent=state.currentTurnColor;document.getElementById("txtLudoPot").textContent=Number(state.totalPot).toFixed(2);drawLudoBoard(state.tokenPositions);if(state.status==="COMPLETED"){alert("Match finished! Winner: "+state.winnerColor+" (₹"+state.winnerPayout+")");fetchWallet();}}
 function drawLudoBoard(positions){const canvas=document.getElementById("ludoCanvas");if(!canvas)return;const ctx=canvas.getContext("2d"),s=canvas.width;ctx.fillStyle="#1e293b";ctx.fillRect(0,0,s,s);ctx.fillStyle="#ef4444";ctx.fillRect(0,0,s*0.4,s*0.4);ctx.fillStyle="#10b981";ctx.fillRect(s*0.6,0,s*0.4,s*0.4);ctx.fillStyle="#eab308";ctx.fillRect(s*0.6,s*0.6,s*0.4,s*0.4);ctx.fillStyle="#3b82f6";ctx.fillRect(0,s*0.6,s*0.4,s*0.4);ctx.fillStyle="#f8fafc";ctx.beginPath();ctx.arc(s/2,s/2,s*0.1,0,Math.PI*2);ctx.fill();}
@@ -187,9 +227,10 @@ async function requestSelfExclusion(){if(!confirm("Are you sure? You will be blo
 
     window.switchTab = function(tabId) {
       if (tabId === 'home' || tabId === 'games') { showPage(tabId); return; }
-      if (tabId === 'deposit') { originalSwitchTab('wallet'); setActive('deposit'); return; }
+      if (tabId === 'deposit') { window.location.href = '/deposit.html'; return; }
+      if (tabId === 'wallet') { window.location.href = '/wallet.html'; return; }
       originalSwitchTab(tabId);
-      setActive(tabId === 'wallet' ? 'wallet' : tabId);
+      setActive(tabId);
       window.scrollTo({top:0, behavior:'smooth'});
     };
 
