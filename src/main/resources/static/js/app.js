@@ -26,12 +26,19 @@ function switchTab(tabId) {
 
 function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add("active"); }
 function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove("active"); }
-function togglePassword(id, button) { const input = document.getElementById(id); if (!input) return; input.type = input.type === "password" ? "text" : "password"; if (button) button.textContent = input.type === "password" ? "◉" : "◌"; }
+
+function togglePassword(id, button) {
+  const input = document.getElementById(id);
+  if (!input) return;
+  input.type = input.type === "password" ? "text" : "password";
+  if (button) button.textContent = input.type === "password" ? "◉" : "◌";
+}
+
 function safeJsonResponse(res) { return res.json().catch(() => ({ success: false, message: "Invalid server response" })); }
 
 async function doLogin() {
-  const u = document.getElementById("loginUsername")?.value.trim();
-  const p = document.getElementById("loginPassword")?.value;
+  const u = document.getElementById("loginUsername").value.trim();
+  const p = document.getElementById("loginPassword").value;
   if (!u || !p) { alert("Please enter username/phone and password."); return; }
   try {
     const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usernameOrPhone: u, password: p }) });
@@ -46,20 +53,26 @@ async function doLogin() {
 }
 
 async function doRegister() {
-  const u = document.getElementById("regUsername")?.value.trim();
-  const ph = document.getElementById("regPhone")?.value.trim();
+  const u = document.getElementById("regUsername").value.trim();
+  const ph = document.getElementById("regPhone").value.trim();
   const email = document.getElementById("regEmail")?.value.trim() || null;
-  const dob = document.getElementById("regDob")?.value;
-  const st = document.getElementById("regState")?.value;
-  const pwd = document.getElementById("regPassword")?.value;
-  const confirmPwd = document.getElementById("regConfirmPassword")?.value;
-  const age = document.getElementById("regAgeConfirm")?.checked;
+  const dob = document.getElementById("regDob").value;
+  const st = document.getElementById("regState").value;
+  const pwd = document.getElementById("regPassword").value;
+  const confirmPwd = document.getElementById("regConfirmPassword").value;
+  const age = document.getElementById("regAgeConfirm").checked;
+
   if (!u || !ph || !dob || !st || !pwd || !confirmPwd) { alert("Please complete all required registration fields."); return; }
   if (pwd.length < 8) { alert("Password must be at least 8 characters."); return; }
   if (pwd !== confirmPwd) { alert("Passwords do not match."); return; }
   if (!age) { alert("You must confirm that you are 18+ and legally eligible."); return; }
+
   try {
-    const res = await fetch("/api/auth/register", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ username: u, phoneNumber: ph, email, firstName: u, lastName: null, dateOfBirth: dob, state: st, password: pwd, ageConfirmed: true }) });
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: u, phoneNumber: ph, email, firstName: u, lastName: null, dateOfBirth: dob, state: st, password: pwd, ageConfirmed: true })
+    });
     const data = await safeJsonResponse(res);
     if (data.success) {
       token = data.data.accessToken; currentUserId = data.data.userId;
@@ -80,6 +93,7 @@ function onLoginSuccess() {
   if (topJoin) topJoin.style.display = "none";
   fetchWallet();
 }
+
 function logout() { localStorage.removeItem("rmg_token"); localStorage.removeItem("rmg_userId"); location.reload(); }
 
 async function fetchWallet() {
@@ -89,10 +103,20 @@ async function fetchWallet() {
     const data = await safeJsonResponse(res);
     if (data.success) {
       const w = data.data;
-      [
-        ["txtDepositBal", w.depositBalance], ["txtWinningsBal", w.winningsBalance], ["txtBonusBal", w.bonusBalance],
-        ["txtWithdrawableBal", w.winningsBalance], ["walletDepositBalance", w.depositBalance], ["walletWinningsBalance", w.winningsBalance], ["walletBonusBalance", w.bonusBalance]
-      ].forEach(([id, value]) => { const el = document.getElementById(id); if (el) el.textContent = Number(value).toFixed(2); });
+      const deposit = document.getElementById("txtDepositBal");
+      const winnings = document.getElementById("txtWinningsBal");
+      const bonus = document.getElementById("txtBonusBal");
+      const withdrawable = document.getElementById("txtWithdrawableBal");
+      const walletDeposit = document.getElementById("walletDepositBalance");
+      const walletWinnings = document.getElementById("walletWinningsBalance");
+      const walletBonus = document.getElementById("walletBonusBalance");
+      if (deposit) deposit.textContent = Number(w.depositBalance).toFixed(2);
+      if (winnings) winnings.textContent = Number(w.winningsBalance).toFixed(2);
+      if (bonus) bonus.textContent = Number(w.bonusBalance).toFixed(2);
+      if (withdrawable) withdrawable.textContent = Number(w.winningsBalance).toFixed(2);
+      if (walletDeposit) walletDeposit.textContent = Number(w.depositBalance).toFixed(2);
+      if (walletWinnings) walletWinnings.textContent = Number(w.winningsBalance).toFixed(2);
+      if (walletBonus) walletBonus.textContent = Number(w.bonusBalance).toFixed(2);
     }
   } catch (e) { console.error("Wallet error", e); }
 }
@@ -100,8 +124,9 @@ async function fetchWallet() {
 async function initiateDeposit() {
   if (!token) { window.location.href = "/"; return; }
   const input = document.getElementById("depositAmountInput"); if (!input) return;
+  const amt = input.value;
   try {
-    const res = await fetch("/api/deposits", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({ amount: input.value, paymentMethod: "UPI" }) });
+    const res = await fetch("/api/deposits", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token }, body: JSON.stringify({ amount: amt, paymentMethod: "UPI" }) });
     const data = await safeJsonResponse(res);
     if (data.success) {
       const dep = data.data;
@@ -158,24 +183,41 @@ function renderPawnButtons(movable){const container=document.getElementById("lud
 async function moveLudoPawn(tokenIndex){if(!currentLudoMatch)return;try{const res=await fetch("/api/games/ludo/rooms/move",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({matchUuid:currentLudoMatch.matchUuid,tokenIndex})});const data=await safeJsonResponse(res);if(data.success){const box=document.getElementById("ludoTokenButtons");if(box)box.innerHTML="";updateLudoGameState(data.data);}}catch(e){alert("Error moving pawn");}}
 function updateLudoGameState(state){const turn=document.getElementById("txtLudoTurnColor"),pot=document.getElementById("txtLudoPot");if(turn)turn.textContent=state.currentTurnColor;if(pot)pot.textContent=Number(state.totalPot).toFixed(2);drawLudoBoard(state.tokenPositions);if(state.status==="COMPLETED"){alert("Match finished!");fetchWallet();}}
 function drawLudoBoard(){const canvas=document.getElementById("ludoCanvas");if(!canvas)return;const c=canvas.getContext("2d"),s=canvas.width;c.fillStyle="#1e293b";c.fillRect(0,0,s,s);c.fillStyle="#ef4444";c.fillRect(0,0,s*.4,s*.4);c.fillStyle="#10b981";c.fillRect(s*.6,0,s*.4,s*.4);c.fillStyle="#eab308";c.fillRect(s*.6,s*.6,s*.4,s*.4);c.fillStyle="#3b82f6";c.fillRect(0,s*.6,s*.4,s*.4);c.fillStyle="#f8fafc";c.beginPath();c.arc(s/2,s/2,s*.1,0,Math.PI*2);c.fill();}
-async function submitKycForm(){if(!token){openModal("loginModal");return;}try{const res=await fetch("/api/users/kyc/upload",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({documentType:document.getElementById("kycDocType")?.value,documentNumber:document.getElementById("kycDocNumber")?.value,documentFrontUrl:document.getElementById("kycFrontUrl")?.value,selfieUrl:document.getElementById("kycSelfieUrl")?.value})});const data=await safeJsonResponse(res);if(data.success)alert("KYC submitted.");else alert("KYC error: "+(data.message||"Unknown error"));}catch(e){alert("Error submitting KYC");}}
-async function updateLimits(){if(!token){openModal("loginModal");return;}try{const res=await fetch("/api/users/limits",{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({dailyDepositLimit:document.getElementById("limitDepositInput")?.value,dailyLossLimit:document.getElementById("limitLossInput")?.value})});const data=await safeJsonResponse(res);if(data.success)alert("Responsible gaming limits updated!");else alert("Unable to update limits");}catch(e){alert("Error updating limits");}}
+async function submitKycForm(){if(!token){openModal("loginModal");return;}const num=document.getElementById("kycDocNumber")?.value,docType=document.getElementById("kycDocType")?.value,front=document.getElementById("kycFrontUrl")?.value,selfie=document.getElementById("kycSelfieUrl")?.value;try{const res=await fetch("/api/users/kyc/upload",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({documentType:docType,documentNumber:num,documentFrontUrl:front,selfieUrl:selfie})});const data=await safeJsonResponse(res);if(data.success)alert("KYC submitted.");else alert("KYC error: "+(data.message||"Unknown error"));}catch(e){alert("Error submitting KYC");}}
+async function updateLimits(){if(!token){openModal("loginModal");return;}const dep=document.getElementById("limitDepositInput")?.value,loss=document.getElementById("limitLossInput")?.value;try{const res=await fetch("/api/users/limits",{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({dailyDepositLimit:dep,dailyLossLimit:loss})});const data=await safeJsonResponse(res);if(data.success)alert("Responsible gaming limits updated!");else alert("Unable to update limits");}catch(e){alert("Error updating limits");}}
 async function requestSelfExclusion(){if(!token){openModal("loginModal");return;}if(!confirm("Are you sure? You will be blocked from depositing and placing bets for 24 hours."))return;try{const res=await fetch("/api/users/self-exclude",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({exclusionType:"COOL_OFF",durationHours:24,reason:"User break"})});const data=await safeJsonResponse(res);if(data.success){alert("Account is now in 24-hour cool-off period. Logging out.");logout();}}catch(e){alert("Self-exclusion error");}}
 
-const catalog={
-  popular:[['Fortune Garuda 500','fortune'],['Lucky Jaguar 500','lucky'],['Fortune Gems 4','gems4'],['Phoenix Legend','phoenix'],['Fortune Gems 2','gems2'],['Fortune Gems 3','gems3'],['Cash Machine','cash'],['Double Diamonds','diamonds']],
-  lottery:[['Wingo','wingo'],['K3','k3'],['5D','5d'],['Trx Wingo','trx'],['Moto Racing','moto']],
-  mini:[['Aviator','aviator'],['Aviator Red','aviator-red'],['Cricket','cricket'],['Go Rush','gorush'],['Limbo','limbo'],['Mines','mines'],['Mines Classic','mines2'],['Limbo Space','limbo2']],
-  slots:[['Phoenix Legend','phoenix'],['Double Diamonds','diamonds'],['Blessing of Shiva','shiva'],['Fruit 777','fruit'],['Cyber Viper','viper'],['Regal 777','regal'],['Classic 777','classic'],['Gold Rush','gold']],
-  fishing:[['Jackpot Fishing','jackpot'],['Dracon Master','dracon'],['One Shot Fishing','oneshot'],['Happy Fishing','happy'],['Royal Fishing','royal'],['Mega Fishing','mega'],['Dragon Master','dragon'],['Bombing Fishing','bomb']]
+function cardHTML(game) {
+  const actions = {
+    aviator: "switchTab('aviator')",
+    colour: "switchTab('colour')",
+    ludo: "switchTab('ludo')",
+    mines: "switchTab('games')",
+    fruit: "switchTab('games')"
+  };
+  const action = actions[game.key] || "void(0)";
+  return `<button class="catalog-card ${game.key}" onclick="${action}"><div class="catalog-art"><img src="${game.image}" alt="${game.name}"></div><b>${game.name}</b></button>`;
+}
+
+const catalog = {
+  popular:[
+    {name:'Aviator',key:'aviator',image:'/images/games/aviator.webp'},
+    {name:'Colour Prediction',key:'colour',image:'/images/games/colour-prediction.webp'},
+    {name:'Ludo',key:'ludo',image:'/images/games/ludo.webp'},
+    {name:'Mines',key:'mines',image:'/images/games/mines.webp'},
+    {name:'Fruit 777',key:'fruit',image:'/images/games/fruit-777.webp'}
+  ]
 };
-function cardHTML(game){const click=game[1].includes("aviator")?"switchTab('aviator')":"switchTab('games')";return `<button class="catalog-card ${game[1]}" onclick="${click}"><div class="catalog-art"><span>${game[0].split(' ').slice(0,2).map(x=>x[0]).join('')}</span></div><b>${game[0]}</b></button>`;}
+
+function showGameCategory() {
+  const target = document.getElementById('categoryGames');
+  if (target) target.innerHTML = catalog.popular.map(cardHTML).join('');
+}
 
 function setupMobileNavigation(){
-  const home=document.querySelector('.mobile-home-shell');
-  const games=document.getElementById('mobile-games');
+  const home=document.querySelector('.mobile-home-shell'); const games=document.getElementById('mobile-games');
   if(!home||!games)return;
-  const originalSwitchTab=window.switchTab;
+  const originalSwitchTab = window.switchTab;
   window.switchTab=function(tabId){
     if(tabId==='home'){document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');home.style.display='block';games.style.display='none';setNavActive('home');window.scrollTo(0,0);return;}
     if(tabId==='games'){document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');home.style.display='none';games.style.display='block';setNavActive('games');window.scrollTo(0,0);return;}
@@ -183,10 +225,7 @@ function setupMobileNavigation(){
     if(tabId==='wallet'){window.location.href='/wallet.html';return;}
     home.style.display='none';games.style.display='none';originalSwitchTab(tabId);setNavActive(tabId);window.scrollTo(0,0);
   };
-  const target=document.getElementById('categoryGames');
-  if(target)target.innerHTML=catalog.popular.map(cardHTML).join('');
-  const large=document.getElementById('gamesCatalogLarge');
-  if(large)large.innerHTML=[...catalog.lottery,...catalog.mini,...catalog.slots,...catalog.fishing].map(cardHTML).join('');
+  showGameCategory();
   setNavActive('home');
 }
 function setNavActive(tab){document.querySelectorAll('.bottom-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));}
