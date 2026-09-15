@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Apex Gaming | Wallet</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+  <header class="navbar">
+    <div class="brand" aria-label="Apex Gaming">
+      <span class="brand-mark">A</span>
+      <div class="brand-copy"><span>APEX GAMING</span><span class="brand-badge">WALLET</span></div>
+    </div>
+    <div class="auth-actions">
+      <button class="btn btn-secondary" onclick="window.location.href='/'">Home</button>
+      <button class="btn btn-primary" onclick="window.location.href='/deposit.html'">Deposit</button>
+    </div>
+  </header>
+
+  <main class="container page-container">
+    <section class="page-heading">
+      <span class="eyebrow">Account balance</span>
+      <h1>Wallet</h1>
+      <p>View your balances and request a withdrawal from your dedicated wallet page.</p>
+    </section>
+
+    <section class="wallet-balance-grid" aria-label="Wallet balances">
+      <article class="card balance-card"><span>Deposit Balance</span><strong>Rs <span id="txtDepositBal">0.00</span></strong></article>
+      <article class="card balance-card"><span>Winnings</span><strong>Rs <span id="txtWinningsBal">0.00</span></strong></article>
+      <article class="card balance-card"><span>Bonus</span><strong>Rs <span id="txtBonusBal">0.00</span></strong></article>
+    </section>
+
+    <section class="wallet-layout">
+      <div class="card">
+        <div class="card-title"><span>Withdraw Funds</span></div>
+        <div class="form-group">
+          <label class="form-label">Withdrawable Winnings Balance</label>
+          <div class="big-balance">Rs <span id="txtWithdrawableBal">0.00</span></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wdrAmountInput">Withdrawal Amount (Rs)</label>
+          <input type="number" id="wdrAmountInput" class="form-control" placeholder="Min Rs 200" min="200" step="50">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wdrTypeSelect">Destination Type</label>
+          <select id="wdrTypeSelect" class="form-control">
+            <option value="UPI">UPI VPA</option>
+            <option value="BANK_ACCOUNT">Bank Account (IMPS)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wdrNameInput">Account Holder Name</label>
+          <input type="text" id="wdrNameInput" class="form-control" placeholder="As per bank records">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="wdrVpaInput">UPI VPA or Bank Account Number</label>
+          <input type="text" id="wdrVpaInput" class="form-control" placeholder="username@okhdfcbank or account number">
+        </div>
+        <button class="btn btn-primary wide-btn" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+      </div>
+
+      <div class="card wallet-help-card">
+        <div class="card-title"><span>Quick Actions</span></div>
+        <p class="helper-text">Need to add money? Open the dedicated Deposit page.</p>
+        <button class="btn btn-success wide-btn" onclick="window.location.href='/deposit.html'">Go to Deposit</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Mobile bottom navigation">
+    <button class="bottom-nav-btn" onclick="window.location.href='/'"><span>⌂</span>Home</button>
+    <button class="bottom-nav-btn" onclick="window.location.href='/#games'"><span>G</span>Games</button>
+    <button class="bottom-nav-btn center-action" onclick="window.location.href='/deposit.html'"><span>Rs</span>Deposit</button>
+    <button class="bottom-nav-btn active"><span>W</span>Wallet</button>
+  </nav>
+
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!localStorage.getItem('rmg_token')) {
+        window.location.href = '/';
+        return;
+      }
+      if (typeof fetchWallet === 'function') fetchWallet();
+    });
+  </script>
+</body>
+</html>
