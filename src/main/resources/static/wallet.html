@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Apex Gaming | Wallet</title>
   <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mobile-home-fixes.css">
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
-<body>
-  <header class="navbar">
+<body class="apex-mobile-app">
+  <header class="navbar mobile-topbar">
     <div class="brand" aria-label="Apex Gaming">
       <span class="brand-mark">A</span>
-      <div class="brand-copy"><span>APEX GAMING</span><span class="brand-badge">WALLET</span></div>
+      <div class="brand-copy"><span>APEX</span><span class="brand-badge">WALLET</span></div>
     </div>
-    <div class="auth-actions">
+    <div class="auth-actions topbar-actions">
       <button class="btn btn-secondary" onclick="window.location.href='/'">Home</button>
       <button class="btn btn-primary" onclick="window.location.href='/deposit.html'">Deposit</button>
     </div>
@@ -71,10 +72,11 @@
   </main>
 
   <nav class="bottom-nav" aria-label="Mobile bottom navigation">
-    <button class="bottom-nav-btn" onclick="window.location.href='/'"><span>⌂</span>Home</button>
-    <button class="bottom-nav-btn" onclick="window.location.href='/#games'"><span>G</span>Games</button>
-    <button class="bottom-nav-btn center-action" onclick="window.location.href='/deposit.html'"><span>Rs</span>Deposit</button>
-    <button class="bottom-nav-btn active"><span>W</span>Wallet</button>
+    <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
+    <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games"><span>✦</span><small>Games</small></a>
+    <a class="bottom-nav-btn center-action play-action" href="/" data-tab="aviator" aria-label="Play"><span>▶</span><small>Play</small></a>
+    <a class="bottom-nav-btn" href="/deposit.html" data-tab="deposit" aria-label="Deposit"><span>₹</span><small>Deposit</small></a>
+    <a class="bottom-nav-btn active" href="/wallet.html" data-tab="wallet" aria-label="Wallet"><span>◈</span><small>Wallet</small></a>
   </nav>
 
   <script src="/js/app.js"></script>
