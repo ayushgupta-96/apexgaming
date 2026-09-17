@@ -22,21 +22,21 @@ function setupPremiumBottomNav() {
   if (!nav) return;
 
   nav.innerHTML = `
-    <button class="bottom-nav-btn" onclick="switchTab('home')" data-tab="home" aria-label="Home">
+    <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home">
       <span>⌂</span><small>Home</small>
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('games')" data-tab="games" aria-label="Games">
+    </a>
+    <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games">
       <span>✦</span><small>Games</small>
-    </button>
-    <button class="bottom-nav-btn center-action play-action" onclick="switchTab('aviator')" data-tab="aviator" aria-label="Play">
+    </a>
+    <a class="bottom-nav-btn center-action play-action" href="/?play=aviator" data-tab="aviator" aria-label="Play">
       <span>▶</span><small>Play</small>
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('deposit')" data-tab="deposit" aria-label="Deposit">
+    </a>
+    <a class="bottom-nav-btn" href="/deposit.html" data-tab="deposit" aria-label="Deposit">
       <span>₹</span><small>Deposit</small>
-    </button>
-    <button class="bottom-nav-btn" onclick="switchTab('wallet')" data-tab="wallet" aria-label="Wallet">
+    </a>
+    <a class="bottom-nav-btn" href="/wallet.html" data-tab="wallet" aria-label="Wallet">
       <span>◈</span><small>Wallet</small>
-    </button>
+    </a>
   `;
 }
 
