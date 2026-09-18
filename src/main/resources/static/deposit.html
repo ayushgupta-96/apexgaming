@@ -70,5 +70,12 @@
   </nav>
 
   <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!localStorage.getItem('rmg_token')) {
+        window.location.href = '/';
+      }
+    });
+  </script>
 </body>
 </html>
