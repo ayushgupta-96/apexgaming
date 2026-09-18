@@ -121,7 +121,7 @@ async function fetchWallet() {
   } catch (e) { console.error("Wallet error", e); }
 }
 
-async function initiateDeposit() {
+async async function initiateDeposit() {
   if (!token) { window.location.href = "/"; return; }
   const input = document.getElementById("depositAmountInput"); if (!input) return;
   const amt = input.value;
@@ -136,6 +136,7 @@ async function initiateDeposit() {
       { const el = document.getElementById("dispOfficialIfsc"); if (el) el.textContent = dep.officialIfsc; }
       { const el = document.getElementById("lnkWhatsApp"); if (el) el.href = dep.whatsAppLink; }
       { const el = document.getElementById("depositResultBox"); if (el) el.style.display = "block"; }
+      return dep.whatsAppLink;
     } else alert("Deposit request error: " + (data.message || "Unable to create request"));
   } catch (e) { alert("Failed to create deposit request"); }
 }
