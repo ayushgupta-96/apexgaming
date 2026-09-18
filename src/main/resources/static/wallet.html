@@ -7,63 +7,260 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/mobile-home-fixes.css">
   <style>
-    .wallet-screen{min-height:100vh;background:#001f18;color:#fff;padding-bottom:92px}
-    .wallet-screen *{box-sizing:border-box}
-    .wallet-head{height:64px;background:#00352a;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid rgba(255,255,255,.04)}
-    .wallet-back{position:absolute;left:22px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:#fff;font-size:34px;font-weight:300;line-height:1;padding:0;cursor:pointer}
-    .wallet-head-title{font-size:27px;font-weight:500;letter-spacing:.2px}
-    .wallet-total{background:linear-gradient(180deg,#0a9b69 0%,#005c43 100%);height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-    .wallet-total-icon{width:48px;height:40px;margin-bottom:10px;display:flex;align-items:center;justify-content:center}
-    .wallet-total-icon svg{width:48px;height:40px;display:block}
-    .wallet-total-amount{font-size:48px;font-weight:300;line-height:1.05}
-    .wallet-total-label{font-size:25px;margin-top:8px;font-weight:400}
-    .wallet-panel{margin:20px 22px 0;background:#00342a;border-radius:18px;padding:34px 10px 25px;box-shadow:0 7px 18px rgba(0,0,0,.18)}
-    .wallet-rings{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:center}
-    .wallet-ring-wrap{display:flex;flex-direction:column;align-items:center}
-    .wallet-ring{width:138px;height:138px;border-radius:50%;border:11px solid #e5bb4e !important;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px rgba(229,187,78,.18),inset 0 0 0 1px rgba(255,255,255,.02)}
-    .wallet-ring b{font-size:31px;color:#e8c75c}
-    .wallet-ring-amount{font-size:28px;color:#e6c15a;margin-top:13px}
-    .wallet-ring-name{font-size:21px;color:#dfc875;margin-top:3px}
-    .wallet-transfer{margin:31px 0 29px;width:100%;height:68px;border:0;border-radius:40px;background:linear-gradient(180deg,#f1cd67,#d7ad3e);color:#fff;font-size:25px;font-weight:800;cursor:pointer}
-    .wallet-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;text-align:center;width:100%}
-    .wallet-action{border:0;background:transparent;color:#ddd;cursor:pointer;font-size:16px;line-height:1.22;min-width:0;padding:0}
-    .wallet-action-icon{width:clamp(66px,21vw,94px);height:clamp(66px,21vw,94px);margin:0 auto 9px;border-radius:25px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 12px rgba(0,0,0,.18);overflow:hidden}
-    .wallet-action-icon svg{width:58%;height:58%;display:block}
-    .wallet-action.deposit .wallet-action-icon{background:linear-gradient(145deg,#f0bd4a,#e0aa39)}
-    .wallet-action.withdraw .wallet-action-icon{background:linear-gradient(145deg,#4d8fe8,#3872ca)}
-    .wallet-action.dep-history .wallet-action-icon{background:linear-gradient(145deg,#ed657e,#d94361)}
-    .wallet-action.wdr-history .wallet-action-icon{background:linear-gradient(145deg,#42d2ae,#18a987)}
-    .wallet-action.deposit .wallet-action-icon{background:linear-gradient(145deg,#f0bd4a,#e0aa39);color:#fff0bd}
-    .wallet-action.withdraw .wallet-action-icon{background:linear-gradient(145deg,#4d8fe8,#3872ca);color:#eaf3ff}
-    .wallet-action.dep-history .wallet-action-icon{background:linear-gradient(145deg,#ed657e,#d94361);color:#fff}
-    .wallet-action.wdr-history .wallet-action-icon{background:linear-gradient(145deg,#42d2ae,#18a987);color:#effff9}
-    .wallet-lower-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 22px}
-    
-    .wallet-mini-card{height:140px;background:#00342a;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#d7d7d7}
-    .wallet-mini-card strong{font-size:21px;color:#eee}
-    .wallet-mini-card span{font-size:22px;margin-top:10px;color:#9eaaa6}
-    .wallet-withdraw-panel{display:none;margin:0 18px 24px;background:#00342a;border-radius:18px;padding:22px 18px}
-    .wallet-withdraw-panel.open{display:block}
-    .wallet-withdraw-panel h2{margin:0 0 18px;color:#e8c75c;font-size:25px}
-    .wallet-withdraw-panel .form-group{margin-bottom:15px}
-    .wallet-withdraw-panel .form-label{color:#ddd}
-    .wallet-withdraw-panel .form-control{background:#002a22;border-color:#075e4d;color:#fff}
-    .wallet-withdraw-panel .wide-btn{margin-top:5px}
-    @media(max-width:420px){
-      .wallet-panel{margin-left:22px;margin-right:22px;padding-left:8px;padding-right:8px}
-      .wallet-ring{width:132px;height:132px}
-      .wallet-action-icon{width:78px;height:78px}
-      .wallet-action{font-size:15px}
-      .wallet-transfer{font-size:24px}
-      .wallet-lower-grid{margin-left:22px;margin-right:22px}
-      .wallet-total{height:218px}.wallet-total-amount{font-size:48px}.wallet-total-label{font-size:23px}
-      .wallet-panel{margin:24px 14px 0;padding:30px 10px 22px}
-      .wallet-ring{width:128px;height:128px}.wallet-ring b{font-size:29px}.wallet-ring-amount{font-size:25px}.wallet-ring-name{font-size:18px}
-      .wallet-transfer{height:68px;font-size:25px}
-      .wallet-action-icon{width:78px;height:78px;font-size:40px}.wallet-action{font-size:15px}
-      .wallet-lower-grid{margin:22px 14px;gap:14px}
+    /* Base Reset and Screen Layout */
+    .wallet-screen {
+        min-height: 100vh;
+        background: #041d12;
+        color: #fff;
+        padding-bottom: 92px;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     }
-  </style>
+    .wallet-screen * {
+        box-sizing: border-box;
+    }
+    
+    /* Top Navigation Header */
+    .wallet-head {
+        height: 56px;
+        background: #041d12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .wallet-back {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 0;
+        background: transparent;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .wallet-head-title {
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    /* Top Gradient Balance Panel */
+    .wallet-total {
+        background: linear-gradient(180deg, #0d5c3a 0%, #041d12 100%);
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 10px;
+    }
+    .wallet-total-icon {
+        width: auto;
+        height: auto;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-total-icon svg {
+        width: 45px;
+        height: 36px;
+        display: block;
+        opacity: 0.8;
+    }
+    .wallet-total-amount {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .wallet-total-label {
+        font-size: 14px;
+        margin-top: 4px;
+        color: #a0b2a6;
+    }
+
+    /* Main Center Card Panel */
+    .wallet-panel {
+        margin: 16px 16px 0;
+        background: #052618;
+        border: 1px solid #0a3a25;
+        border-radius: 12px;
+        padding: 24px 16px;
+    }
+    .wallet-rings {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        text-align: center;
+    }
+    .wallet-ring-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .wallet-ring {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 4px solid #e1b12c !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-ring b {
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+    .wallet-ring-amount {
+        font-size: 16px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-top: 12px;
+    }
+    .wallet-ring-name {
+        font-size: 12px;
+        color: #8fa397;
+        margin-top: 2px;
+    }
+
+    /* Main Golden Transfer Button */
+    .wallet-transfer {
+        margin: 24px 0 0;
+        width: 100%;
+        height: 46px;
+        border: 0;
+        border-radius: 25px;
+        background: #f5cd79;
+        color: #052618;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .wallet-transfer:hover {
+        background-color: #eccc68;
+    }
+
+    /* 4-Column Action Menu Grid */
+    .wallet-actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        text-align: center;
+        width: auto;
+        margin: 16px 16px 0;
+    }
+    .wallet-action {
+        border: 0;
+        background: transparent;
+        color: #b0c4b8;
+        cursor: pointer;
+        font-size: 12px;
+        line-height: 1.3;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .wallet-action-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 8px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-action-icon svg {
+        width: 50%;
+        height: 50%;
+        display: block;
+    }
+
+    /* Action Gradients mapped to exact box colors */
+    .wallet-action.deposit .wallet-action-icon { background: #f3a683; color: #fff; }
+    .wallet-action.withdraw .wallet-action-icon { background: #778beb; color: #fff; }
+    .wallet-action.dep-history .wallet-action-icon { background: #f78fb3; color: #fff; }
+    .wallet-action.wdr-history .wallet-action-icon { background: #63cdda; color: #fff; }
+
+    /* Bottom Game Box Grid */
+    .wallet-lower-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 16px 16px;
+    }
+    .wallet-mini-card {
+        height: 90px;
+        background: #052618;
+        border: 1px solid #0a3a25;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-mini-card strong {
+        font-size: 14px;
+        font-weight: 500;
+        color: #ffffff;
+        order: 1; /* Pushes number to top */
+    }
+    .wallet-mini-card span {
+        font-size: 12px;
+        margin-top: 4px;
+        color: #7d9687;
+        order: 2; /* Pushes label below number */
+    }
+
+    /* Optional Panel overrides for conditional logic */
+    .wallet-withdraw-panel {
+        display: none;
+        margin: 0 16px 24px;
+        background: #052618;
+        border: 1px solid #0a3a25;
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .wallet-withdraw-panel.open {
+        display: block;
+    }
+    .wallet-withdraw-panel h2 {
+        margin: 0 0 16px;
+        color: #f5cd79;
+        font-size: 18px;
+    }
+    .wallet-withdraw-panel .form-group {
+        margin-bottom: 12px;
+    }
+    .wallet-withdraw-panel .form-label {
+        color: #b0c4b8;
+        font-size: 14px;
+    }
+    .wallet-withdraw-panel .form-control {
+        background: #041d12;
+        border: 1px solid #0a3a25;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        width: 100%;
+    }
+
+    /* Responsive Mobile Optimization Scaling */
+    @media(max-width: 420px) {
+        .wallet-panel { margin: 16px 12px 0; padding: 20px 12px; }
+        .wallet-ring { width: 74px; height: 74px; }
+        .wallet-ring b { font-size: 14px; }
+        .wallet-ring-amount { font-size: 15px; }
+        .wallet-ring-name { font-size: 11px; }
+        .wallet-action-icon { width: 48px; height: 48px; border-radius: 12px; }
+        .wallet-action { font-size: 11px; }
+        .wallet-lower-grid { margin: 12px 12px; gap: 10px; }
+        .wallet-mini-card { height: 80px; }
+    }
+</style>
+
 </head>
 <body class="apex-mobile-app wallet-screen">
   <header class="wallet-head">
