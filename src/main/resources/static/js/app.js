@@ -121,7 +121,7 @@ async function fetchWallet() {
   } catch (e) { console.error("Wallet error", e); }
 }
 
-async async function initiateDeposit() {
+async function initiateDeposit() {
   if (!token) { window.location.href = "/"; return; }
   const input = document.getElementById("depositAmountInput"); if (!input) return;
   const amt = input.value;
