@@ -26,7 +26,7 @@
 <header class="deposit-head">
   <button class="deposit-back" onclick="window.location.href='/'" aria-label="Back to home">‹</button>
   <div class="deposit-head-title">Deposit</div>
-  <a class="deposit-history-link" href="/wallet.html">Wallet</a>
+  <a class="deposit-history-link" href="/wallet.html" aria-label="Open Wallet"><svg width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M8 20c0-5 4-9 9-9h30c5 0 9 4 9 9v25c0 5-4 9-9 9H17c-5 0-9-4-9-9V20Z" fill="#e8f4ef"/><path d="M8 23h48v13H8z" fill="#c7d9d3"/><circle cx="45" cy="42" r="5" fill="#7d918a"/></svg></a>
 </header>
 <main>
   <section class="balance-card">
@@ -56,7 +56,7 @@
         <button class="amount-clear-btn" type="button" onclick="document.getElementById('depositAmountInput').value=''">×</button>
       </div>
     </div>
-    <button class="btn-deposit-submit" onclick="initiateDeposit()">Generate Payment Code</button>
+    <button class="btn-deposit-submit" type="button" onclick="openWhatsAppPayment()"><span class="whatsapp-icon" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 32 32" fill="none"><path d="M16 3a12.8 12.8 0 0 0-11 19.4L3.5 28.5l6.3-1.6A13 13 0 1 0 16 3Z" fill="#03150d"/><path d="M11.2 10.1c.4-.5.8-.5 1.2-.5h.8c.3 0 .6.2.7.5l1.2 2.9c.1.3.1.6-.1.8l-.9 1.1c.8 1.6 2 2.7 3.6 3.5l1-.9c.2-.2.5-.2.8-.1l2.8 1.3c.3.1.5.4.5.7v.8c0 .4-.1.8-.5 1.1-.6.5-1.4.8-2.2.8-4.5-.1-9.1-4.6-9.2-9.1 0-1 .5-2 1.3-2.9Z" fill="#fff"/></svg></span> Generate Payment Code</button>
     <div id="depositResultBox" class="result-box" style="display:none;">
       <div class="helper-text">Unique Reference Code</div>
       <div id="dispDepRefCode" class="reference-code">DEP-000</div>
@@ -90,6 +90,11 @@ document.addEventListener('DOMContentLoaded',function(){
   const dep=document.getElementById('txtDepositBal'), out=document.getElementById('depositPageBalance');
   if(dep&&out){const sync=()=>out.textContent=dep.textContent;sync();new MutationObserver(sync).observe(dep,{childList:true,subtree:true});}
 });
+async function openWhatsAppPayment(){
+  if(!localStorage.getItem('rmg_token')){window.location.href='/';return;}
+  const link=await initiateDeposit();
+  if(link) window.location.href=link;
+}
 function setDepositAmount(amount){
  const input=document.getElementById('depositAmountInput'); if(input) input.value=amount;
  document.querySelectorAll('.amount-btn').forEach(b=>b.classList.toggle('active',b.textContent.replace(/[^0-9]/g,'')==String(amount)));
