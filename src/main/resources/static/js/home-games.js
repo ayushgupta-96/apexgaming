@@ -25,7 +25,7 @@ function setupPremiumBottomNav() {
     <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home">
       <span>⌂</span><small>Home</small>
     </a>
-    <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games">
+    <a class="bottom-nav-btn" href="/#games" onclick="event.preventDefault(); switchTab('games')" data-tab="games" aria-label="Games">
       <span>✦</span><small>Games</small>
     </a>
     <a class="bottom-nav-btn center-action play-action" href="/?play=aviator" data-tab="aviator" aria-label="Play">
