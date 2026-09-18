@@ -8,74 +8,92 @@
   <link rel="stylesheet" href="/css/mobile-home-fixes.css">
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
-</head>
-<body class="apex-mobile-app">
-  <header class="navbar mobile-topbar">
-    <div class="brand" aria-label="Apex Gaming">
-      <span class="brand-mark">A</span>
-      <div class="brand-copy"><span>APEX</span><span class="brand-badge">DEPOSIT</span></div>
-    </div>
-    <div class="auth-actions topbar-actions">
-      <button class="btn btn-secondary" onclick="window.location.href='/'">Home</button>
-      <button class="btn btn-primary" onclick="window.location.href='/wallet.html'">Wallet</button>
-    </div>
-  </header>
-
-  <main class="container page-container">
-    <section class="page-heading">
-      <span class="eyebrow">Wallet funding</span>
-      <h1>Deposit Funds</h1>
-      <p>Generate your payment reference and complete the manual payment flow.</p>
-    </section>
-
-    <section class="wallet-layout">
-      <div class="card">
-        <div class="card-title">
-          <span>Manual Deposit</span>
-          <span class="badge badge-verified">Zero Gateway Fees</span>
-        </div>
-        <p class="helper-text">Transactions are verified by the finance team on WhatsApp.</p>
-        <div class="form-group">
-          <label class="form-label" for="depositAmountInput">Deposit Amount (Rs)</label>
-          <input type="number" id="depositAmountInput" class="form-control" value="500" min="100" step="100">
-        </div>
-        <button class="btn btn-primary wide-btn" onclick="initiateDeposit()">Generate WhatsApp Payment Code</button>
-
-        <div id="depositResultBox" class="result-box" style="display:none;">
-          <div class="helper-text">Unique Reference Code</div>
-          <div id="dispDepRefCode" class="reference-code">DEP-000</div>
-          <div class="helper-text">Official Bank Details</div>
-          <div class="bank-details">
-            <div>UPI VPA: <b id="dispOfficialUpi">-</b></div>
-            <div>Account: <b id="dispOfficialAccount">-</b></div>
-            <div>IFSC: <b id="dispOfficialIfsc">-</b></div>
-          </div>
-          <a id="lnkWhatsApp" href="#" target="_blank" rel="noopener" class="btn btn-whatsapp wide-btn">Open Official WhatsApp Chat</a>
-          <div class="simulator-box">
-            <div class="helper-text"><b>Simulator Mode</b>: send screenshot and UTR.</div>
-            <input type="text" id="simUtrInput" class="form-control" placeholder="12-digit Bank UTR">
-            <button class="btn btn-success wide-btn" onclick="simulateWhatsAppSubmission()">Simulate WhatsApp Screenshot Webhook</button>
-          </div>
-        </div>
+<style>
+.deposit-screen{min-height:100vh;background:#03150d;color:#fff;padding-bottom:110px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.deposit-screen *{box-sizing:border-box}
+.deposit-head{height:56px;background:#03150d;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:relative;border-bottom:1px solid rgba(255,255,255,.04)}
+.deposit-back{border:0;background:transparent;color:#fff;font-size:30px;line-height:1;cursor:pointer;padding:4px 8px}.deposit-head-title{font-size:20px;font-weight:500;position:absolute;left:50%;transform:translateX(-50%)}.deposit-history-link{font-size:14px;color:#a0b2a6;text-decoration:none}
+.balance-card{margin:12px 16px;background:linear-gradient(135deg,#0b8457 0%,#05462e 100%);border-radius:12px;padding:20px;position:relative;box-shadow:0 4px 15px rgba(0,0,0,.2)}.balance-card-label{font-size:14px;color:#bdf0d9;display:flex;align-items:center;gap:6px;margin-bottom:8px}.balance-card-amount{font-size:30px;font-weight:700;display:flex;align-items:center;gap:10px}.balance-refresh-icon{width:20px;height:20px;cursor:pointer}.balance-card-masked{position:absolute;bottom:16px;right:20px;color:rgba(3,21,13,.45);font-size:14px;letter-spacing:2px}
+.deposit-panel{margin:16px 16px 0;background:#052618;border:1px solid #0a3a25;border-radius:12px;padding:20px 16px}.panel-title{font-size:16px;font-weight:600;color:#f5cd79;margin-bottom:16px;display:flex;align-items:center;gap:8px}.helper-text{font-size:13px;color:#8fa397;line-height:1.45}.form-group{margin-bottom:15px}.form-label{display:block;font-size:13px;font-weight:600;color:#d7e0dc;margin-bottom:7px}.form-control{width:100%;background:#03150d!important;border:1px solid #0a3a25!important;border-radius:8px!important;height:48px;padding:0 14px;color:#fff!important;font-size:16px;outline:none}.form-control:focus{border-color:#f5cd79!important}
+.amounts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}.amount-btn{background:transparent;border:1px solid #0a3a25;border-radius:6px;color:#8fa397;height:44px;font-size:15px;cursor:pointer}.amount-btn.active{border-color:#f5cd79;color:#f5cd79;background:rgba(245,205,121,.05)}
+.amount-input-wrapper{background:#03150d;border:1px solid #0a3a25;border-radius:8px;display:flex;align-items:center;padding:0 14px;height:48px}.currency-symbol{font-size:18px;color:#f5cd79;padding-right:12px;border-right:1px solid #0a3a25}.amount-field{background:transparent;border:0;color:#fff;font-size:16px;padding:0 12px;flex:1;outline:none}.amount-clear-btn{background:transparent;border:0;color:#4a6356;font-size:18px;cursor:pointer}
+.btn-deposit-submit,.deposit-panel .wide-btn{display:block;width:100%;margin:16px 0 0;height:48px;background:#f5cd79;color:#03150d;border:0;border-radius:24px;font-size:16px;font-weight:700;cursor:pointer}
+.upi-payment-box{margin-top:16px;background:#03150d;border:1px dashed #0a3a25;border-radius:8px;padding:16px;text-align:center;display:flex;flex-direction:column;align-items:center}.qr-title{font-size:13px;color:#8fa397;margin-bottom:10px}.qr-holder{background:#fff;padding:8px;border-radius:6px;display:inline-block;margin-bottom:12px}.qr-holder img{width:140px;height:140px;display:block}.upi-id-label{font-size:12px;color:#8fa397;margin-bottom:4px}.upi-id-value{font-size:14px;font-weight:600;color:#f5cd79;background:rgba(245,205,121,.1);padding:6px 12px;border-radius:4px;letter-spacing:.5px;word-break:break-all}
+.result-box{margin-top:16px;background:#03150d;border:1px dashed #0a3a25;border-radius:8px;padding:16px}.reference-code{font-size:18px;font-weight:700;color:#f5cd79;margin:6px 0 14px}.bank-details{background:#052618;border:1px solid #0a3a25;border-radius:8px;padding:12px;margin:8px 0 12px;color:#8fa397;font-size:13px;line-height:1.8}.bank-details b{color:#fff}.btn-whatsapp{background:#20b874!important;color:#fff!important;text-decoration:none;text-align:center;line-height:48px}.simulator-box{margin-top:14px;padding-top:14px;border-top:1px solid #0a3a25}.btn-success{background:#159b65!important;color:#fff!important}
+.instructions-panel{margin:16px;background:#052618;border:1px solid #0a3a25;border-radius:12px;padding:20px 16px}.instruction-list{list-style:none;display:flex;flex-direction:column;gap:14px;padding:0;margin:0}.instruction-list li{font-size:13px;color:#8fa397;line-height:1.5;position:relative;padding-left:18px}.instruction-list li:before{content:"◆";position:absolute;left:0;top:0;color:#f5cd79;font-size:10px}
+@media(max-width:420px){.deposit-head{height:56px}.deposit-panel{margin-left:16px;margin-right:16px;padding:18px 14px}.balance-card{margin-left:16px;margin-right:16px}.amounts-grid{gap:8px}.amount-btn{height:42px}.balance-card-amount{font-size:29px}}
+</style></head>
+<body class="apex-mobile-app deposit-screen">
+<header class="deposit-head">
+  <button class="deposit-back" onclick="window.location.href='/'" aria-label="Back to home">‹</button>
+  <div class="deposit-head-title">Deposit</div>
+  <a class="deposit-history-link" href="/wallet.html">Wallet</a>
+</header>
+<main>
+  <section class="balance-card">
+    <div class="balance-card-label">ACCOUNT BALANCE <span>◆</span></div>
+    <div class="balance-card-amount">₹<span id="depositPageBalance">0.00</span></div>
+    <div class="balance-card-masked">••••••</div>
+  </section>
+  <section class="deposit-panel">
+    <div class="panel-title">Deposit Funds</div>
+    <p class="helper-text">Choose an amount and generate your secure payment reference.</p>
+    <div class="form-group" style="margin-top:16px">
+      <label class="form-label">Quick amount</label>
+      <div class="amounts-grid">
+        <button class="amount-btn" type="button" onclick="setDepositAmount(200)">₹200</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(500)">₹500</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(1000)">₹1K</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(2000)">₹2K</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(5000)">₹5K</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(10000)">₹10K</button>
       </div>
-    </section>
-  </main>
-
-  <nav class="bottom-nav" aria-label="Mobile bottom navigation">
-    <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
-    <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games"><span>✦</span><small>Games</small></a>
-    <a class="bottom-nav-btn center-action play-action" href="/" data-tab="aviator" aria-label="Play"><span>▶</span><small>Play</small></a>
-    <a class="bottom-nav-btn active" href="/deposit.html" data-tab="deposit" aria-label="Deposit"><span>₹</span><small>Deposit</small></a>
-    <a class="bottom-nav-btn" href="/wallet.html" data-tab="wallet" aria-label="Wallet"><span>◈</span><small>Wallet</small></a>
-  </nav>
-
-  <script src="/js/app.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      if (!localStorage.getItem('rmg_token')) {
-        window.location.href = '/';
-      }
-    });
-  </script>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="depositAmountInput">Deposit Amount (Rs)</label>
+      <div class="amount-input-wrapper">
+        <span class="currency-symbol">₹</span>
+        <input type="number" id="depositAmountInput" class="amount-field" value="500" min="100" step="100">
+        <button class="amount-clear-btn" type="button" onclick="document.getElementById('depositAmountInput').value=''">×</button>
+      </div>
+    </div>
+    <button class="btn-deposit-submit" onclick="initiateDeposit()">Generate Payment Code</button>
+    <div id="depositResultBox" class="result-box" style="display:none;">
+      <div class="helper-text">Unique Reference Code</div>
+      <div id="dispDepRefCode" class="reference-code">DEP-000</div>
+      <div class="helper-text">Official Bank Details</div>
+      <div class="bank-details">
+        <div>UPI VPA: <b id="dispOfficialUpi">-</b></div>
+        <div>Account: <b id="dispOfficialAccount">-</b></div>
+        <div>IFSC: <b id="dispOfficialIfsc">-</b></div>
+      </div>
+      <a id="lnkWhatsApp" href="#" target="_blank" rel="noopener" class="btn btn-whatsapp wide-btn">Open Official WhatsApp Chat</a>
+      <div class="simulator-box">
+        <div class="helper-text"><b>Simulator Mode</b>: send screenshot and UTR.</div>
+        <input type="text" id="simUtrInput" class="form-control" placeholder="12-digit Bank UTR">
+        <button class="btn btn-success wide-btn" onclick="simulateWhatsAppSubmission()">Simulate WhatsApp Screenshot Webhook</button>
+      </div>
+    </div>
+  </section>
+</main>
+<nav class="bottom-nav" aria-label="Mobile bottom navigation">
+  <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
+  <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games"><span>✦</span><small>Games</small></a>
+  <a class="bottom-nav-btn center-action play-action" href="/" data-tab="aviator" aria-label="Play"><span>▶</span><small>Play</small></a>
+  <a class="bottom-nav-btn active" href="/deposit.html" data-tab="deposit" aria-label="Deposit"><span>₹</span><small>Deposit</small></a>
+  <a class="bottom-nav-btn" href="/wallet.html" data-tab="wallet" aria-label="Wallet"><span>◈</span><small>Wallet</small></a>
+</nav>
+<script src="/js/app.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  if(!localStorage.getItem('rmg_token')){window.location.href='/';return;}
+  if(typeof fetchWallet==='function') fetchWallet();
+  const dep=document.getElementById('txtDepositBal'), out=document.getElementById('depositPageBalance');
+  if(dep&&out){const sync=()=>out.textContent=dep.textContent;sync();new MutationObserver(sync).observe(dep,{childList:true,subtree:true});}
+});
+function setDepositAmount(amount){
+ const input=document.getElementById('depositAmountInput'); if(input) input.value=amount;
+ document.querySelectorAll('.amount-btn').forEach(b=>b.classList.toggle('active',b.textContent.replace(/[^0-9]/g,'')==String(amount)));
+}
+</script>
 </body>
 </html>
