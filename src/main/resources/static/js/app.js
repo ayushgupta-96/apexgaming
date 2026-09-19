@@ -57,12 +57,11 @@ async function doRegister() {
   const ph = document.getElementById("regPhone").value.trim();
   const email = document.getElementById("regEmail")?.value.trim() || null;
   const dob = document.getElementById("regDob").value;
-  const st = document.getElementById("regState").value;
   const pwd = document.getElementById("regPassword").value;
   const confirmPwd = document.getElementById("regConfirmPassword").value;
   const age = document.getElementById("regAgeConfirm").checked;
 
-  if (!u || !ph || !dob || !st || !pwd || !confirmPwd) { alert("Please complete all required registration fields."); return; }
+  if (!u || !ph || !dob || !pwd || !confirmPwd) { alert("Please complete all required registration fields."); return; }
   if (pwd.length < 8) { alert("Password must be at least 8 characters."); return; }
   if (pwd !== confirmPwd) { alert("Passwords do not match."); return; }
   if (!age) { alert("You must confirm that you are 18+ and legally eligible."); return; }
@@ -71,7 +70,7 @@ async function doRegister() {
     const res = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username: u, phoneNumber: ph, email, firstName: u, lastName: null, dateOfBirth: dob, state: st, password: pwd, ageConfirmed: true })
+      body: JSON.stringify({ username: u, phoneNumber: ph, email, firstName: u, lastName: null, dateOfBirth: dob, password: pwd, ageConfirmed: true })
     });
     const data = await safeJsonResponse(res);
     if (data.success) {
