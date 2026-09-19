@@ -14,3 +14,51 @@
 .tab-content{display:block}.floating-actions{display:none}.tabs-header{display:none!important}
 @media(min-width:701px){body{padding-bottom:28px}.container{padding-left:1.2rem;padding-right:1.2rem}.mobile-hero{min-height:220px}.catalog-grid{grid-template-columns:repeat(6,minmax(0,1fr))}.wallet-layout,.bet-panel{grid-template-columns:repeat(2,minmax(0,1fr))}.bottom-nav{display:none}.modal{align-items:center;padding:1rem}.modal-content{border-radius:22px;border:1px solid rgba(230,196,91,.18);max-width:560px}.topbar-actions{display:none}.nav-deposit,.nav-logout{display:inline-flex}.nav-logout{background:#7e2940!important}.nav-wallets{display:none}.earnings-strip{max-width:850px}.mobile-game-browser{display:none}}
 @media(max-width:390px){.game-categories{gap:.28rem}.category-chip{min-height:72px}.category-chip b{font-size:.59rem}.catalog-grid{gap:.34rem}.catalog-card b{font-size:.56rem}.mobile-hero-copy{max-width:76%}.hero-orb{right:-35px}.form-grid-two{grid-template-columns:1fr}.ludo-status{grid-template-columns:1fr 1fr}.ludo-status div:last-child{grid-column:1/-1}}
+
+
+/* =========================================================
+   Aviator — dark crash-game interface refresh
+   ========================================================= */
+.aviator-screen{min-height:100vh;background:#101010!important;color:#fff!important;padding:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;border-radius:0;}
+.aviator-screen *{box-sizing:border-box;margin:0;padding:0}
+.aviator-screen .aviator-header{height:50px;background:#1a1a1a;display:flex;align-items:center;justify-content:space-between;padding:0 12px}
+.aviator-screen .header-left{display:flex;align-items:center;gap:16px}
+.aviator-screen .btn-back{background:transparent;border:0;color:#fff;font-size:26px;line-height:1;cursor:pointer;padding:4px 6px}
+.aviator-screen .wallet-pill{background:#152744;border:1px solid #233b66;border-radius:20px;display:flex;align-items:center;padding-right:10px;height:32px;gap:8px;cursor:pointer}
+.aviator-screen .wallet-pill .coin-icon{width:32px;height:32px;border-radius:50%;background:#f1c40f;color:#4b3500;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;margin-left:-1px}
+.aviator-screen .wallet-pill .amount{font-size:14px;font-weight:600;color:#6da2ff}
+.aviator-screen .game-title-bar{background:#1c1c1e;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #2c2c2e}
+.aviator-screen .game-logo{color:#cb1c3b;font-size:22px;font-weight:900;font-style:italic;letter-spacing:.4px}
+.aviator-screen .game-status-inr{color:#2ed573;font-size:14px;font-weight:bold}
+.aviator-screen .history-ribbon{background:#141414;padding:8px 12px;display:flex;gap:8px;overflow-x:auto;align-items:center;min-height:42px;scrollbar-width:none}
+.aviator-screen .history-ribbon::-webkit-scrollbar{display:none}
+.aviator-screen .history-ribbon:empty::after{content:"Waiting for round history...";color:#68686c;font-size:11px}
+.aviator-screen .history-pill{font-size:12px;font-weight:bold;padding:4px 10px;border-radius:12px;background:#1c1a2e;color:#4ba3ff;white-space:nowrap}
+.aviator-screen .history-pill:nth-child(3n){color:#9b51e0}
+.aviator-screen .display-panel{margin:10px 12px;background:radial-gradient(circle at center,#25161a 0%,#181818 100%);border:1.5px solid #2c2c2e;border-radius:16px;height:240px;display:flex;flex-direction:column;justify-content:center;align-items:center;position:relative;overflow:hidden}
+.aviator-screen .display-panel:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 58%,rgba(203,28,59,.13),transparent 42%);pointer-events:none}
+.aviator-screen .aviator-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.aviator-screen .display-status-text{position:relative;z-index:2;font-size:16px;font-weight:bold;color:#fff;letter-spacing:1px;margin-bottom:4px;text-transform:uppercase;text-align:center}
+.aviator-screen .display-multiplier-huge{position:relative;z-index:2;font-size:64px;font-weight:900;color:#cb1c3b;line-height:1;text-shadow:0 3px 18px rgba(203,28,59,.2)}
+.aviator-screen .display-multiplier-huge.crashed{color:#ff3155}
+.aviator-screen .aviator-seed-hidden{position:absolute;left:10px;bottom:7px;z-index:2;color:#555;font-size:8px;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aviator-screen .betting-console{margin:0 12px 10px;background:#1c1c1e;border:1px solid #2c2c2e;border-radius:14px;padding:12px}
+.aviator-screen .toggle-row{display:flex;background:#101010;border-radius:20px;padding:2px;width:160px;margin:0 auto 12px}
+.aviator-screen .toggle-btn{flex:1;background:transparent;border:0;color:#8e8e93;font-size:13px;font-weight:600;padding:6px 0;border-radius:18px;cursor:pointer}
+.aviator-screen .toggle-btn.active{background:#2c2c2e;color:#fff}
+.aviator-screen .controls-grid{display:grid;grid-template-columns:1.1fr 1fr;gap:12px}
+.aviator-screen .number-stepper-box{display:flex;flex-direction:column;gap:8px}
+.aviator-screen .input-row{display:flex;align-items:center;background:#101010;border:1px solid #2c2c2e;border-radius:24px;height:44px;justify-content:space-between;padding:0 12px}
+.aviator-screen .step-btn{background:transparent;border:0;color:#8e8e93;font-size:20px;cursor:pointer;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
+.aviator-screen .value-display{font-size:18px;font-weight:bold;color:#fff}
+.aviator-screen .presets-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.aviator-screen .preset-chip{background:#101010;border:1px solid #2c2c2e;color:#8e8e93;font-size:12px;font-weight:600;padding:5px 0;border-radius:6px;text-align:center;cursor:pointer}
+.aviator-screen .preset-chip.active{border-color:#4ba3ff;color:#fff;background:#152744}
+.aviator-screen .btn-execute-bet{background:linear-gradient(180deg,#2ecc71 0%,#27ae60 100%);border:1px solid #219653;border-radius:16px;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:inset 0 1px 0 rgba(255,255,255,.2);height:82px}
+.aviator-screen .btn-execute-bet .action-lbl{font-size:14px;font-weight:bold;letter-spacing:.5px;text-transform:uppercase}
+.aviator-screen .btn-execute-bet .value-lbl{font-size:16px;font-weight:800;margin-top:2px}
+.aviator-screen .aviator-cashout-row{margin-top:10px;display:flex;align-items:center;justify-content:center;min-height:36px}
+.aviator-screen .aviator-cashout-action{width:100%;height:58px;background:linear-gradient(180deg,#cb1c3b,#9f1730);border-color:#7f1227}
+.aviator-screen .muted-state{color:#77777c;font-size:12px;text-align:center}
+.aviator-screen .aviator-hidden-input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+@media(max-width:420px){.aviator-screen .display-multiplier-huge{font-size:56px}.aviator-screen .controls-grid{grid-template-columns:1.08fr 1fr;gap:9px}.aviator-screen .betting-console{padding:10px}.aviator-screen .wallet-pill .amount{font-size:13px}}
