@@ -5,8 +5,6 @@ import com.gaming.platform.common.security.JwtTokenProvider;
 import com.gaming.platform.common.security.UserPrincipal;
 import com.gaming.platform.common.util.TotpUtil;
 import com.gaming.platform.module.auth.dto.*;
-import com.gaming.platform.module.kyc.entity.KycDocument;
-import com.gaming.platform.module.kyc.repository.KycDocumentRepository;
 import com.gaming.platform.module.user.entity.*;
 import com.gaming.platform.module.user.repository.SelfExclusionRepository;
 import com.gaming.platform.module.user.repository.UserLimitsRepository;
@@ -36,7 +34,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserProfileRepository profileRepository;
     private final UserLimitsRepository limitsRepository;
-    private final KycDocumentRepository kycRepository;
     private final SelfExclusionRepository selfExclusionRepository;
     private final LedgerService ledgerService;
     private final PasswordEncoder passwordEncoder;
@@ -76,7 +73,6 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .active(true)
-                .verified(false)
                 .frozen(false)
                 .build();
         User savedUser = userRepository.save(user);
@@ -116,7 +112,6 @@ public class AuthService {
                 .phoneNumber(savedUser.getPhoneNumber())
                 .role(savedUser.getRole())
                 .requires2fa(false)
-                .kycApproved(false)
                 .build();
     }
 
@@ -162,7 +157,6 @@ public class AuthService {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(user.getId());
 
-        boolean kycApproved = kycRepository.existsByUserIdAndStatus(user.getId(), KycDocument.KycStatus.APPROVED);
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -172,7 +166,6 @@ public class AuthService {
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .requires2fa(false)
-                .kycApproved(kycApproved)
                 .build();
     }
 

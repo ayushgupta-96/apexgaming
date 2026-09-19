@@ -5,8 +5,6 @@ import com.gaming.platform.common.security.SecurityUtils;
 import com.gaming.platform.common.util.TotpUtil;
 import com.gaming.platform.module.admin.dto.*;
 import com.gaming.platform.module.audit.service.AuditService;
-import com.gaming.platform.module.kyc.entity.KycDocument;
-import com.gaming.platform.module.kyc.repository.KycDocumentRepository;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.entity.WhatsAppMessage;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
@@ -42,7 +40,6 @@ public class AdminService {
     private static final Logger log = LoggerFactory.getLogger(AdminService.class);
 
     private final UserRepository userRepository;
-    private final KycDocumentRepository kycRepository;
     private final DepositRequestRepository depositRepository;
     private final WithdrawalRequestRepository withdrawalRepository;
     private final WhatsAppTicketRepository ticketRepository;
@@ -55,7 +52,6 @@ public class AdminService {
     @Transactional(readOnly = true)
     public AdminDashboardStatsDto getDashboardStats() {
         long usersCount = userRepository.count();
-        long pendingKyc = kycRepository.findByStatusOrderByCreatedAtAsc(KycDocument.KycStatus.PENDING).size();
         long pendingDeposits = depositRepository.countByStatus(DepositRequest.DepositStatus.PENDING) +
                                depositRepository.countByStatus(DepositRequest.DepositStatus.UNDER_REVIEW);
         long pendingWithdrawals = withdrawalRepository.countByStatus(WithdrawalRequest.WithdrawalStatus.PENDING_VERIFICATION) +
@@ -70,7 +66,6 @@ public class AdminService {
 
         return AdminDashboardStatsDto.builder()
                 .totalUsers(usersCount)
-                .pendingKycCount(pendingKyc)
                 .pendingDepositsCount(pendingDeposits)
                 .pendingWithdrawalsCount(pendingWithdrawals)
                 .openWhatsAppTicketsCount(openTickets)

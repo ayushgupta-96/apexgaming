@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
   loadDeposits();
   loadWithdrawals();
   loadTickets();
-  loadKyc();
   loadAml();
   loadAuditLogs();
 });
@@ -25,7 +24,6 @@ function switchAdminTab(tabId) {
   if (tabId === "deposits") loadDeposits();
   if (tabId === "withdrawals") loadWithdrawals();
   if (tabId === "whatsapp") loadTickets();
-  if (tabId === "kyc") loadKyc();
   if (tabId === "aml") loadAml();
   if (tabId === "audit") loadAuditLogs();
 }
@@ -62,7 +60,6 @@ async function loadDashboard() {
       document.getElementById("badgePendingDep").textContent = s.pendingDepositsCount;
       document.getElementById("badgePendingWdr").textContent = s.pendingWithdrawalsCount;
       document.getElementById("badgeOpenTickets").textContent = s.openWhatsAppTicketsCount;
-      document.getElementById("badgePendingKyc").textContent = s.pendingKycCount;
     }
   } catch (e) {
     console.error("Dashboard error", e);
@@ -347,60 +344,6 @@ async function sendWhatsAppReply() {
     }
   } catch (e) {
     alert("Error sending WhatsApp reply");
-  }
-}
-
-// ----------------------------------------------------
-// KYC Reviews
-// ----------------------------------------------------
-async function loadKyc() {
-  try {
-    const res = await fetch("/api/admin/kyc/pending", { headers: getAuthHeaders() });
-    const data = await res.json();
-    if (data.success) {
-      const tbody = document.getElementById("kycTableBody");
-      tbody.innerHTML = "";
-
-      data.data.forEach(k => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${k.user.id} (${k.user.username})</td>
-          <td><b>${k.documentType}</b></td>
-          <td>${k.documentNumber}</td>
-          <td><a href="${k.documentFrontUrl}" target="_blank" style="color: #60a5fa;">View Document</a></td>
-          <td><a href="${k.selfieUrl}" target="_blank" style="color: #60a5fa;">View Selfie</a></td>
-          <td>${new Date(k.createdAt).toLocaleDateString()}</td>
-          <td>
-            <button class="btn btn-success" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="reviewKycDoc(${k.id}, true)">Approve</button>
-            <button class="btn btn-danger" style="padding: 0.3rem 0.6rem; font-size: 0.8rem;" onclick="reviewKycDoc(${k.id}, false)">Reject</button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-  } catch (e) {
-    console.error("KYC load error", e);
-  }
-}
-
-async function reviewKycDoc(kycId, approve) {
-  let reason = null;
-  if (!approve) {
-    reason = prompt("Enter KYC rejection reason:", "Document blurred or details mismatch");
-    if (!reason) return;
-  }
-
-  try {
-    const url = `/api/admin/kyc/${kycId}/review?approve=${approve}` + (reason ? `&reason=${encodeURIComponent(reason)}` : '');
-    const res = await fetch(url, { method: "POST", headers: getAuthHeaders() });
-    const data = await res.json();
-    if (data.success) {
-      alert("KYC " + (approve ? "Approved!" : "Rejected."));
-      loadKyc();
-      loadDashboard();
-    }
-  } catch (e) {
-    alert("KYC review error");
   }
 }
 

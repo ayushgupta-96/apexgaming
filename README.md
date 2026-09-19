@@ -1,7 +1,7 @@
 # Apex Gaming: Enterprise Real-Money Gaming (RMG) Platform
 
 > **COMPLIANCE NOTICE**:
-> The platform enforces mandatory 18+ age verification, identity KYC, Anti-Money Laundering (AML) monitoring, and responsible gaming limits. Registration does not collect or use a state/jurisdiction field.
+> The platform enforces mandatory 18+ age verification, Anti-Money Laundering (AML) monitoring, and responsible gaming limits. Registration does not collect or use a state/jurisdiction field.
 
 ---
 
@@ -67,7 +67,7 @@ The platform does not rely on third-party automated payment gateways. All deposi
 7. **Approval**: Admin clicks "Approve" (verified with Admin TOTP 2FA). The ledger credits the user deposit balance, and an outbound WhatsApp notification is automatically dispatched to the user.
 
 ### Withdrawal Workflow:
-1. **Compliance Check**: System verifies user KYC is `APPROVED`, account is non-frozen, and AML 100% wagering turnover is satisfied.
+1. **Compliance Check**: System verifies user account is non-frozen, and AML 100% wagering turnover is satisfied.
 2. **Atomic Lock**: Funds are locked from `winnings_balance` to `locked_balance`.
 3. **Queue Ticket**: Ticket created in Admin Withdrawal Queue with player bank/UPI details.
 4. **Manual Transfer**: Admin executes manual IMPS/UPI bank payout.
@@ -114,14 +114,12 @@ The platform does not rely on third-party automated payment gateways. All deposi
 ## 5. RMG Compliance & Security Guardrails
 
 1. **Age Gate**: Mandatory 18+ declaration on signup and document birthdate validation.
-2. **KYC Verification**: Identity document upload (PAN, Aadhaar, Passport) and selfie validation workflow.
-3. **AML Surveillance**:
-4. **AML Surveillance**:
+2. **AML Surveillance**:
    - Single transactions $\ge ₹50,000$ trigger AML alerts.
    - Cumulative daily deposit thresholds ($\ge ₹100,000$) trigger velocity flags.
    - Anti-money laundering 100% wagering turnover check: users cannot withdraw funds without wagering at least 100% of their deposits.
-5. **Responsible Gaming**: Daily deposit limits, daily loss limits, session timers, and 24-hour / 30-day self-exclusion cool-off locks.
-6. **Admin 2FA**: Google Authenticator / RFC 6238 TOTP required for all admin payouts and sensitive actions.
+3. **Responsible Gaming**: Daily deposit limits, daily loss limits, session timers, and 24-hour / 30-day self-exclusion cool-off locks.
+4. **Admin 2FA**: Google Authenticator / RFC 6238 TOTP required for all admin payouts and sensitive actions.
 
 ---
 
@@ -146,7 +144,6 @@ The platform does not rely on third-party automated payment gateways. All deposi
 | `POST` | `/api/admin/deposits/approve` | Approve deposit & ledger credit | Admin, Finance |
 | `POST` | `/api/admin/withdrawals/approve` | Mark withdrawal paid with UTR | Admin, Finance |
 | `GET`  | `/api/admin/whatsapp/tickets` | WhatsApp customer support inbox | Admin, Support |
-| `POST` | `/api/admin/kyc/{id}/review` | Approve/reject player identity KYC | Admin, Support |
 | `GET`  | `/api/admin/audit-logs` | Immutable audit logs of all actions | Admin |
 
 **Interactive API Documentation**: Access Swagger UI at `http://localhost:8080/swagger-ui.html`.

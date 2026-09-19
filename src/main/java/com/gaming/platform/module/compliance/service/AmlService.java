@@ -86,9 +86,6 @@ public class AmlService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("User not found"));
 
-        if (!user.isVerified()) {
-            throw new BusinessException("Withdrawal rejected: User identity KYC must be approved by compliance prior to any withdrawal.");
-        }
 
         if (user.isFrozen()) {
             throw new BusinessException("Withdrawal rejected: Account is frozen due to active compliance/fraud investigation.");

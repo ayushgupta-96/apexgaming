@@ -120,7 +120,7 @@ public class PaymentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("User not found"));
 
-        // Enforce AML Wagering Turnover, KYC verification, and transaction thresholds
+        // Enforce AML wagering turnover and transaction thresholds
         amlService.validateWithdrawalCompliance(userId, request.getAmount());
 
         long timestamp = Instant.now().getEpochSecond();

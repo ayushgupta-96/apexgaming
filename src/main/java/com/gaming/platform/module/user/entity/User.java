@@ -41,9 +41,6 @@ public class User {
     @Builder.Default
     private boolean active = true;
 
-    @Column(name = "is_verified", nullable = false)
-    @Builder.Default
-    private boolean verified = false;
 
     @Column(name = "is_frozen", nullable = false)
     @Builder.Default
