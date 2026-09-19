@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
   if (token) onLoginSuccess();
   connectWebSocket();
   initAviatorCanvas();
+  setupAviatorControls();
   setupMobileNavigation();
 });
 
@@ -110,6 +111,8 @@ async function fetchWallet() {
       const walletWinnings = document.getElementById("walletWinningsBalance");
       const walletBonus = document.getElementById("walletBonusBalance");
       if (deposit) deposit.textContent = Number(w.depositBalance).toFixed(2);
+      const aviatorWallet = document.getElementById("aviatorWalletAmount");
+      if (aviatorWallet) aviatorWallet.textContent = Number(w.depositBalance).toFixed(2);
       if (winnings) winnings.textContent = Number(w.winningsBalance).toFixed(2);
       if (bonus) bonus.textContent = Number(w.bonusBalance).toFixed(2);
       if (withdrawable) withdrawable.textContent = Number(w.winningsBalance).toFixed(2);
@@ -228,3 +231,50 @@ function setupMobileNavigation(){
   setNavActive('home');
 }
 function setNavActive(tab){document.querySelectorAll('.bottom-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));}
+
+
+function setupAviatorControls() {
+  const amount = document.getElementById("aviatorBetAmount");
+  const display = document.getElementById("aviatorBetAmountDisplay");
+  const actionAmount = document.getElementById("aviatorBetActionAmount");
+  if (!amount || !display || !actionAmount) return;
+
+  const syncAmount = () => {
+    let value = Number(amount.value || 50);
+    value = Math.min(50000, Math.max(10, Math.round(value / 10) * 10));
+    amount.value = value;
+    display.textContent = value;
+    actionAmount.textContent = value;
+    document.querySelectorAll("[data-aviator-preset]").forEach(btn => {
+      btn.classList.toggle("active", Number(btn.dataset.aviatorPreset) === value);
+    });
+  };
+
+  document.getElementById("aviatorBetMinus")?.addEventListener("click", () => {
+    amount.value = Number(amount.value || 50) - 10;
+    syncAmount();
+  });
+  document.getElementById("aviatorBetPlus")?.addEventListener("click", () => {
+    amount.value = Number(amount.value || 50) + 10;
+    syncAmount();
+  });
+  amount.addEventListener("input", syncAmount);
+
+  document.querySelectorAll("[data-aviator-preset]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      amount.value = Number(btn.dataset.aviatorPreset);
+      syncAmount();
+    });
+  });
+
+  document.querySelectorAll("[data-aviator-mode]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-aviator-mode]").forEach(item => item.classList.remove("active"));
+      btn.classList.add("active");
+      const auto = document.getElementById("aviatorAutoCashout");
+      if (auto) auto.focus();
+    });
+  });
+
+  syncAmount();
+}
