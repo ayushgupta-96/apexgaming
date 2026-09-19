@@ -1,7 +1,7 @@
 # Apex Gaming: Enterprise Real-Money Gaming (RMG) Platform
 
-> **LEGAL COMPLIANCE NOTICE**:
-> This platform is engineered strictly for operation within jurisdictions and states where skill-based and real-money gaming is licensed and legally permitted. The software enforces automated geo-blocking, mandatory 18+ age verification, identity KYC, Anti-Money Laundering (AML) monitoring, and responsible gaming limits.
+> **COMPLIANCE NOTICE**:
+> The platform enforces mandatory 18+ age verification, identity KYC, Anti-Money Laundering (AML) monitoring, and responsible gaming limits. Registration does not collect or use a state/jurisdiction field.
 
 ---
 
@@ -10,7 +10,7 @@
 - **Core Framework**: Java 21, Spring Boot 3.3.3
 - **Security**: Spring Security 6 (Stateless JWT + Refresh token rotation, BCrypt, RFC 6238 TOTP 2FA)
 - **Data Persistence**: Spring Data JPA, Hibernate 6, PostgreSQL 16 (Serializable / Pessimistic Write locking)
-- **Database Migrations**: Flyway (V1 through V6)
+- **Database Migrations**: Flyway (V1 through V7)
 - **Cache & Real-time State**: Redis 7 (Token blacklist, rate-limiting, live game locks)
 - **Real-time Messaging**: Spring WebSocket with STOMP message broker (`/topic`, `/queue`)
 - **Asynchronous Events**: Spring AMQP & RabbitMQ 3.13
@@ -114,8 +114,8 @@ The platform does not rely on third-party automated payment gateways. All deposi
 ## 5. RMG Compliance & Security Guardrails
 
 1. **Age Gate**: Mandatory 18+ declaration on signup and document birthdate validation.
-2. **Geo-Blocking Filter**: Rejects financial and game requests originating from restricted states (`ASSAM`, `ODISHA`, `TELANGANA`, `ANDHRA_PRADESH`, `NAGALAND`, `SIKKIM`).
-3. **KYC Verification**: Identity document upload (PAN, Aadhaar, Passport) and selfie validation workflow.
+2. **KYC Verification**: Identity document upload (PAN, Aadhaar, Passport) and selfie validation workflow.
+3. **AML Surveillance**:
 4. **AML Surveillance**:
    - Single transactions $\ge ₹50,000$ trigger AML alerts.
    - Cumulative daily deposit thresholds ($\ge ₹100,000$) trigger velocity flags.
@@ -129,7 +129,7 @@ The platform does not rely on third-party automated payment gateways. All deposi
 
 | Method | Path | Description | Roles |
 | :--- | :--- | :--- | :--- |
-| `POST` | `/api/auth/register` | Register new user (18+ check, geo check) | Public |
+| `POST` | `/api/auth/register` | Register new user (18+ check) | Public |
 | `POST` | `/api/auth/login` | Authenticate with JWT (+ Admin 2FA) | Public |
 | `GET`  | `/api/wallet` | Get deposit, winnings, bonus, locked balances | User |
 | `POST` | `/api/deposits` | Create manual deposit request & WhatsApp link | User |
