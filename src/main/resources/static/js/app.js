@@ -175,8 +175,25 @@ function handleAviatorTick(state) { currentAviatorState=state; const mult=docume
 function renderAviatorFlight(mult){if(!ctx||!canvas)return;ctx.clearRect(0,0,canvas.width,canvas.height);const w=canvas.width,h=canvas.height,p=Math.min(1,(mult-1)/10),x=w*.1+p*w*.75,y=h*.85-Math.pow(p,1.2)*h*.65;ctx.beginPath();ctx.moveTo(w*.05,h*.85);ctx.quadraticCurveTo(x*.6,h*.85,x,y);ctx.strokeStyle="#f43f5e";ctx.lineWidth=4;ctx.stroke();ctx.fillStyle="#f59e0b";ctx.beginPath();ctx.arc(x,y,12,0,Math.PI*2);ctx.fill();}
 function renderCrashExplosion(){if(!ctx||!canvas)return;ctx.fillStyle="rgba(244,63,95,.25)";ctx.fillRect(0,0,canvas.width,canvas.height)}
 function clearCanvas(){if(ctx&&canvas)ctx.clearRect(0,0,canvas.width,canvas.height)}
-async function placeAviatorBet(){if(!token){openModal("loginModal");return;}if(!currentAviatorState)return;const amt=document.getElementById("aviatorBetAmount")?.value,auto=document.getElementById("aviatorAutoCashout")?.value||null;try{const res=await fetch("/api/games/aviator/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentAviatorState.roundUuid,amount:amt,autoCashoutMultiplier:auto})});const data=await safeJsonResponse(res);if(data.success){activeAviatorBet={betUuid:data.data.bet.betUuid,amount:Number(amt)};fetchWallet();}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to place bet");}}
-async function cashoutAviator(){if(!activeAviatorBet)return;try{const res=await fetch("/api/games/aviator/cashout",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({betUuid:activeAviatorBet.betUuid})});const data=await safeJsonResponse(res);if(data.success){alert("Cashed out successfully!");activeAviatorBet=null;fetchWallet();}else alert("Cashout error: "+(data.message||"Unknown error"));}catch(e){alert("Cashout failed");}}
+async function placeAviatorBet(){if(!token){openModal("loginModal");return;}if(!currentAviatorState)return;const amt=document.getElementById("aviatorBetAmount")?.value,auto=document.getElementById("aviatorAutoCashout")?.value||null;try{const res=await fetch("/api/games/aviator/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentAviatorState.roundUuid,amount:amt,autoCashoutMultiplier:auto})});const data=await safeJsonResponse(res);if(data.success){
+activeAviatorBet={betUuid:data.data.bet.betUuid,amount:Number(amt)};
+const cashout=document.getElementById("btnAviatorCashout");
+const notice=document.getElementById("aviatorNoBetNotice");
+const cashoutAmount=document.getElementById("cashoutAmountDisplay");
+if(cashout){cashout.style.display="flex";}
+if(notice){notice.style.display="none";}
+if(cashoutAmount){cashoutAmount.textContent=Number(amt).toFixed(2);}
+fetchWallet();
+}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to place bet");}}
+async function cashoutAviator(){if(!activeAviatorBet)return;try{const res=await fetch("/api/games/aviator/cashout",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({betUuid:activeAviatorBet.betUuid})});const data=await safeJsonResponse(res);if(data.success){
+alert("Cashed out successfully!");
+activeAviatorBet=null;
+const cashout=document.getElementById("btnAviatorCashout");
+const notice=document.getElementById("aviatorNoBetNotice");
+if(cashout){cashout.style.display="none";}
+if(notice){notice.style.display="block";}
+fetchWallet();
+}else alert("Cashout error: "+(data.message||"Unknown error"));}catch(e){alert("Cashout failed");}}
 function handleColourTick(state){currentColourState=state;const round=document.getElementById("colourRoundUuid"),timer=document.getElementById("colourTimerBadge");if(!round||!timer)return;round.textContent=state.roundUuid;timer.textContent="00:"+(state.secondsRemaining<10?"0":"")+state.secondsRemaining;if(state.status==="LOCKED"){timer.className="badge badge-rejected";timer.textContent="LOCKED ("+state.secondsRemaining+"s)";}else if(state.status==="RESULT"){timer.className="badge badge-verified";timer.textContent="RESULT: "+state.winningNumber+" ("+state.winningColor+")";}else timer.className="badge badge-approved";const ribbon=document.getElementById("colourHistoryRibbon");if(ribbon&&state.recentResults)ribbon.innerHTML=state.recentResults.map(r=>`<span class="history-pill">${r.number}</span>`).join("");}
 function openColourBetModal(type,val){if(!token){openModal("loginModal");return;}selectedColourTarget={type,value:val};document.getElementById("modalBetTarget").textContent=val;document.getElementById("modalBetMultiplier").textContent=type==="NUMBER"?"9.0x":(val==="VIOLET"?"4.5x":"2.0x");openModal("colourBetModal");}
 async function confirmColourBet(){const amt=document.getElementById("colourModalAmount")?.value;try{const res=await fetch("/api/games/colour/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentColourState.roundUuid,targetType:selectedColourTarget.type,targetValue:selectedColourTarget.value,amount:amt})});const data=await safeJsonResponse(res);if(data.success){alert("Bet placed!");closeModal("colourBetModal");fetchWallet();}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to submit bet");}}
