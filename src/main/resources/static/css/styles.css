@@ -216,3 +216,158 @@
   .aviator-screen .live-multiplier{font-size:56px}
   .aviator-screen .flight-path-container{left:40px;bottom:30px;width:calc(100% - 60px);height:calc(100% - 50px)}
 }
+
+
+/* =========================================================
+   Unified Game UI — Aviator / Colour / Ludo
+   ========================================================= */
+
+/* Aviator Live Stage */
+.aviator-screen .aviator-stage{
+  background:radial-gradient(circle at center,#1e1b4b 0%,#09090b 100%);
+  border-radius:12px;
+  height:380px;
+  margin:10px 12px 1rem;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #312e81;
+}
+.aviator-screen .aviator-multiplier-display{
+  font-size:4.5rem;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 0 25px rgba(99,102,241,.6);
+  z-index:10;
+  user-select:none;
+}
+.aviator-screen .aviator-multiplier-display.crashed{
+  color:var(--accent-rose);
+  text-shadow:0 0 25px rgba(244,63,94,.8);
+}
+.aviator-screen .aviator-canvas{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:1;
+}
+.aviator-screen .aviator-stage .display-status-text{
+  position:relative;
+  z-index:10;
+}
+.aviator-screen .aviator-seed-hidden{
+  position:absolute;
+  left:10px;
+  bottom:7px;
+  z-index:11;
+  color:#555;
+  font-size:8px;
+  max-width:90%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* Shared multiplier history */
+.aviator-screen .history-ribbon,
+#tab-colour .history-ribbon{
+  display:flex;
+  gap:.5rem;
+  overflow-x:auto;
+  padding:.5rem 0;
+  margin-bottom:1rem;
+  scrollbar-width:none;
+}
+.aviator-screen .history-ribbon::-webkit-scrollbar,
+#tab-colour .history-ribbon::-webkit-scrollbar{display:none}
+.aviator-screen .history-pill,
+#tab-colour .history-pill{
+  padding:.25rem .65rem;
+  border-radius:9999px;
+  font-size:.8rem;
+  font-weight:700;
+  white-space:nowrap;
+}
+.aviator-screen .history-pill{background:rgba(99,102,241,.2);color:#818cf8}
+.aviator-screen .history-pill:nth-child(3n){background:rgba(16,185,129,.2);color:#34d399}
+.aviator-screen .history-pill:nth-child(5n){background:rgba(245,158,11,.2);color:#fbbf24}
+
+/* Colour Prediction Grid */
+#tab-colour .colour-btn-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1rem;
+  margin-bottom:1.5rem;
+}
+#tab-colour .btn-bet-colour{
+  height:80px;
+  min-height:80px;
+  padding:.5rem;
+  font-size:1.25rem;
+  font-weight:800;
+  border-radius:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  border:none;
+  transition:transform .15s ease;
+}
+#tab-colour .btn-bet-colour:hover{transform:translateY(-2px)}
+#tab-colour .btn-green{background:linear-gradient(135deg,#059669 0%,#10b981 100%);color:#fff}
+#tab-colour .btn-violet{background:linear-gradient(135deg,#6d28d9 0%,#8b5cf6 100%);color:#fff}
+#tab-colour .btn-red{background:linear-gradient(135deg,#dc2626 0%,#ef4444 100%);color:#fff}
+#tab-colour .number-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:.75rem;
+}
+#tab-colour .btn-number{
+  background-color:var(--bg-card);
+  border:1px solid var(--border-color);
+  color:var(--text-primary);
+  font-size:1.25rem;
+  font-weight:700;
+  padding:.75rem;
+  border-radius:10px;
+  cursor:pointer;
+  transition:all .15s ease;
+}
+#tab-colour .btn-number:hover{
+  background-color:var(--accent-indigo);
+  border-color:var(--accent-indigo);
+}
+
+/* Ludo Board */
+#tab-ludo .ludo-board-wrapper{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:1rem 0;
+}
+#tab-ludo .ludo-canvas{
+  background:#0f172a;
+  border:3px solid var(--border-color);
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.5);
+}
+
+/* Responsive game stage */
+@media(max-width:600px){
+  .aviator-screen .aviator-stage{
+    height:330px;
+    margin-left:10px;
+    margin-right:10px;
+  }
+  .aviator-screen .aviator-multiplier-display{font-size:3.7rem}
+  #tab-colour .colour-btn-grid{gap:.55rem}
+  #tab-colour .btn-bet-colour{height:76px;font-size:1rem}
+  #tab-colour .number-grid{gap:.5rem}
+  #tab-colour .btn-number{font-size:1.05rem;padding:.65rem}
+}
