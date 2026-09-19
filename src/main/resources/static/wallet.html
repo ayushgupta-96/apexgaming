@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Apex Gaming | Wallet</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/mobile-home-fixes.css">
+  <style>
+    /* Base Reset and Screen Layout */
+    .wallet-screen {
+        min-height: 100vh;
+        background: #041d12;
+        color: #fff;
+        padding-bottom: 92px;
+        font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .wallet-screen * {
+        box-sizing: border-box;
+    }
+    
+    /* Top Navigation Header */
+    .wallet-head {
+        height: 56px;
+        background: #041d12;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .wallet-back {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        border: 0;
+        background: transparent;
+        color: #fff;
+        font-size: 24px;
+        cursor: pointer;
+    }
+    .wallet-head-title {
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    /* Top Gradient Balance Panel */
+    .wallet-total {
+        background: linear-gradient(180deg, #0d5c3a 0%, #041d12 100%);
+        height: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 10px;
+    }
+    .wallet-total-icon {
+        width: auto;
+        height: auto;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-total-icon svg {
+        width: 45px;
+        height: 36px;
+        display: block;
+        opacity: 0.8;
+    }
+    .wallet-total-amount {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+    .wallet-total-label {
+        font-size: 14px;
+        margin-top: 4px;
+        color: #a0b2a6;
+    }
+
+    /* Main Center Card Panel */
+    .wallet-panel {
+        margin: 16px 16px 0;
+        background: #052618;
+        border: 1px solid #0a3a25;
+        border-radius: 12px;
+        padding: 24px 16px;
+    }
+    .wallet-rings {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        text-align: center;
+    }
+    .wallet-ring-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .wallet-ring {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 4px solid #e1b12c !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-ring b {
+        font-size: 16px;
+        font-weight: bold;
+        color: #ffffff;
+    }
+    .wallet-ring-amount {
+        font-size: 16px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-top: 12px;
+    }
+    .wallet-ring-name {
+        font-size: 12px;
+        color: #8fa397;
+        margin-top: 2px;
+    }
+
+    /* Main Golden Transfer Button */
+    .wallet-transfer {
+        margin: 24px 0 0;
+        width: 100%;
+        height: 46px;
+        border: 0;
+        border-radius: 25px;
+        background: #f5cd79;
+        color: #052618;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .wallet-transfer:hover {
+        background-color: #eccc68;
+    }
+
+    /* 4-Column Action Menu Grid */
+    .wallet-actions {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
+        text-align: center;
+        width: auto;
+        margin: 16px 16px 0;
+    }
+    .wallet-action {
+        border: 0;
+        background: transparent;
+        color: #b0c4b8;
+        cursor: pointer;
+        font-size: 12px;
+        line-height: 1.3;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .wallet-action-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 8px;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-action-icon svg {
+        width: 50%;
+        height: 50%;
+        display: block;
+    }
+
+    /* Action Gradients mapped to exact box colors */
+    .wallet-action.deposit .wallet-action-icon { background: #f3a683; color: #fff; }
+    .wallet-action.withdraw .wallet-action-icon { background: #778beb; color: #fff; }
+    .wallet-action.dep-history .wallet-action-icon { background: #f78fb3; color: #fff; }
+    .wallet-action.wdr-history .wallet-action-icon { background: #63cdda; color: #fff; }
+
+    /* Bottom Game Box Grid */
+    .wallet-lower-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin: 16px 16px;
+    }
+    .wallet-mini-card {
+        height: 90px;
+        background: #052618;
+        border: 1px solid #0a3a25;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .wallet-mini-card strong {
+        font-size: 14px;
+        font-weight: 500;
+        color: #ffffff;
+        order: 1; /* Pushes number to top */
+    }
+    .wallet-mini-card span {
+        font-size: 12px;
+        margin-top: 4px;
+        color: #7d9687;
+        order: 2; /* Pushes label below number */
+    }
+
+    /* Optional Panel overrides for conditional logic */
+    .wallet-withdraw-panel {
+        display: none;
+        margin: 0 16px 24px;
+        background: #052618;
+        border: 1px solid #0a3a25;
+        border-radius: 12px;
+        padding: 16px;
+    }
+    .wallet-withdraw-panel.open {
+        display: block;
+    }
+    .wallet-withdraw-panel h2 {
+        margin: 0 0 16px;
+        color: #f5cd79;
+        font-size: 18px;
+    }
+    .wallet-withdraw-panel .form-group {
+        margin-bottom: 12px;
+    }
+    .wallet-withdraw-panel .form-label {
+        color: #b0c4b8;
+        font-size: 14px;
+    }
+    .wallet-withdraw-panel .form-control {
+        background: #041d12;
+        border: 1px solid #0a3a25;
+        color: #fff;
+        padding: 8px 12px;
+        border-radius: 6px;
+        width: 100%;
+    }
+
+    /* Responsive Mobile Optimization Scaling */
+    @media(max-width: 420px) {
+        .wallet-panel { margin: 16px 12px 0; padding: 20px 12px; }
+        .wallet-ring { width: 74px; height: 74px; }
+        .wallet-ring b { font-size: 14px; }
+        .wallet-ring-amount { font-size: 15px; }
+        .wallet-ring-name { font-size: 11px; }
+        .wallet-action-icon { width: 48px; height: 48px; border-radius: 12px; }
+        .wallet-action { font-size: 11px; }
+        .wallet-lower-grid { margin: 12px 12px; gap: 10px; }
+        .wallet-mini-card { height: 80px; }
+    }
+</style>
+
+</head>
+<body class="apex-mobile-app wallet-screen">
+  <header class="wallet-head">
+    <button class="wallet-back" onclick="window.location.href='/'" aria-label="Back to home">‹</button>
+    <div class="wallet-head-title">Wallet</div>
+  </header>
+
+  <main>
+    <section class="wallet-total" aria-label="Total wallet balance">
+      <div class="wallet-total-icon" aria-hidden="true"><svg viewBox="0 0 80 60" fill="none"><rect x="8" y="8" width="55" height="43" rx="10" fill="#F3F3F3"/><path d="M15 15l17-9h28c7 0 12 5 12 12v20c0 7-5 12-12 12H18c-6 0-10-4-10-10V15h7Z" fill="#D8DDDC"/><rect x="24" y="20" width="25" height="7" rx="4" fill="#7C8786"/><circle cx="67" cy="32" r="7" fill="#F1F1F1"/></svg></div>
+      <div class="wallet-total-amount">₹<span id="walletTotalBalance">0.00</span></div>
+      <div class="wallet-total-label">Total balance</div>
+    </section>
+
+    <section class="wallet-panel">
+      <div class="wallet-rings">
+        <div class="wallet-ring-wrap">
+          <div class="wallet-ring"><b id="walletMainPercent">0%</b></div>
+          <div class="wallet-ring-amount">₹<span id="txtDepositBal">0.00</span></div>
+          <div class="wallet-ring-name">Main wallet</div>
+        </div>
+        <div class="wallet-ring-wrap">
+          <div class="wallet-ring"><b id="walletThirdPercent">0%</b></div>
+          <div class="wallet-ring-amount">₹<span id="walletThirdBalance">0.00</span></div>
+          <div class="wallet-ring-name">3rd party wallet</div>
+        </div>
+      </div>
+
+      <button class="wallet-transfer" onclick="window.location.href='/deposit.html'">Main wallet transfer</button>
+
+      <div class="wallet-actions">
+        <button class="wallet-action deposit" onclick="window.location.href='/deposit.html'">
+          <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M10 28h44v20a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V28Z" fill="#FFF5D8"/><path d="M15 28c0-12 8-20 17-20s17 8 17 20" stroke="#E6C36A" stroke-width="7"/><path d="M17 35h30v13H17z" fill="#EBD59A"/></svg></span><span>Deposit</span>
+        </button>
+        <button class="wallet-action withdraw" onclick="document.getElementById('withdrawPanel').classList.toggle('open')">
+          <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><rect x="10" y="9" width="44" height="46" rx="5" fill="#EAF3FF"/><rect x="17" y="18" width="30" height="18" rx="3" fill="#5B91E4"/><path d="M22 44h20" stroke="#4A7DCC" stroke-width="5" stroke-linecap="round"/><path d="M28 25h8" stroke="#EAF3FF" stroke-width="4" stroke-linecap="round"/></svg></span><span>Withdraw</span>
+        </button>
+        <button class="wallet-action dep-history" onclick="alert('Deposit history will appear here.')">
+          <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M15 8h34v48H15z" fill="#FFF2F4"/><path d="M24 18h16M24 28h16M24 38h16M24 48h10" stroke="#D9556C" stroke-width="4" stroke-linecap="round"/></svg></span><span>Deposit<br>history</span>
+        </button>
+        <button class="wallet-action wdr-history" onclick="alert('Withdrawal history will appear here.')">
+          <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M8 20c0-5 4-9 9-9h30c5 0 9 4 9 9v25c0 5-4 9-9 9H17c-5 0-9-4-9-9V20Z" fill="#E8FFF7"/><path d="M8 23h48v13H8z" fill="#B5EEDC"/><circle cx="21" cy="44" r="7" fill="#3AC09A"/><path d="m18 44 2 2 4-5" stroke="#E8FFF7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Withdrawal<br>history</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="wallet-lower-grid">
+      <div class="wallet-mini-card"><strong>0.00</strong><span>ARGame</span></div>
+      <div class="wallet-mini-card"><strong>0.00</strong><span>Lottery</span></div>
+    </section>
+
+    <section id="withdrawPanel" class="wallet-withdraw-panel">
+      <h2>Withdraw Funds</h2>
+      <div class="form-group">
+        <label class="form-label">Withdrawable Winnings Balance</label>
+        <div class="big-balance">₹<span id="txtWithdrawableBal">0.00</span></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="wdrAmountInput">Withdrawal Amount (₹)</label>
+        <input type="number" id="wdrAmountInput" class="form-control" placeholder="Min ₹200" min="200" step="50">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="wdrTypeSelect">Destination Type</label>
+        <select id="wdrTypeSelect" class="form-control">
+          <option value="UPI">UPI VPA</option>
+          <option value="BANK_ACCOUNT">Bank Account (IMPS)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="wdrNameInput">Account Holder Name</label>
+        <input type="text" id="wdrNameInput" class="form-control" placeholder="As per bank records">
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="wdrVpaInput">UPI VPA or Bank Account Number</label>
+        <input type="text" id="wdrVpaInput" class="form-control" placeholder="username@okhdfcbank or account number">
+      </div>
+      <button class="btn btn-primary wide-btn" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Mobile bottom navigation">
+    <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
+    <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games"><span>✦</span><small>Games</small></a>
+    <a class="bottom-nav-btn center-action play-action" href="/" data-tab="aviator" aria-label="Play"><span>▶</span><small>Play</small></a>
+    <a class="bottom-nav-btn" href="/deposit.html" data-tab="deposit" aria-label="Deposit"><span>₹</span><small>Deposit</small></a>
+    <a class="bottom-nav-btn active" href="/wallet.html" data-tab="wallet" aria-label="Wallet"><span>◈</span><small>Wallet</small></a>
+  </nav>
+
+  <script src="/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      if (!localStorage.getItem('rmg_token')) {
+        window.location.href = '/';
+        return;
+      }
+      if (typeof fetchWallet === 'function') fetchWallet();
+
+      const observer = new MutationObserver(function () {
+        const dep = document.getElementById('txtDepositBal');
+        const total = document.getElementById('walletTotalBalance');
+        const withdrawable = document.getElementById('txtWithdrawableBal');
+        const winnings = document.getElementById('txtWinningsBal');
+        if (dep && total) total.textContent = dep.textContent;
+        if (withdrawable && winnings) withdrawable.textContent = winnings.textContent;
+      });
+      const dep = document.getElementById('txtDepositBal');
+      if (dep) observer.observe(dep, {childList:true,subtree:true});
+    });
+  </script>
+</body>
+</html>

@@ -38,9 +38,6 @@ public class UserProfile {
     @Column(length = 20)
     private String gender;
 
-    @Column(nullable = false, length = 50)
-    private String state;
-
     @Column(length = 50)
     private String city;
 

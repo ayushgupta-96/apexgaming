@@ -67,13 +67,6 @@ security:
 rmg:
   compliance:
     minimum-age: 18
-    restricted-jurisdictions:
-      - ASSAM
-      - ODISHA
-      - TELANGANA
-      - ANDHRA_PRADESH
-      - NAGALAND
-      - SIKKIM
     aml:
       single-transaction-alert-threshold: 50000.00
       daily-deposit-limit-count: 10

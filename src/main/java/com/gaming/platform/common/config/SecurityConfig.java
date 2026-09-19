@@ -1,6 +1,5 @@
 package com.gaming.platform.common.config;
 
-import com.gaming.platform.common.filter.GeoBlockingFilter;
 import com.gaming.platform.common.filter.JwtAuthFilter;
 import com.gaming.platform.common.filter.RateLimitFilter;
 import com.gaming.platform.common.security.CustomUserDetailsService;
@@ -34,7 +33,6 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final GeoBlockingFilter geoBlockingFilter;
     private final RateLimitFilter rateLimitFilter;
     private final CustomUserDetailsService userDetailsService;
 
@@ -49,6 +47,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/",
                                 "/index.html",
+                                "/deposit.html",
+                                "/wallet.html",
                                 "/admin.html",
                                 "/css/**",
                                 "/js/**",
@@ -70,7 +70,6 @@ public class SecurityConfig {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(geoBlockingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

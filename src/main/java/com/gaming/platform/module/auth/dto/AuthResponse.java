@@ -20,5 +20,4 @@ public class AuthResponse {
     private String phoneNumber;
     private Role role;
     private boolean requires2fa;
-    private boolean kycApproved;
 }

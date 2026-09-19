@@ -10,9 +10,6 @@ import com.gaming.platform.module.compliance.entity.AmlAlert;
 import com.gaming.platform.module.compliance.entity.FraudFlag;
 import com.gaming.platform.module.compliance.repository.AmlAlertRepository;
 import com.gaming.platform.module.compliance.repository.FraudFlagRepository;
-import com.gaming.platform.module.kyc.entity.KycDocument;
-import com.gaming.platform.module.kyc.repository.KycDocumentRepository;
-import com.gaming.platform.module.kyc.service.KycService;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.entity.WhatsAppMessage;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
@@ -36,12 +33,10 @@ import java.util.List;
 @RequestMapping("/api/admin")
 @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'FINANCE', 'SUPPORT')")
 @RequiredArgsConstructor
-@Tag(name = "Admin & Compliance Management", description = "Management dashboard, payment approvals, WhatsApp inbox, KYC oversight, and audit logs")
+@Tag(name = "Admin & Compliance Management", description = "Management dashboard, payment approvals, WhatsApp inbox, AML/fraud monitoring, and audit logs")
 public class AdminController {
 
     private final AdminService adminService;
-    private final KycService kycService;
-    private final KycDocumentRepository kycRepository;
     private final WhatsAppTicketRepository ticketRepository;
     private final WhatsAppMessageRepository messageRepository;
     private final AuditLogRepository auditLogRepository;
@@ -127,25 +122,6 @@ public class AdminController {
             @Valid @RequestBody ReplyWhatsAppTicketRequest request) {
         WhatsAppMessage message = adminService.replyToTicket(ticketId, request);
         return ResponseEntity.ok(ApiResponse.ok("Reply sent", message));
-    }
-
-    @GetMapping("/kyc/pending")
-    @Operation(summary = "Get pending KYC verification documents queue")
-    public ResponseEntity<ApiResponse<List<KycDocument>>> getPendingKyc() {
-        List<KycDocument> pending = kycRepository.findByStatusOrderByCreatedAtAsc(KycDocument.KycStatus.PENDING);
-        return ResponseEntity.ok(ApiResponse.ok(pending));
-    }
-
-    @PostMapping("/kyc/{kycId}/review")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'SUPPORT')")
-    @Operation(summary = "Approve or reject a user KYC submission")
-    public ResponseEntity<ApiResponse<KycDocument>> reviewKyc(
-            @PathVariable Long kycId,
-            @RequestParam boolean approve,
-            @RequestParam(required = false) String reason) {
-        Long adminId = SecurityUtils.getCurrentUserId();
-        KycDocument reviewed = kycService.reviewKyc(kycId, adminId, approve, reason);
-        return ResponseEntity.ok(ApiResponse.ok("KYC review completed", reviewed));
     }
 
     @PostMapping("/users/{userId}/freeze")

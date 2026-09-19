@@ -24,7 +24,7 @@ public class WithdrawalController {
     private final PaymentService paymentService;
 
     @PostMapping
-    @Operation(summary = "Request a withdrawal of winnings", description = "Verifies KYC status and AML turnover before atomically locking funds via ledger")
+    @Operation(summary = "Request a withdrawal of winnings", description = "Verifies AML turnover before atomically locking funds via ledger")
     public ResponseEntity<ApiResponse<WithdrawalResponse>> requestWithdrawal(@Valid @RequestBody WithdrawalCreateRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         WithdrawalResponse response = paymentService.requestWithdrawal(userId, request);

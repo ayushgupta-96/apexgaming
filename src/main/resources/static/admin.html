@@ -28,7 +28,6 @@
     <button class="tab-btn" onclick="switchAdminTab('deposits')">📥 Deposit Approvals (<span id="badgePendingDep">0</span>)</button>
     <button class="tab-btn" onclick="switchAdminTab('withdrawals')">📤 Withdrawal Queue (<span id="badgePendingWdr">0</span>)</button>
     <button class="tab-btn" onclick="switchAdminTab('whatsapp')">💬 WhatsApp Live Inbox (<span id="badgeOpenTickets">0</span>)</button>
-    <button class="tab-btn" onclick="switchAdminTab('kyc')">🪪 KYC Verifications (<span id="badgePendingKyc">0</span>)</button>
     <button class="tab-btn" onclick="switchAdminTab('aml')">🚨 AML & Fraud Flags</button>
     <button class="tab-btn" onclick="switchAdminTab('audit')">📜 System Audit Logs</button>
   </nav>
@@ -158,29 +157,6 @@
           </div>
         </div>
 
-      </div>
-    </section>
-
-    <!-- ==================== KYC VERIFICATIONS TAB ==================== -->
-    <section id="adm-tab-kyc" class="admin-tab" style="display: none;">
-      <div class="card">
-        <div class="card-title">Pending KYC Document Reviews</div>
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>User ID</th>
-                <th>Document Type</th>
-                <th>Document Number</th>
-                <th>Front Image</th>
-                <th>Selfie</th>
-                <th>Submitted</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="kycTableBody"></tbody>
-          </table>
-        </div>
       </div>
     </section>
 
