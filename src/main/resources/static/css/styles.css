@@ -371,3 +371,43 @@
   #tab-colour .number-grid{gap:.5rem}
   #tab-colour .btn-number{font-size:1.05rem;padding:.65rem}
 }
+
+
+/* Aviator flight canvas replacement */
+.aviator-screen .aviator-stage{
+  position:relative;
+  width:100%;
+  height:300px;
+  margin:10px 12px 15px;
+  background:#15171e;
+  border-radius:12px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  border:2px solid #252936;
+}
+.aviator-screen #flightCanvas{
+  width:100%;
+  height:100%;
+  display:block;
+}
+.aviator-screen .multiplier-text,
+.aviator-screen .aviator-multiplier-display{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  font-size:3.5rem;
+  font-weight:800;
+  color:#fff;
+  font-family:sans-serif;
+  z-index:10;
+  text-shadow:0 4px 10px rgba(0,0,0,.7);
+  pointer-events:none;
+}
+@media(max-width:600px){
+  .aviator-screen .aviator-stage{height:300px;margin-left:10px;margin-right:10px}
+  .aviator-screen .aviator-multiplier-display{font-size:3.5rem}
+}
