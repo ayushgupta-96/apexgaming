@@ -259,7 +259,48 @@
         .wallet-lower-grid { margin: 12px 12px; gap: 10px; }
         .wallet-mini-card { height: 80px; }
     }
-</style>
+<style>
+/* Wallet mobile polish */
+.wallet-screen{
+  background:linear-gradient(180deg,#03140e 0%,#041c14 52%,#020907 100%)!important;
+}
+.wallet-screen .wallet-head{
+  background:rgba(3,18,13,.96)!important;
+  border-bottom:1px solid rgba(39,194,130,.14);
+}
+.wallet-screen .wallet-total{
+  background:radial-gradient(circle at 78% 18%,rgba(230,196,91,.16),transparent 28%),linear-gradient(180deg,#0a553c 0%,#041d12 100%)!important;
+  min-height:185px;
+}
+.wallet-screen .wallet-panel,
+.wallet-screen .wallet-mini-card,
+.wallet-screen .wallet-withdraw-panel{
+  background:linear-gradient(180deg,#07291f,#052018)!important;
+  border-color:rgba(39,194,130,.15)!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.2);
+}
+.wallet-screen .wallet-panel{border-radius:16px;}
+.wallet-screen .wallet-ring{
+  border-color:#e1b84a!important;
+  box-shadow:0 0 0 5px rgba(225,184,74,.035);
+}
+.wallet-screen .wallet-transfer{
+  min-height:50px;
+  background:linear-gradient(180deg,#f5d879,#c79b34)!important;
+  box-shadow:0 9px 20px rgba(230,196,91,.12);
+}
+.wallet-screen .wallet-action-icon{
+  border:1px solid rgba(255,255,255,.08);
+}
+.wallet-screen .wallet-lower-grid{
+  margin-bottom:20px;
+}
+@media(max-width:420px){
+  .wallet-screen .wallet-panel{margin-left:12px;margin-right:12px;}
+  .wallet-screen .wallet-actions{margin-left:12px;margin-right:12px;gap:7px;}
+  .wallet-screen .wallet-action-icon{width:46px;height:46px;}
+}
+</style></style>
 
 </head>
 <body class="apex-mobile-app wallet-screen">
