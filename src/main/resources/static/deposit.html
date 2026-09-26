@@ -21,7 +21,48 @@
 .result-box{margin-top:16px;background:#03150d;border:1px dashed #0a3a25;border-radius:8px;padding:16px}.reference-code{font-size:18px;font-weight:700;color:#f5cd79;margin:6px 0 14px}.bank-details{background:#052618;border:1px solid #0a3a25;border-radius:8px;padding:12px;margin:8px 0 12px;color:#8fa397;font-size:13px;line-height:1.8}.bank-details b{color:#fff}.btn-whatsapp{background:#20b874!important;color:#fff!important;text-decoration:none;text-align:center;line-height:48px}.simulator-box{margin-top:14px;padding-top:14px;border-top:1px solid #0a3a25}.btn-success{background:#159b65!important;color:#fff!important}
 .instructions-panel{margin:16px;background:#052618;border:1px solid #0a3a25;border-radius:12px;padding:20px 16px}.instruction-list{list-style:none;display:flex;flex-direction:column;gap:14px;padding:0;margin:0}.instruction-list li{font-size:13px;color:#8fa397;line-height:1.5;position:relative;padding-left:18px}.instruction-list li:before{content:"◆";position:absolute;left:0;top:0;color:#f5cd79;font-size:10px}
 @media(max-width:420px){.deposit-head{height:56px}.deposit-panel{margin-left:16px;margin-right:16px;padding:18px 14px}.balance-card{margin-left:16px;margin-right:16px}.amounts-grid{gap:8px}.amount-btn{height:42px}.balance-card-amount{font-size:29px}}
-</style></head>
+<style>
+/* Deposit mobile polish */
+.deposit-screen{background:linear-gradient(180deg,#03140e 0%,#041b13 55%,#020907 100%)!important;}
+.deposit-screen .deposit-head{background:rgba(3,18,13,.96)!important;border-bottom:1px solid rgba(39,194,130,.14);}
+.deposit-screen .balance-card{
+  margin:12px 14px 0!important;
+  border:1px solid rgba(39,194,130,.18)!important;
+  background:radial-gradient(circle at 80% 10%,rgba(230,196,91,.16),transparent 32%),linear-gradient(145deg,#0a4a36,#06271e)!important;
+  box-shadow:0 14px 30px rgba(0,0,0,.28);
+}
+.deposit-screen .deposit-panel{
+  margin:12px 14px 0!important;
+  background:linear-gradient(180deg,#07281f,#052018)!important;
+  border-color:rgba(39,194,130,.15)!important;
+  border-radius:16px!important;
+  box-shadow:0 10px 26px rgba(0,0,0,.22);
+}
+.deposit-screen .amount-btn{
+  border-radius:10px!important;
+  border-color:rgba(39,194,130,.2)!important;
+  background:#06251c!important;
+  color:#a8bdb4!important;
+}
+.deposit-screen .amount-btn.active{
+  border-color:#e5c760!important;
+  color:#f0d77e!important;
+  background:rgba(230,196,91,.09)!important;
+}
+.deposit-screen .amount-input-wrapper{
+  background:#031710!important;
+  border-color:rgba(39,194,130,.18)!important;
+}
+.deposit-screen .btn-deposit-submit{
+  min-height:52px!important;
+  border-radius:15px!important;
+  background:linear-gradient(180deg,#f5d879,#c69a32)!important;
+  box-shadow:0 10px 24px rgba(230,196,91,.13)!important;
+}
+@media(max-width:420px){
+  .deposit-screen .balance-card,.deposit-screen .deposit-panel{margin-left:12px!important;margin-right:12px!important;}
+}
+</style></style></head>
 <body class="apex-mobile-app deposit-screen">
 <header class="deposit-head">
   <button class="deposit-back" onclick="window.location.href='/'" aria-label="Back to home">‹</button>
