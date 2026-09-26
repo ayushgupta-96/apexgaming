@@ -411,3 +411,105 @@
   .aviator-screen .aviator-stage{height:300px;margin-left:10px;margin-right:10px}
   .aviator-screen .aviator-multiplier-display{font-size:3.5rem}
 }
+
+/* =========================================================
+   Senior mobile UI polish — green visual system
+   ========================================================= */
+body.apex-mobile-app{
+  background:
+    radial-gradient(circle at 15% -10%,rgba(24,132,91,.18),transparent 34%),
+    linear-gradient(180deg,#03130e 0%,#041c14 48%,#020907 100%);
+}
+.apex-mobile-app .mobile-topbar{
+  min-height:62px;
+  padding:calc(.65rem + env(safe-area-inset-top)) .75rem .65rem;
+  background:rgba(3,18,13,.94);
+  border-bottom-color:rgba(39,190,128,.16);
+}
+.apex-mobile-app .brand-mark{
+  width:36px;height:36px;flex-basis:36px;
+  background:linear-gradient(145deg,#e9cf68,#ae8a2c);
+}
+.apex-mobile-app .container{
+  padding:.7rem .7rem 1.5rem;
+}
+.apex-mobile-app .mobile-hero{
+  min-height:206px;
+  border-color:rgba(38,194,129,.18);
+  background:
+    radial-gradient(circle at 84% 30%,rgba(235,203,101,.18),transparent 22%),
+    radial-gradient(circle at 8% 92%,rgba(11,191,121,.2),transparent 36%),
+    linear-gradient(145deg,#0a513c 0%,#083325 58%,#062319 100%);
+}
+.apex-mobile-app .mobile-hero h1{font-size:1.72rem;letter-spacing:-.025em}
+.apex-mobile-app .mobile-hero p{max-width:240px}
+.apex-mobile-app .hero-cta-row .btn{min-height:42px;border-radius:12px}
+.apex-mobile-app .section-heading{margin-top:.9rem}
+.apex-mobile-app .section-heading h2{font-size:1.04rem;color:#f0d67f}
+.apex-mobile-app .catalog-card{
+  border-color:rgba(39,194,130,.16);
+  background:linear-gradient(180deg,#082b21,#061e17);
+  border-radius:15px;
+}
+.apex-mobile-app .catalog-card b{
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.apex-mobile-app .game-tile{
+  background:linear-gradient(145deg,#0a3024,#062119);
+  border-color:rgba(39,194,130,.15);
+}
+.apex-mobile-app .winner-board,
+.apex-mobile-app .earnings-strip>div{
+  background:linear-gradient(180deg,#082a20,#062118);
+  border-color:rgba(39,194,130,.13);
+}
+.apex-mobile-app .bottom-nav{
+  min-height:74px;
+  background:rgba(3,28,20,.98);
+  border-top-color:rgba(39,194,130,.18);
+}
+.apex-mobile-app .bottom-nav-btn{
+  min-height:58px;
+  color:#87a79c;
+}
+.apex-mobile-app .bottom-nav-btn.active{color:#f2dfa0}
+.apex-mobile-app .bottom-nav-btn.active span{background:rgba(230,196,91,.13);color:#f0d36b}
+.apex-mobile-app .bottom-nav-btn.center-action span{
+  background:linear-gradient(145deg,#f5d975,#c79c32);
+  border-color:#06251d;
+}
+.apex-mobile-app .mobile-game-browser{
+  padding-top:.15rem;
+}
+.apex-mobile-app .mobile-game-browser .game-summary-grid{
+  gap:.65rem;
+}
+.apex-mobile-app .tab-content{
+  max-width:100%;
+}
+.apex-mobile-app .modal-content{
+  max-height:min(88vh,760px);
+}
+@media(max-width:600px){
+  .apex-mobile-app .catalog-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:.55rem;
+  }
+  .apex-mobile-app .catalog-card{min-width:0}
+  .apex-mobile-app .catalog-image{aspect-ratio:1/1.18}
+  .apex-mobile-app .mobile-hero-copy{max-width:73%}
+  .apex-mobile-app .hero-orb{width:112px;height:112px}
+  .apex-mobile-app .earnings-strip{
+    grid-template-columns:1fr 1fr;
+    overflow:visible;
+  }
+  .apex-mobile-app .earnings-strip>div:first-child{grid-column:1/-1}
+}
+@media(max-width:390px){
+  .apex-mobile-app .mobile-hero{min-height:194px}
+  .apex-mobile-app .mobile-hero h1{font-size:1.5rem}
+  .apex-mobile-app .hero-cta-row .btn{padding:.52rem .62rem}
+}
