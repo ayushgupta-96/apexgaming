@@ -2,506 +2,144 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Apex Gaming | Licensed Real-Money Gaming Platform</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#041d12">
+  <title>Apex Gaming</title>
   <link rel="stylesheet" href="/css/styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+  <link rel="stylesheet" href="/css/mobile-home-fixes.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 </head>
-<body>
-  <header class="navbar">
-    <div class="brand" aria-label="Apex Gaming">
-      <span class="brand-mark">A</span>
-      <div class="brand-copy">
-        <span>APEX GAMING</span>
-        <span class="brand-badge">LICENSED RMG</span>
+<body class="apex-mobile-app">
+<header class="navbar mobile-topbar">
+  <div class="brand"><span class="brand-mark">A</span><div class="brand-copy"><span>APEX</span><span class="brand-badge">GAMING</span></div></div>
+  <div class="topbar-actions" id="topbarAuth"><button id="headerLoginBtn" class="btn btn-secondary" onclick="openModal('loginModal')">Login</button><button id="headerJoinBtn" class="btn btn-primary" onclick="openModal('registerModal')">Join</button></div>
+  <div class="nav-wallets" id="navWallets" style="display:none"><button class="wallet-total" onclick="navGo('wallet')"><span class="wallet-amount">₹<span id="txtDepositBal">0.00</span></span></button><button class="btn btn-danger nav-logout" onclick="logout()">Logout</button></div>
+</header>
+
+<main class="container">
+  <!-- HOME -->
+  <div class="mobile-home-shell" id="tab-home">
+    <div class="mobile-hero">
+      <div class="mobile-hero-copy">
+        <span class="eyebrow">Play. Win. Stay in control.</span>
+        <h1>India's fun gaming zone</h1>
+        <p>Fast mobile games, secure wallet.</p>
+        <div class="hero-cta-row" style="display: flex; gap: 8px; flex-direction: row; flex-wrap: nowrap; align-items: center;">
+          <button class="btn btn-gold btn-sm" onclick="navGo('games')" style="padding: 6px 12px; font-size: 0.875rem; flex: 1; white-space: nowrap;">Explore Games</button>
+          <button class="btn btn-light btn-sm" onclick="navGo('deposit')" style="padding: 6px 12px; font-size: 0.875rem; flex: 1; white-space: nowrap;">Deposit</button>
+        </div>
       </div>
+      <div class="hero-orb"><span>2.48x</span><small>LIVE</small></div>
     </div>
 
-    <div class="nav-wallets" id="navWallets" style="display: none;">
-      <button class="wallet-total" onclick="switchTab('wallet')" aria-label="Open wallet">
-        <span class="wallet-label">Wallet</span>
-        <span class="wallet-amount">Rs <span id="txtDepositBal">0.00</span></span>
-      </button>
-      <div class="balance-strip">
-        <div class="balance-chip">
-          <span class="label">Winnings</span>
-          <span class="amount amount-winnings">Rs <span id="txtWinningsBal">0.00</span></span>
-        </div>
-        <div class="balance-chip">
-          <span class="label">Bonus</span>
-          <span class="amount amount-bonus">Rs <span id="txtBonusBal">0.00</span></span>
-        </div>
-      </div>
-      <span id="kycBadge" class="badge badge-pending">KYC Pending</span>
-      <button class="btn btn-primary nav-deposit" onclick="switchTab('wallet')">Deposit</button>
-      <button class="btn btn-danger nav-logout" onclick="logout()">Logout</button>
-    </div>
-
-    <div id="authButtons" class="auth-actions">
-      <button class="btn btn-secondary" onclick="openModal('loginModal')">Login</button>
-      <button class="btn btn-primary" onclick="openModal('registerModal')">Join</button>
-    </div>
-  </header>
-
-  <main class="container">
-    <section class="announcement" aria-label="Announcements">
-      <span class="announcement-dot"></span>
-      <p>Manual WhatsApp deposits, live rounds, and responsible gaming controls are active.</p>
+    <section class="earnings-strip">
+      <div><span>Today's earnings</span><b>Live wins</b></div>
+      <div class="earning-item"><span>Dice</span><strong>₹6.00</strong><small>Mem***LRL</small></div>
+      <div class="earning-item"><span>Garuda 500</span><strong>₹3.20</strong><small>Mem***TFD</small></div>
     </section>
 
-    <section class="hero-stats" aria-label="Platform highlights">
-      <article class="stat-pill">
-        <span class="stat-kicker">Live</span>
-        <strong>24/7 tables</strong>
-      </article>
-      <article class="stat-pill">
-        <span class="stat-kicker">Payout</span>
-        <strong>2 min review</strong>
-      </article>
-      <article class="stat-pill">
-        <span class="stat-kicker">Fairness</span>
-        <strong>Provably fair</strong>
-      </article>
+    <section class="game-section">
+      <div class="section-heading"><h2>Popular</h2><button onclick="navGo('games')">See all ›</button></div>
+      <div id="categoryGames" class="catalog-grid"></div>
     </section>
 
-    <section class="promo-panel" aria-label="Apex Gaming promotion">
-      <div class="promo-copy">
-        <span class="eyebrow">Live real-money gaming</span>
-        <h1>Play fast rounds. Keep control.</h1>
-        <p>Provably fair games, wallet ledger protection, KYC, and manual payment verification in one mobile-first experience.</p>
-        <div class="promo-actions">
-          <button class="btn btn-gold" onclick="switchTab('aviator')">Play Aviator</button>
-          <button class="btn btn-light" onclick="switchTab('wallet')">Add Cash</button>
-        </div>
-      </div>
-      <div class="promo-visual" aria-hidden="true">
-        <div class="phone-card">
-          <div class="plane-line"></div>
-          <span class="multiplier-chip">2.48x</span>
-          <span class="mini-chip chip-one">Colour</span>
-          <span class="mini-chip chip-two">Ludo</span>
-        </div>
-      </div>
+    <section class="winner-board">
+      <div class="section-heading"><h2>Top Winners</h2><span>Today</span></div>
+      <div class="winner-row"><i>1</i><span>Mem***6IQ</span><strong>₹51,74,558</strong></div>
+      <div class="winner-row"><i>2</i><span>Mem***OGH</span><strong>₹40,14,520</strong></div>
+      <div class="winner-row"><i>3</i><span>Mem***ZHA</span><strong>₹15,67,900</strong></div>
     </section>
-
-    <section class="reward-grid" aria-label="Rewards and quick actions">
-      <article class="reward-card">
-        <span class="reward-kicker">Bonus</span>
-        <strong>Welcome credits</strong>
-        <small>Use bonus balance where eligible.</small>
-      </article>
-      <article class="reward-card">
-        <span class="reward-kicker">Fair play</span>
-        <strong>Seed verified</strong>
-        <small>Check round fairness anytime.</small>
-      </article>
-      <article class="reward-card">
-        <span class="reward-kicker">Limits</span>
-        <strong>Responsible play</strong>
-        <small>Set daily deposit and loss caps.</small>
-      </article>
-    </section>
-
-    <section class="money-actions" aria-label="Deposit and withdrawal actions">
-      <button class="money-action deposit-action" onclick="switchTab('wallet')">
-        <span>Deposit</span>
-        <strong>WhatsApp payment</strong>
-      </button>
-      <button class="money-action withdraw-action" onclick="switchTab('wallet')">
-        <span>Withdraw</span>
-        <strong>Manual payout</strong>
-      </button>
-    </section>
-
-    <nav class="tabs-header" aria-label="Game and account categories">
-      <button class="tab-btn active" onclick="switchTab('aviator')">Aviator</button>
-      <button class="tab-btn" onclick="switchTab('colour')">Colour</button>
-      <button class="tab-btn" onclick="switchTab('ludo')">Ludo</button>
-      <button class="tab-btn" onclick="switchTab('wallet')">Wallet</button>
-      <button class="tab-btn" onclick="switchTab('kyc')">KYC</button>
-    </nav>
-
-    <section class="game-summary-grid" aria-label="Available games">
-      <button class="game-tile tile-aviator" onclick="switchTab('aviator')">
-        <span class="game-icon">A</span>
-        <span>
-          <strong>Aviator</strong>
-          <small>Crash multiplier</small>
-        </span>
-      </button>
-      <button class="game-tile tile-colour" onclick="switchTab('colour')">
-        <span class="game-icon">C</span>
-        <span>
-          <strong>Colour</strong>
-          <small>60s prediction</small>
-        </span>
-      </button>
-      <button class="game-tile tile-ludo" onclick="switchTab('ludo')">
-        <span class="game-icon">L</span>
-        <span>
-          <strong>Ludo</strong>
-          <small>2-4 player rooms</small>
-        </span>
-      </button>
-    </section>
-
-    <section id="tab-aviator" class="tab-content">
-      <div class="card game-card">
-        <div class="card-title">
-          <span>Aviator Provably Fair Crash</span>
-          <span class="seed-line">Seed: <span id="aviatorSeedHash">Connecting...</span></span>
-        </div>
-
-        <div class="history-ribbon" id="aviatorHistoryRibbon"></div>
-
-        <div class="aviator-stage">
-          <canvas id="aviatorCanvas" class="aviator-canvas"></canvas>
-          <div id="aviatorMultiplier" class="aviator-multiplier-display">1.00x</div>
-          <div id="aviatorStatusSubtitle" class="stage-subtitle">Connecting to game server...</div>
-        </div>
-
-        <div class="bet-panel two-column">
-          <div class="card compact-card">
-            <div class="bet-input-grid">
-              <div class="form-group">
-                <label class="form-label" for="aviatorBetAmount">Bet Amount (Rs)</label>
-                <input type="number" id="aviatorBetAmount" class="form-control" value="50" min="10" max="50000" step="10">
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="aviatorAutoCashout">Auto Cashout</label>
-                <input type="number" id="aviatorAutoCashout" class="form-control" placeholder="Optional" min="1.01" step="0.1">
-              </div>
-            </div>
-            <button id="btnAviatorBet" class="btn btn-success wide-btn" onclick="placeAviatorBet()">Place Bet</button>
-          </div>
-
-          <div class="card compact-card cashout-card">
-            <button id="btnAviatorCashout" class="btn btn-gold cashout-btn" style="display: none;" onclick="cashoutAviator()">
-              Cash Out Rs <span id="cashoutAmountDisplay">0.00</span>
-            </button>
-            <div id="aviatorNoBetNotice" class="muted-state">No active bet in current round</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-colour" class="tab-content" style="display: none;">
-      <div class="card game-card">
-        <div class="card-title">
-          <span>Colour Prediction</span>
-          <div class="round-meta">
-            <span id="colourRoundUuid">CP-00000000</span>
-            <span id="colourTimerBadge" class="badge badge-approved">00:60</span>
-          </div>
-        </div>
-
-        <div class="colour-btn-grid">
-          <button class="btn-bet-colour btn-green" onclick="openColourBetModal('COLOR', 'GREEN')">
-            <span>GREEN</span>
-            <small>2.0x Payout</small>
-          </button>
-          <button class="btn-bet-colour btn-violet" onclick="openColourBetModal('COLOR', 'VIOLET')">
-            <span>VIOLET</span>
-            <small>4.5x Payout</small>
-          </button>
-          <button class="btn-bet-colour btn-red" onclick="openColourBetModal('COLOR', 'RED')">
-            <span>RED</span>
-            <small>2.0x Payout</small>
-          </button>
-        </div>
-
-        <h2 class="section-label">Exact Numbers</h2>
-        <div class="number-grid">
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '0')">0</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '1')">1</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '2')">2</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '3')">3</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '4')">4</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '5')">5</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '6')">6</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '7')">7</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '8')">8</button>
-          <button class="btn-number" onclick="openColourBetModal('NUMBER', '9')">9</button>
-        </div>
-
-        <h2 class="section-label">Recent Results</h2>
-        <div class="history-ribbon" id="colourHistoryRibbon"></div>
-      </div>
-    </section>
-
-    <section id="tab-ludo" class="tab-content" style="display: none;">
-      <div class="card game-card">
-        <div class="card-title">
-          <span>Real-Money Ludo</span>
-          <span id="ludoMatchStatusBadge" class="badge badge-pending">Lobby</span>
-        </div>
-
-        <div id="ludoLobbySection" class="ludo-lobby">
-          <div class="form-group">
-            <label class="form-label" for="ludoStakeSelect">Stake Amount (Rs)</label>
-            <select id="ludoStakeSelect" class="form-control">
-              <option value="50">Rs 50 Stake (Prize: Rs 92)</option>
-              <option value="100">Rs 100 Stake (Prize: Rs 184)</option>
-              <option value="250">Rs 250 Stake (Prize: Rs 460)</option>
-              <option value="500">Rs 500 Stake (Prize: Rs 920)</option>
-            </select>
-          </div>
-          <button class="btn btn-primary wide-btn" onclick="createLudoMatch()">Create Match</button>
-        </div>
-
-        <div id="ludoGameSection" style="display: none;">
-          <div class="ludo-status">
-            <div>
-              <span>Match</span>
-              <b id="txtLudoMatchUuid">-</b>
-            </div>
-            <div>
-              <span>Pot</span>
-              <b class="amount-winnings">Rs <span id="txtLudoPot">0.00</span></b>
-            </div>
-            <div>
-              <span>Turn</span>
-              <b id="txtLudoTurnColor">RED</b>
-            </div>
-          </div>
-          <button id="btnLudoRoll" class="btn btn-gold wide-btn" onclick="rollLudoDice()">Roll Dice</button>
-
-          <div class="ludo-board-wrapper">
-            <canvas id="ludoCanvas" width="480" height="480" class="ludo-canvas"></canvas>
-          </div>
-
-          <div id="ludoTokenButtons" class="token-actions"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-wallet" class="tab-content" style="display: none;">
-      <div class="wallet-layout">
-        <div class="card">
-          <div class="card-title">
-            <span>Manual Deposit</span>
-            <span class="badge badge-verified">Zero Gateway Fees</span>
-          </div>
-
-          <p class="helper-text">Transactions are verified by the finance team on WhatsApp.</p>
-
-          <div class="form-group">
-            <label class="form-label" for="depositAmountInput">Deposit Amount (Rs)</label>
-            <input type="number" id="depositAmountInput" class="form-control" value="500" min="100" step="100">
-          </div>
-
-          <button class="btn btn-primary wide-btn" onclick="initiateDeposit()">Generate WhatsApp Payment Code</button>
-
-          <div id="depositResultBox" class="result-box" style="display: none;">
-            <div class="helper-text">Unique Reference Code</div>
-            <div id="dispDepRefCode" class="reference-code">DEP-000</div>
-
-            <div class="helper-text">Official Bank Details</div>
-            <div class="bank-details">
-              <div>UPI VPA: <b id="dispOfficialUpi">rmgfinance@icici</b></div>
-              <div>Account: <b id="dispOfficialAccount">50200012345678 (HDFC Bank)</b></div>
-              <div>IFSC: <b id="dispOfficialIfsc">HDFC0001234</b></div>
-            </div>
-
-            <a id="lnkWhatsApp" href="#" target="_blank" class="btn btn-whatsapp wide-btn">Open Official WhatsApp Chat</a>
-
-            <div class="simulator-box">
-              <div class="helper-text"><b>Simulator Mode</b>: send screenshot and UTR.</div>
-              <input type="text" id="simUtrInput" class="form-control" placeholder="12-digit Bank UTR">
-              <button class="btn btn-success wide-btn" onclick="simulateWhatsAppSubmission()">Simulate WhatsApp Screenshot Webhook</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            <span>Request Withdrawal</span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Withdrawable Winnings Balance</label>
-            <div class="big-balance">Rs <span id="txtWithdrawableBal">0.00</span></div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="wdrAmountInput">Withdrawal Amount (Rs)</label>
-            <input type="number" id="wdrAmountInput" class="form-control" placeholder="Min Rs 200" min="200" step="50">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="wdrTypeSelect">Destination Type</label>
-            <select id="wdrTypeSelect" class="form-control">
-              <option value="UPI">UPI VPA</option>
-              <option value="BANK_ACCOUNT">Bank Account (IMPS)</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="wdrNameInput">Account Holder Name</label>
-            <input type="text" id="wdrNameInput" class="form-control" placeholder="As per bank records">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="wdrVpaInput">UPI VPA or Bank Account Number</label>
-            <input type="text" id="wdrVpaInput" class="form-control" placeholder="username@okhdfcbank or account number">
-          </div>
-
-          <button class="btn btn-primary wide-btn" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
-        </div>
-      </div>
-    </section>
-
-    <section id="tab-kyc" class="tab-content" style="display: none;">
-      <div class="wallet-layout">
-        <div class="card">
-          <div class="card-title">
-            <span>Identity KYC Verification</span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="kycDocType">Document Type</label>
-            <select id="kycDocType" class="form-control">
-              <option value="PAN">PAN Card</option>
-              <option value="AADHAAR">Aadhaar Card</option>
-              <option value="PASSPORT">Passport</option>
-              <option value="VOTER_ID">Voter ID</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="kycDocNumber">Document Number</label>
-            <input type="text" id="kycDocNumber" class="form-control" placeholder="ABCDE1234F">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="kycFrontUrl">Document Front Photo URL</label>
-            <input type="text" id="kycFrontUrl" class="form-control" value="/uploads/kyc/sample_pan.jpg">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="kycSelfieUrl">Live Selfie Photo URL</label>
-            <input type="text" id="kycSelfieUrl" class="form-control" value="/uploads/kyc/sample_selfie.jpg">
-          </div>
-
-          <button class="btn btn-primary wide-btn" onclick="submitKycForm()">Submit KYC for Approval</button>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            <span>Responsible Gaming Limits</span>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="limitDepositInput">Daily Deposit Limit (Rs)</label>
-            <input type="number" id="limitDepositInput" class="form-control" value="25000">
-          </div>
-
-          <div class="form-group">
-            <label class="form-label" for="limitLossInput">Daily Loss Limit (Rs)</label>
-            <input type="number" id="limitLossInput" class="form-control" value="15000">
-          </div>
-
-          <button class="btn btn-primary wide-btn" onclick="updateLimits()">Save Responsible Limits</button>
-
-          <div class="danger-zone">
-            <h2 class="section-label danger-label">Self-Exclusion / Cool-Off</h2>
-            <p class="helper-text">Block play and deposits immediately if you need a break.</p>
-            <button class="btn btn-danger wide-btn" onclick="requestSelfExclusion()">Activate 24-Hour Cool-Off</button>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="floating-actions" aria-label="Quick actions">
-    <button onclick="switchTab('wallet')" aria-label="Open wallet">Rs</button>
-    <button onclick="switchTab('kyc')" aria-label="Open KYC">ID</button>
   </div>
 
-  <nav class="bottom-nav" aria-label="Mobile bottom navigation">
-    <button class="bottom-nav-btn active" onclick="switchTab('aviator')" data-tab="aviator"><span>A</span>Aviator</button>
-    <button class="bottom-nav-btn" onclick="switchTab('colour')" data-tab="colour"><span>C</span>Colour</button>
-    <button class="bottom-nav-btn center-action" onclick="switchTab('wallet')" data-tab="wallet"><span>Rs</span>Deposit</button>
-    <button class="bottom-nav-btn" onclick="switchTab('ludo')" data-tab="ludo"><span>L</span>Ludo</button>
-    <button class="bottom-nav-btn" onclick="switchTab('kyc')" data-tab="kyc"><span>ID</span>KYC</button>
-  </nav>
 
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <h3>Player Login</h3>
-      <div class="form-group">
-        <label class="form-label" for="loginUsername">Phone or Username</label>
-        <input type="text" id="loginUsername" class="form-control" value="demoplayer">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="loginPassword">Password</label>
-        <input type="password" id="loginPassword" class="form-control" value="Password@123">
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeModal('loginModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="doLogin()">Login</button>
-      </div>
+  <!-- GAMES - NOW WITH CARDS -->
+  <section id="mobile-games" class="mobile-game-browser" style="display:none">
+    <div class="section-heading"><h2>Games</h2><button onclick="goHomeDirect()">Home ›</button></div>
+    <div class="game-summary-grid">
+      <button class="game-tile tile-aviator" onclick="navGo('aviator')"><span class="game-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="#fff"/></svg></span><span><strong>Aviator</strong><small>Crash multiplier • LIVE</small></span><em class="tile-live">LIVE</em></button>
+      <button class="game-tile tile-colour" onclick="navGo('colour')"><span class="game-icon"><i class="cdot g"></i><i class="cdot v"></i><i class="cdot r"></i></span><span><strong>Colour</strong><small>60s prediction</small></span><em>2.0x</em></button>
+      <button class="game-tile tile-ludo" onclick="navGo('ludo')"><span class="game-icon"><svg viewBox="0 0 24 24" width="26" height="26"><rect x="3" y="3" width="18" height="18" rx="4" fill="#fff"/><circle cx="8.5" cy="8.5" r="1.8" fill="#0a3a25"/><circle cx="15.5" cy="8.5" r="1.8" fill="#0a3a25"/><circle cx="12" cy="12" r="1.8" fill="#0a3a25"/><circle cx="8.5" cy="15.5" r="1.8" fill="#0a3a25"/><circle cx="15.5" cy="15.5" r="1.8" fill="#0a3a25"/></svg></span><span><strong>Ludo</strong><small>2-4 player rooms</small></span><em>₹92+</em></button>
     </div>
-  </div>
+    <div class="section-heading"><h2>All Games</h2><span id="gamesCount">3</span></div>
+    <div id="categoryGamesBrowser" class="catalog-grid"></div>
+  </section>
 
-  <div id="registerModal" class="modal">
-    <div class="modal-content modal-wide">
-      <h3>Register (18+ Only)</h3>
-      <div class="form-group">
-        <label class="form-label" for="regUsername">Username</label>
-        <input type="text" id="regUsername" class="form-control" placeholder="johndoe">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="regPhone">Mobile Number</label>
-        <input type="text" id="regPhone" class="form-control" placeholder="+919876543210">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="regDob">Date of Birth</label>
-        <input type="date" id="regDob" class="form-control">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="regState">State / Jurisdiction</label>
-        <select id="regState" class="form-control">
-          <option value="MAHARASHTRA">Maharashtra (Permitted)</option>
-          <option value="DELHI">Delhi (Permitted)</option>
-          <option value="KARNATAKA">Karnataka (Permitted)</option>
-          <option value="UTTAR_PRADESH">Uttar Pradesh (Permitted)</option>
-          <option value="ASSAM">Assam (Restricted)</option>
-          <option value="ODISHA">Odisha (Restricted)</option>
-          <option value="TELANGANA">Telangana (Restricted)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="regPassword">Password</label>
-        <input type="password" id="regPassword" class="form-control" placeholder="Min 8 characters">
-      </div>
-      <label class="check-row">
-        <input type="checkbox" id="regAgeConfirm">
-        <span>I confirm that I am 18 years or older and legally eligible.</span>
-      </label>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeModal('registerModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="doRegister()">Create Account</button>
-      </div>
+  <!-- AVIATOR -->
+  <section id="tab-aviator" class="tab-content aviator-screen" style="display:none">
+    <div class="game-title-bar"><button class="btn-back" onclick="backToGames()" aria-label="Back to games">‹</button><span class="game-logo"><svg viewBox="0 0 24 24" width="20" height="20" style="vertical-align:-3px"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z" fill="#ff2a55"/></svg> AVIATOR</span><span class="badge badge-approved">● LIVE</span></div>
+    <div class="history-ribbon" id="aviatorHistoryRibbon"></div>
+    <div class="aviator-stage" id="aviatorStage"><canvas id="flightCanvas" class="aviator-canvas"></canvas><div class="display-status-text" id="aviatorStatusSubtitle">WAITING...</div><div id="multiplier-display" class="aviator-multiplier-display">1.00x</div><span id="aviatorSeedHash" class="aviator-seed-hidden">Seed: Connecting...</span></div>
+    <div class="betting-console">
+      <div class="toggle-row"><button class="toggle-btn active" data-aviator-mode="bet">Bet</button><button class="toggle-btn" data-aviator-mode="auto">Auto</button></div>
+      <div class="controls-grid"><div class="number-stepper-box"><div class="input-row"><button class="step-btn" id="aviatorBetMinus">−</button><span class="value-display">₹<span id="aviatorBetAmountDisplay">50</span></span><button class="step-btn" id="aviatorBetPlus">+</button></div><input type="number" id="aviatorBetAmount" class="aviator-hidden-input" value="50" min="10" max="50000"><div class="presets-grid"><button class="preset-chip" data-aviator-preset="50">₹50</button><button class="preset-chip" data-aviator-preset="100">₹100</button><button class="preset-chip" data-aviator-preset="500">₹500</button><button class="preset-chip" data-aviator-preset="1000">₹1K</button></div><input type="number" id="aviatorAutoCashout" class="aviator-hidden-input"></div><button id="btnAviatorBet" class="btn-execute-bet" onclick="placeAviatorBet()"><span class="action-lbl">Place Bet</span><span class="value-lbl">₹<span id="aviatorBetActionAmount">50</span></span></button></div>
+      <div class="aviator-cashout-row"><button id="btnAviatorCashout" class="btn-execute-bet aviator-cashout-action" style="display:none" onclick="cashoutAviator()"><span class="action-lbl">Cash Out</span><span class="value-lbl">₹<span id="cashoutAmountDisplay">0.00</span></span></button><div id="aviatorNoBetNotice" class="muted-state">No active bet</div></div>
     </div>
-  </div>
+  </section>
 
-  <div id="colourBetModal" class="modal">
-    <div class="modal-content">
-      <h3>Place Bet on <span id="modalBetTarget">-</span></h3>
-      <p class="helper-text">Estimated Payout: <b id="modalBetMultiplier" class="amount-winnings">-</b></p>
-      <div class="form-group">
-        <label class="form-label" for="colourModalAmount">Bet Amount (Rs)</label>
-        <input type="number" id="colourModalAmount" class="form-control" value="100" min="10" step="50">
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeModal('colourBetModal')">Cancel</button>
-        <button class="btn btn-primary" onclick="confirmColourBet()">Confirm Bet</button>
-      </div>
-    </div>
-  </div>
+  <section id="tab-colour" class="tab-content" style="display:none"><div class="card game-card"><div class="card-title"><span>Colour Prediction</span><div class="round-meta"><span id="colourRoundUuid">CP-00000000</span> <span id="colourTimerBadge" class="badge badge-approved">00:60</span></div></div><div class="colour-btn-grid"><button class="btn-bet-colour btn-green" onclick="openColourBetModal('COLOR','GREEN')"><span>GREEN</span><small>2.0x</small></button><button class="btn-bet-colour btn-violet" onclick="openColourBetModal('COLOR','VIOLET')"><span>VIOLET</span><small>4.5x</small></button><button class="btn-bet-colour btn-red" onclick="openColourBetModal('COLOR','RED')"><span>RED</span><small>2.0x</small></button></div><h2 class="section-label">Exact Numbers</h2><div class="number-grid"><button class="btn-number" onclick="openColourBetModal('NUMBER','0')">0</button><button class="btn-number" onclick="openColourBetModal('NUMBER','1')">1</button><button class="btn-number" onclick="openColourBetModal('NUMBER','2')">2</button><button class="btn-number" onclick="openColourBetModal('NUMBER','3')">3</button><button class="btn-number" onclick="openColourBetModal('NUMBER','4')">4</button><button class="btn-number" onclick="openColourBetModal('NUMBER','5')">5</button><button class="btn-number" onclick="openColourBetModal('NUMBER','6')">6</button><button class="btn-number" onclick="openColourBetModal('NUMBER','7')">7</button><button class="btn-number" onclick="openColourBetModal('NUMBER','8')">8</button><button class="btn-number" onclick="openColourBetModal('NUMBER','9')">9</button></div><h2 class="section-label">Recent Results</h2><div class="history-ribbon" id="colourHistoryRibbon"></div><button class="btn btn-secondary wide-btn" onclick="backToGames()">‹ Back to Games</button></div></section>
 
-  <script src="/js/app.js"></script>
+  <section id="tab-ludo" class="tab-content" style="display:none"><div class="card game-card"><div class="card-title"><span>Ludo</span><span id="ludoMatchStatusBadge" class="badge badge-pending">Lobby</span></div><div id="ludoLobbySection"><div class="form-group"><label class="form-label" for="ludoStakeSelect">Stake (₹)</label><select id="ludoStakeSelect" class="form-control"><option value="50">₹50 (Prize ₹92)</option><option value="100">₹100 (Prize ₹184)</option><option value="250">₹250 (Prize ₹460)</option><option value="500">₹500 (Prize ₹920)</option></select></div><button class="btn btn-primary wide-btn" onclick="createLudoMatch()">Create Match</button><button class="btn btn-secondary wide-btn" style="margin-top:.5rem" onclick="backToGames()">‹ Back</button></div><div id="ludoGameSection" style="display:none"><div class="ludo-status"><div><span>Match</span><b id="txtLudoMatchUuid">-</b></div><div><span>Pot</span><b>₹<span id="txtLudoPot">0.00</span></b></div><div><span>Turn</span><b id="txtLudoTurnColor">RED</b></div></div><button id="btnLudoRoll" class="btn btn-gold wide-btn" onclick="rollLudoDice()">Roll Dice</button><div class="ludo-board-wrapper"><canvas id="ludoCanvas" width="480" height="480" class="ludo-canvas"></canvas></div><div id="ludoTokenButtons" class="token-actions"></div></div></div></section>
+</main>
+
+<nav class="bottom-nav">
+  <button class="bottom-nav-btn active" data-tab="home" onclick="navGo('home')"><span>⌂</span><small>Home</small></button>
+  <button class="bottom-nav-btn" data-tab="games" onclick="navGo('games')"><span>✦</span><small>Games</small></button>
+  <button class="bottom-nav-btn center-action play-action" data-tab="aviator" onclick="navGo('aviator')"><span>▶</span><small>Play</small></button>
+  <button class="bottom-nav-btn" data-tab="deposit" onclick="navGo('deposit')"><span>₹</span><small>Deposit</small></button>
+  <button class="bottom-nav-btn" data-tab="wallet" onclick="navGo('wallet')"><span>◈</span><small>Wallet</small></button>
+</nav>
+
+<div id="loginModal" class="modal"><div class="modal-content auth-modal"><button class="modal-close" onclick="closeModal('loginModal')">×</button><div class="auth-brand">A<span>pex</span></div><h3>Welcome back</h3><div class="form-group"><label class="form-label">Username</label><input id="loginUsername" class="form-control" value="demoplayer"></div><div class="form-group"><label class="form-label">Password</label><input id="loginPassword" type="password" class="form-control" value="Password@123"></div><button class="btn btn-primary wide-btn" onclick="doLogin()">Log in</button></div></div>
+<div id="registerModal" class="modal"><div class="modal-content auth-modal"><button class="modal-close" onclick="closeModal('registerModal')">×</button><div class="auth-brand">A<span>pex</span></div><h3>Register</h3><div class="form-group"><label class="form-label">Username</label><input id="regUsername" class="form-control"></div><div class="form-group"><label class="form-label">Phone</label><input id="regPhone" class="form-control"></div><div class="form-group"><label class="form-label">Password</label><input id="regPassword" type="password" class="form-control"></div><div class="form-group"><label class="form-label">Confirm</label><input id="regConfirmPassword" type="password" class="form-control"></div><div class="form-group"><label class="form-label">DOB</label><input id="regDob" type="date" class="form-control"></div><button class="btn btn-gold wide-btn" onclick="doRegister()">Register</button></div></div>
+<div id="colourBetModal" class="modal"><div class="modal-content"><button class="modal-close" onclick="closeModal('colourBetModal')">×</button><h3>Bet on <span id="modalBetTarget">-</span></h3><p class="helper-text">Payout <b id="modalBetMultiplier">-</b></p><div class="form-group"><label class="form-label">Amount</label><input id="colourModalAmount" type="number" class="form-control" value="100"></div><button class="btn btn-primary wide-btn" onclick="confirmColourBet()">Confirm</button></div></div>
+
+<script src="/js/game-assets.js"></script><script src="/js/home-games.js"></script><script src="/js/game-page-animations.js"></script><script src="/js/app.js"></script>
+<script>
+  /* Direct navigation - no wallet/deposit in back stack */
+  (function(){
+    const pages={home:'tab-home',games:'mobile-games',aviator:'tab-aviator',colour:'tab-colour',ludo:'tab-ludo'};
+    function _show(t){Object.entries(pages).forEach(([k,id])=>{const el=document.getElementById(id);if(el)el.style.display=(k===t?'':'none')});document.querySelectorAll('.bottom-nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.tab===t||(t==='aviator'&&b.dataset.tab==='aviator')));window.scrollTo({top:0});}
+    window.navGo=function(tab){if(tab==='deposit'){location.replace('/deposit.html');return}if(tab==='wallet'){location.replace('/wallet.html');return}_show(tab);try{history.replaceState({tab},'', '#'+tab)}catch(e){}if(window.switchTab&&window.switchTab!==window.navGo){try{window._origSwitch=window._origSwitch||window.switchTab}catch(e){}}};
+    window.goHomeDirect=function(){_show('home');try{history.replaceState({tab:'home'},'','#/home')}catch(e){}};
+    window.backToGames=function(){_show('games');try{history.replaceState({tab:'games'},'','#/games')}catch(e){}};
+    const _old=window.switchTab;window.switchTab=function(t){try{if(_old&&String(_old).indexOf('replaceState')===-1){}}catch(e){}_show(t);try{history.replaceState({tab:t},'', '#'+t)}catch(e){}};
+    window.addEventListener('popstate',e=>{const t=e.state&&e.state.tab;if(t&&pages[t])_show(t);else _show('home');});
+    if(location.hash){const h=location.hash.replace('#/','').replace('#','');if(pages[h])_show(h)}
+    /* Mirror Popular -> Games tab cards */
+    function syncGames(){const a=document.getElementById('categoryGames'),b=document.getElementById('categoryGamesBrowser');if(a&&b&&b.children.length===0&&a.children.length>0){b.innerHTML=a.innerHTML;const c=document.getElementById('gamesCount');if(c)c.textContent=a.children.length+3}}new MutationObserver(syncGames).observe(document.getElementById('categoryGames'),{childList:true});setInterval(syncGames,1500);
+  })();
+</script>
+<script>
+  /* Mobile-friendly Aviator canvas - lightweight, DPR<=2 */
+  (function(){
+    const cv=document.getElementById('flightCanvas'),mult=document.getElementById('multiplier-display'),sub=document.getElementById('aviatorStatusSubtitle');
+    if(!cv)return;const ctx=cv.getContext('2d');let W=0,H=0,DPR=1,raf=0,t0=performance.now(),curMult=1,state='waiting';
+    function resize(){const r=cv.parentElement.getBoundingClientRect();DPR=Math.min(window.devicePixelRatio||1,2);W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+    new ResizeObserver(resize).observe(cv.parentElement);resize();
+    function parseMult(){const v=parseFloat((mult.textContent||'1').replace('x',''));if(!isNaN(v))curMult=v;const s=(sub.textContent||'').toLowerCase();if(s.includes('crash'))state='crashed';else if(s.includes('fly')||s.includes('live'))state='flying';else state='waiting'}
+    new MutationObserver(parseMult).observe(mult,{childList:true,characterData:true,subtree:true});new MutationObserver(parseMult).observe(sub,{childList:true,characterData:true,subtree:true});
+    let hidden=false;document.addEventListener('visibilitychange',()=>{hidden=document.hidden;if(!hidden){t0=performance.now();loop()}});
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){ /* static */ }
+    function drawGrid(){ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;for(let x=0;x<W;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke()}for(let y=0;y<H;y+=32){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke()}}
+    function curve(p){ // p 0..1 progress from mult
+      const x0=20,y0=H-30,x1=W*0.55,y1=H*0.6,x2=W-24,y2=24;const t=Math.min(.08+Math.log10(1+curMult)/2.2,1);
+      function q(t,a,b,c){return (1-t)*(1-t)*a+2*(1-t)*t*b+t*t*c}
+      const pts=[];for(let i=0;i<=40;i++){const tt=t*i/40;pts.push([q(tt,x0,x1,x2),q(tt,y0,y1,y2)])}return pts}
+    function loop(){if(hidden)return;const now=performance.now();const tt=(now-t0)/1000;ctx.clearRect(0,0,W,H);drawGrid();parseMult();
+      const pts=curve(tt);ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]));
+      ctx.strokeStyle=state==='crashed'?'#ff2a55':'#ff2a55';ctx.lineWidth=3;ctx.shadowColor='rgba(255,42,85,.7)';ctx.shadowBlur=12;ctx.stroke();ctx.shadowBlur=0;
+// fill under
+      ctx.lineTo(pts[pts.length-1][0],H);ctx.lineTo(pts[0][0],H);ctx.closePath();ctx.fillStyle=state==='crashed'?'rgba(255,42,85,.12)':'rgba(255,42,85,.18)';ctx.fill();
+// plane
+      const head=pts[pts.length-1],prev=pts[pts.length-2]||head;const ang=Math.atan2(head[1]-prev[1],head[0]-prev[0]);
+      ctx.save();ctx.translate(head[0],head[1]);ctx.rotate(ang);ctx.fillStyle='#fff';ctx.shadowColor='#ff2a55';ctx.shadowBlur=14;
+      ctx.beginPath();ctx.moveTo(12,0);ctx.lineTo(-8,-7);ctx.lineTo(-4,0);ctx.lineTo(-8,7);ctx.closePath();ctx.fill();ctx.restore();
+// pulse dot at start
+      ctx.fillStyle='rgba(46,204,113,.9)';ctx.beginPath();ctx.arc(20,H-30,4+Math.sin(tt*4)*1.5,0,7);ctx.fill();
+      raf=requestAnimationFrame(loop)}
+    loop();window.addEventListener('orientationchange',()=>setTimeout(resize,200));
+  })();
+</script>
 </body>
 </html>

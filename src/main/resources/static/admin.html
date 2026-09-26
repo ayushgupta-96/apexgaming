@@ -10,241 +10,217 @@
 </head>
 <body>
 
-  <header class="navbar">
-    <div class="brand">
-      <span style="color: #60a5fa;">🛡️ RMG ADMIN CONSOLE</span>
-      <span class="brand-badge" style="background: rgba(96, 165, 250, 0.15); border-color: #60a5fa; color: #60a5fa;">2FA PROTECTED</span>
-    </div>
-
-    <div style="display: flex; gap: 1rem; align-items: center;">
-      <span id="adminUsernameBadge" style="font-size: 0.85rem; color: var(--text-secondary);">Logged in as: <b>admin</b></span>
-      <button class="btn btn-gold" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="openAdmin2faModal()">Configure 2FA</button>
-      <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="adminLogout()">Logout</button>
-    </div>
-  </header>
-
-  <nav class="tabs-header">
-    <button class="tab-btn active" onclick="switchAdminTab('dashboard')">📊 Dashboard & KPIs</button>
-    <button class="tab-btn" onclick="switchAdminTab('deposits')">📥 Deposit Approvals (<span id="badgePendingDep">0</span>)</button>
-    <button class="tab-btn" onclick="switchAdminTab('withdrawals')">📤 Withdrawal Queue (<span id="badgePendingWdr">0</span>)</button>
-    <button class="tab-btn" onclick="switchAdminTab('whatsapp')">💬 WhatsApp Live Inbox (<span id="badgeOpenTickets">0</span>)</button>
-    <button class="tab-btn" onclick="switchAdminTab('kyc')">🪪 KYC Verifications (<span id="badgePendingKyc">0</span>)</button>
-    <button class="tab-btn" onclick="switchAdminTab('aml')">🚨 AML & Fraud Flags</button>
-    <button class="tab-btn" onclick="switchAdminTab('audit')">📜 System Audit Logs</button>
-  </nav>
-
-  <main class="container">
-
-    <!-- ==================== DASHBOARD TAB ==================== -->
-    <section id="adm-tab-dashboard" class="admin-tab">
-      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
-        <div class="card" style="margin-bottom: 0;">
-          <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">REGISTERED USERS</div>
-          <div style="font-size: 1.75rem; font-weight: 800;" id="kpiUsers">0</div>
-        </div>
-        <div class="card" style="margin-bottom: 0;">
-          <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">GROSS GAMING REVENUE</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-emerald);" id="kpiGgr">₹0.00</div>
-        </div>
-        <div class="card" style="margin-bottom: 0;">
-          <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">TOTAL DEPOSITED VOLUME</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: #60a5fa;" id="kpiDeposits">₹0.00</div>
-        </div>
-        <div class="card" style="margin-bottom: 0;">
-          <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">ACTIVE ESCROW LIABILITY</div>
-          <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-gold);" id="kpiEscrow">₹0.00</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Real-Time Operational Summary</div>
-        <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
-          • All deposits and payouts require manual administrator verification via WhatsApp banking proofs.<br>
-          • Balances are maintained through an atomic, double-entry financial ledger.<br>
-          • Direct balance mutation is physically disabled at the database and service layers.
-        </p>
-      </div>
-    </section>
-
-    <!-- ==================== DEPOSITS QUEUE TAB ==================== -->
-    <section id="adm-tab-deposits" class="admin-tab" style="display: none;">
-      <div class="card">
-        <div class="card-title">
-          <span>Manual WhatsApp Deposit Verification Queue</span>
-          <button class="btn btn-primary" onclick="loadDeposits()">Refresh Queue</button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Reference Code</th>
-                <th>Player Phone</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>UTR / Proof</th>
-                <th>Created At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="depositsTableBody">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== WITHDRAWALS QUEUE TAB ==================== -->
-    <section id="adm-tab-withdrawals" class="admin-tab" style="display: none;">
-      <div class="card">
-        <div class="card-title">
-          <span>Manual Withdrawal Payout Queue</span>
-          <button class="btn btn-primary" onclick="loadWithdrawals()">Refresh Queue</button>
-        </div>
-
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Reference Code</th>
-                <th>Player</th>
-                <th>Amount</th>
-                <th>Destination</th>
-                <th>Account / VPA</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="withdrawalsTableBody">
-              <!-- Rendered dynamically -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== WHATSAPP INBOX TAB ==================== -->
-    <section id="adm-tab-whatsapp" class="admin-tab" style="display: none;">
-      <div style="display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; height: 650px;">
-
-        <!-- Left: Ticket List -->
-        <div class="card" style="padding: 1rem; display: flex; flex-direction: column; overflow: hidden;">
-          <div style="font-weight: 700; margin-bottom: 0.75rem;">WhatsApp Chat Queue</div>
-          <div id="ticketListContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
-            <!-- Rendered dynamically -->
-          </div>
-        </div>
-
-        <!-- Right: Active Conversation View -->
-        <div class="card" style="padding: 1rem; display: flex; flex-direction: column; overflow: hidden;">
-          <div id="chatHeader" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem; display: flex; justify-content: space-between;">
-            <div>
-              <div id="chatSenderPhone" style="font-weight: 700;">Select a ticket</div>
-              <div id="chatRefCode" style="font-size: 0.8rem; color: var(--accent-gold);">No reference selected</div>
-            </div>
-            <span id="chatStatusBadge" class="badge badge-pending">OPEN</span>
-          </div>
-
-          <!-- Chat Messages Area -->
-          <div id="chatMessagesArea" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-right: 0.5rem;">
-            <!-- Messages rendered dynamically -->
-          </div>
-
-          <!-- Chat Reply Box -->
-          <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem; display: flex; gap: 0.75rem;">
-            <input type="text" id="adminReplyInput" class="form-control" placeholder="Type WhatsApp response to player...">
-            <button class="btn btn-whatsapp" onclick="sendWhatsAppReply()">Reply</button>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ==================== KYC VERIFICATIONS TAB ==================== -->
-    <section id="adm-tab-kyc" class="admin-tab" style="display: none;">
-      <div class="card">
-        <div class="card-title">Pending KYC Document Reviews</div>
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>User ID</th>
-                <th>Document Type</th>
-                <th>Document Number</th>
-                <th>Front Image</th>
-                <th>Selfie</th>
-                <th>Submitted</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="kycTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== AML & FRAUD SURVEILLANCE TAB ==================== -->
-    <section id="adm-tab-aml" class="admin-tab" style="display: none;">
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
-        <div class="card">
-          <div class="card-title" style="color: var(--accent-rose);">AML Velocity Surveillance Alerts</div>
-          <div id="amlAlertsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
-        </div>
-        <div class="card">
-          <div class="card-title" style="color: var(--accent-gold);">Player Fraud Flags</div>
-          <div id="fraudFlagsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ==================== AUDIT LOGS TAB ==================== -->
-    <section id="adm-tab-audit" class="admin-tab" style="display: none;">
-      <div class="card">
-        <div class="card-title">Immutable Administrative Audit Trail</div>
-        <div class="table-responsive">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th>Timestamp</th>
-                <th>Actor</th>
-                <th>Role</th>
-                <th>Action</th>
-                <th>Target</th>
-                <th>Reason / Notes</th>
-              </tr>
-            </thead>
-            <tbody id="auditTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- Payout Approval Modal -->
-  <div id="payoutModal" class="modal">
-    <div class="modal-content">
-      <h3 style="margin-bottom: 0.5rem;">Approve & Mark Paid</h3>
-      <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
-        Enter the bank/UPI UTR after completing manual transfer:
-      </p>
-      <input type="hidden" id="payoutWithdrawalId">
-      <div class="form-group">
-        <label class="form-label">Bank UTR Number</label>
-        <input type="text" id="payoutUtrInput" class="form-control" placeholder="12-digit UTR">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Admin 2FA TOTP Code</label>
-        <input type="number" id="payoutTotpInput" class="form-control" placeholder="6-digit code">
-      </div>
-      <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
-        <button class="btn btn-secondary" onclick="closeModal('payoutModal')">Cancel</button>
-        <button class="btn btn-success" onclick="confirmApproveWithdrawal()">Confirm Payout</button>
-      </div>
-    </div>
+<header class="navbar">
+  <div class="brand">
+    <span style="color: #60a5fa;">🛡️ RMG ADMIN CONSOLE</span>
+    <span class="brand-badge" style="background: rgba(96, 165, 250, 0.15); border-color: #60a5fa; color: #60a5fa;">2FA PROTECTED</span>
   </div>
 
-  <script src="/js/admin.js"></script>
+  <div style="display: flex; gap: 1rem; align-items: center;">
+    <span id="adminUsernameBadge" style="font-size: 0.85rem; color: var(--text-secondary);">Logged in as: <b>admin</b></span>
+    <button class="btn btn-gold" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="openAdmin2faModal()">Configure 2FA</button>
+    <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;" onclick="adminLogout()">Logout</button>
+  </div>
+</header>
+
+<nav class="tabs-header">
+  <button class="tab-btn active" onclick="switchAdminTab('dashboard')">📊 Dashboard & KPIs</button>
+  <button class="tab-btn" onclick="switchAdminTab('deposits')">📥 Deposit Approvals (<span id="badgePendingDep">0</span>)</button>
+  <button class="tab-btn" onclick="switchAdminTab('withdrawals')">📤 Withdrawal Queue (<span id="badgePendingWdr">0</span>)</button>
+  <button class="tab-btn" onclick="switchAdminTab('whatsapp')">💬 WhatsApp Live Inbox (<span id="badgeOpenTickets">0</span>)</button>
+  <button class="tab-btn" onclick="switchAdminTab('aml')">🚨 AML & Fraud Flags</button>
+  <button class="tab-btn" onclick="switchAdminTab('audit')">📜 System Audit Logs</button>
+</nav>
+
+<main class="container">
+
+  <!-- ==================== DASHBOARD TAB ==================== -->
+  <section id="adm-tab-dashboard" class="admin-tab">
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.5rem;">
+      <div class="card" style="margin-bottom: 0;">
+        <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">REGISTERED USERS</div>
+        <div style="font-size: 1.75rem; font-weight: 800;" id="kpiUsers">0</div>
+      </div>
+      <div class="card" style="margin-bottom: 0;">
+        <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">GROSS GAMING REVENUE</div>
+        <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-emerald);" id="kpiGgr">₹0.00</div>
+      </div>
+      <div class="card" style="margin-bottom: 0;">
+        <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">TOTAL DEPOSITED VOLUME</div>
+        <div style="font-size: 1.75rem; font-weight: 800; color: #60a5fa;" id="kpiDeposits">₹0.00</div>
+      </div>
+      <div class="card" style="margin-bottom: 0;">
+        <div style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 0.25rem;">ACTIVE ESCROW LIABILITY</div>
+        <div style="font-size: 1.75rem; font-weight: 800; color: var(--accent-gold);" id="kpiEscrow">₹0.00</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Real-Time Operational Summary</div>
+      <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+        • All deposits and payouts require manual administrator verification via WhatsApp banking proofs.<br>
+        • Balances are maintained through an atomic, double-entry financial ledger.<br>
+        • Direct balance mutation is physically disabled at the database and service layers.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== DEPOSITS QUEUE TAB ==================== -->
+  <section id="adm-tab-deposits" class="admin-tab" style="display: none;">
+    <div class="card">
+      <div class="card-title">
+        <span>Manual WhatsApp Deposit Verification Queue</span>
+        <button class="btn btn-primary" onclick="loadDeposits()">Refresh Queue</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Reference Code</th>
+            <th>Player Phone</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>UTR / Proof</th>
+            <th>Created At</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="depositsTableBody">
+          <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WITHDRAWALS QUEUE TAB ==================== -->
+  <section id="adm-tab-withdrawals" class="admin-tab" style="display: none;">
+    <div class="card">
+      <div class="card-title">
+        <span>Manual Withdrawal Payout Queue</span>
+        <button class="btn btn-primary" onclick="loadWithdrawals()">Refresh Queue</button>
+      </div>
+
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Reference Code</th>
+            <th>Player</th>
+            <th>Amount</th>
+            <th>Destination</th>
+            <th>Account / VPA</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+          </thead>
+          <tbody id="withdrawalsTableBody">
+          <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== WHATSAPP INBOX TAB ==================== -->
+  <section id="adm-tab-whatsapp" class="admin-tab" style="display: none;">
+    <div style="display: grid; grid-template-columns: 350px 1fr; gap: 1.5rem; height: 650px;">
+
+      <!-- Left: Ticket List -->
+      <div class="card" style="padding: 1rem; display: flex; flex-direction: column; overflow: hidden;">
+        <div style="font-weight: 700; margin-bottom: 0.75rem;">WhatsApp Chat Queue</div>
+        <div id="ticketListContainer" style="overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Right: Active Conversation View -->
+      <div class="card" style="padding: 1rem; display: flex; flex-direction: column; overflow: hidden;">
+        <div id="chatHeader" style="border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem; margin-bottom: 1rem; display: flex; justify-content: space-between;">
+          <div>
+            <div id="chatSenderPhone" style="font-weight: 700;">Select a ticket</div>
+            <div id="chatRefCode" style="font-size: 0.8rem; color: var(--accent-gold);">No reference selected</div>
+          </div>
+          <span id="chatStatusBadge" class="badge badge-pending">OPEN</span>
+        </div>
+
+        <!-- Chat Messages Area -->
+        <div id="chatMessagesArea" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-right: 0.5rem;">
+          <!-- Messages rendered dynamically -->
+        </div>
+
+        <!-- Chat Reply Box -->
+        <div style="border-top: 1px solid var(--border-color); padding-top: 1rem; margin-top: 1rem; display: flex; gap: 0.75rem;">
+          <input type="text" id="adminReplyInput" class="form-control" placeholder="Type WhatsApp response to player...">
+          <button class="btn btn-whatsapp" onclick="sendWhatsAppReply()">Reply</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==================== AML & FRAUD SURVEILLANCE TAB ==================== -->
+  <section id="adm-tab-aml" class="admin-tab" style="display: none;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+      <div class="card">
+        <div class="card-title" style="color: var(--accent-rose);">AML Velocity Surveillance Alerts</div>
+        <div id="amlAlertsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color: var(--accent-gold);">Player Fraud Flags</div>
+        <div id="fraudFlagsList" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== AUDIT LOGS TAB ==================== -->
+  <section id="adm-tab-audit" class="admin-tab" style="display: none;">
+    <div class="card">
+      <div class="card-title">Immutable Administrative Audit Trail</div>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Actor</th>
+            <th>Role</th>
+            <th>Action</th>
+            <th>Target</th>
+            <th>Reason / Notes</th>
+          </tr>
+          </thead>
+          <tbody id="auditTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Payout Approval Modal -->
+<div id="payoutModal" class="modal">
+  <div class="modal-content">
+    <h3 style="margin-bottom: 0.5rem;">Approve & Mark Paid</h3>
+    <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+      Enter the bank/UPI UTR after completing manual transfer:
+    </p>
+    <input type="hidden" id="payoutWithdrawalId">
+    <div class="form-group">
+      <label class="form-label">Bank UTR Number</label>
+      <input type="text" id="payoutUtrInput" class="form-control" placeholder="12-digit UTR">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Admin 2FA TOTP Code</label>
+      <input type="number" id="payoutTotpInput" class="form-control" placeholder="6-digit code">
+    </div>
+    <div style="display: flex; justify-content: flex-end; gap: 0.5rem; margin-top: 1rem;">
+      <button class="btn btn-secondary" onclick="closeModal('payoutModal')">Cancel</button>
+      <button class="btn btn-success" onclick="confirmApproveWithdrawal()">Confirm Payout</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/admin.js"></script>
 </body>
 </html>

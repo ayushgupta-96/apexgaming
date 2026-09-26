@@ -1,0 +1,96 @@
+/* Apex Gaming - Mobile-first overrides | Green theme preserved */
+:root{
+    --bg0:#020907; --bg1:#041d12; --bg2:#052618; --bg3:#0a3a25;
+    --gold:#e6c45b; --gold-soft:#f3dda0; --safe-b:env(safe-area-inset-bottom,0px);
+}
+html,body{overflow-x:hidden}
+body.apex-mobile-app{
+    background:linear-gradient(180deg,#020907 0%,#03100c 55%,#020907 100%) !important;
+    color:#f7f2df; padding-bottom:calc(84px + var(--safe-b));
+    -webkit-text-size-adjust:100%;
+}
+
+/* Header */
+.mobile-topbar{position:sticky;top:0;z-index:50;gap:.5rem;padding-top:calc(.6rem + env(safe-area-inset-top,0px))}
+.brand-mark{flex:0 0 38px}
+.topbar-actions .btn,.nav-wallets .btn{min-height:40px}
+.wallet-total{min-height:41px}
+
+/* Hero - stacks on 360px */
+.mobile-hero{min-height:0;padding:1rem;gap:.8rem}
+.mobile-hero-copy{max-width:68%;min-width:0}
+.mobile-hero h1{font-size:clamp(1.35rem,5.5vw,1.6rem);line-height:1.05}
+.mobile-hero p{font-size:.78rem}
+.hero-cta-row{display:flex;gap:.5rem;flex-wrap:wrap}
+.hero-cta-row .btn{flex:1 1 120px;min-height:44px}
+.hero-orb{width:112px;height:112px;right:-10px;top:50%;transform:translateY(-50%) rotate(-7deg)}
+.hero-orb span{font-size:1.25rem}
+
+/* Earnings - swipe, no page scroll */
+.earnings-strip{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(140px,1fr);grid-template-columns:none;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:2px;scrollbar-width:none}
+.earnings-strip::-webkit-scrollbar{display:none}
+.earnings-strip>div{scroll-snap-align:start}
+
+/* Catalog - 5 cards swipe on mobile, grid on desktop */
+.catalog-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem}
+.catalog-card{min-width:0;overflow:hidden;animation:gameCardFloat 3s ease-in-out infinite}
+.catalog-image{width:100%;height:100%;aspect-ratio:333/450;object-fit:cover;display:block;border-radius:14px 14px 10px 10px}
+@keyframes gameCardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(max-width:700px){
+    .catalog-grid{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:32vw;max-width:100%;overflow-x:auto;scroll-snap-type:x mandatory;padding:.1rem .1rem .4rem;scrollbar-width:none}
+    .catalog-grid::-webkit-scrollbar{display:none}
+    .catalog-card{scroll-snap-align:start;min-width:0}
+}
+
+/* Game browser */
+.mobile-game-browser .game-summary-grid{display:grid;grid-template-columns:1fr;gap:.6rem}
+.game-tile{min-height:76px}
+.game-tile,.btn-bet-colour,.btn-number,.bottom-nav-btn{touch-action:manipulation}
+button,.btn,.game-tile{min-height:44px}
+
+/* Aviator - unified, responsive */
+.aviator-screen .aviator-stage{height:clamp(260px,68vw,380px) !important;margin:8px 0 12px !important;width:auto !important;border:1px solid rgba(255,255,255,.08) !important}
+.aviator-screen .aviator-multiplier-display{font-size:clamp(3rem,15vw,5rem) !important;line-height:1}
+.aviator-screen .history-ribbon{position:sticky;top:0;z-index:2}
+.aviator-screen .betting-console{margin:0 0 10px !important}
+.aviator-screen .controls-grid{display:grid;grid-template-columns:1.1fr .95fr;gap:10px}
+.aviator-screen .btn-execute-bet{min-height:84px;width:100%}
+@media(max-width:360px){
+    .aviator-screen .controls-grid{grid-template-columns:1fr}
+    .mobile-hero-copy{max-width:100%}
+    .hero-orb{display:none}
+}
+
+/* Colour / Ludo touch */
+#tab-colour .colour-btn-grid{grid-template-columns:repeat(3,1fr);gap:.6rem}
+#tab-colour .btn-bet-colour{min-height:76px}
+#tab-colour .number-grid{grid-template-columns:repeat(5,1fr);gap:.5rem}
+#tab-colour .btn-number{min-height:52px}
+.ludo-canvas{width:min(100%,480px) !important;height:auto !important}
+
+/* Modals = bottom-sheet on mobile */
+.modal{align-items:flex-end !important;padding:0 !important}
+.modal-content{width:100%;max-width:520px;max-height:92dvh;overflow-y:auto;border-radius:22px 22px 0 0;-webkit-overflow-scrolling:touch}
+@media(min-width:701px){.modal{align-items:center !important;padding:1rem !important}.modal-content{border-radius:20px}}
+
+/* Bottom nav - unified 5 tabs */
+.bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr)) !important;align-items:end;gap:2px;min-height:72px;padding:6px 6px calc(6px + var(--safe-b)) !important}
+.bottom-nav-btn,.bottom-nav a.bottom-nav-btn{min-width:0;min-height:58px;padding:5px 2px;border:0;background:transparent;color:#8fa39c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.64rem;font-weight:800;text-decoration:none}
+.bottom-nav-btn span{display:flex;align-items:center;justify-content:center;width:34px;height:28px;font-size:1rem;border-radius:11px}
+.bottom-nav-btn small{font-size:.62rem;line-height:1}
+.bottom-nav-btn.active{color:var(--gold-soft)}
+.bottom-nav-btn.active span{background:rgba(230,196,91,.14);color:var(--gold-soft)}
+.bottom-nav-btn.center-action{margin-top:-22px;min-height:74px;color:#1a1608;position:relative;z-index:2}
+.bottom-nav-btn.center-action span{width:56px;height:56px;border-radius:50%;background:linear-gradient(145deg,#f7db72,#c69b2f);color:#1a1608;font-size:1.25rem;border:4px solid #06251e;box-shadow:0 8px 20px rgba(230,196,91,.3)}
+.bottom-nav-btn.center-action small{color:var(--gold-soft)}
+.play-action span{animation:playPulse 2.2s ease-in-out infinite}
+@keyframes playPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+@media(prefers-reduced-motion:reduce){.catalog-card,.play-action span{animation:none}}
+
+/* Hide legacy desktop-only blocks on mobile app */
+.game-categories,.manufacturer-section,.floating-promo,.auth-tabs{display:none !important}
+
+/* Forms */
+.form-control{font-size:16px} /* prevents iOS zoom */
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+img{max-width:100%}

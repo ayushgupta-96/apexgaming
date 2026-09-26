@@ -74,7 +74,7 @@ class WhatsAppPaymentVerificationTest {
                 .phoneNumber("+919876500001")
                 .role(Role.USER)
                 .active(true)
-                .verified(true)
+
                 .build();
     }
 

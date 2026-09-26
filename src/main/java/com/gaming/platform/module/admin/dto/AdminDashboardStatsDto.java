@@ -13,7 +13,6 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class AdminDashboardStatsDto {
     private long totalUsers;
-    private long pendingKycCount;
     private long pendingDepositsCount;
     private long pendingWithdrawalsCount;
     private long openWhatsAppTicketsCount;

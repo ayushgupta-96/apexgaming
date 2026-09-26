@@ -1,13 +1,10 @@
 package com.gaming.platform.module.auth.service;
 
 import com.gaming.platform.common.exception.BusinessException;
-import com.gaming.platform.common.exception.GeoBlockedException;
 import com.gaming.platform.common.security.JwtTokenProvider;
 import com.gaming.platform.common.security.UserPrincipal;
 import com.gaming.platform.common.util.TotpUtil;
 import com.gaming.platform.module.auth.dto.*;
-import com.gaming.platform.module.kyc.entity.KycDocument;
-import com.gaming.platform.module.kyc.repository.KycDocumentRepository;
 import com.gaming.platform.module.user.entity.*;
 import com.gaming.platform.module.user.repository.SelfExclusionRepository;
 import com.gaming.platform.module.user.repository.UserLimitsRepository;
@@ -29,7 +26,6 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +34,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserProfileRepository profileRepository;
     private final UserLimitsRepository limitsRepository;
-    private final KycDocumentRepository kycRepository;
     private final SelfExclusionRepository selfExclusionRepository;
     private final LedgerService ledgerService;
     private final PasswordEncoder passwordEncoder;
@@ -47,9 +42,6 @@ public class AuthService {
 
     @Value("${rmg.compliance.minimum-age:18}")
     private int minimumAge;
-
-    @Value("${rmg.compliance.restricted-jurisdictions:ASSAM,ODISHA,TELANGANA,ANDHRA_PRADESH,NAGALAND,SIKKIM}")
-    private List<String> restrictedJurisdictions;
 
     @Value("${security.admin.two-factor.issuer:AntigravityRMG}")
     private String twoFactorIssuer;
@@ -62,13 +54,7 @@ public class AuthService {
             throw new BusinessException("Registration rejected: You must be at least " + minimumAge + " years old to participate in real-money gaming.");
         }
 
-        // 2. Compliance: Geo-blocking check
-        String normalizedState = request.getState().trim().toUpperCase();
-        if (restrictedJurisdictions.contains(normalizedState)) {
-            throw new GeoBlockedException(request.getState());
-        }
-
-        // 3. Duplicate checks
+        // 2. Duplicate checks
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException("Username is already taken");
         }
@@ -87,7 +73,6 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .active(true)
-                .verified(false)
                 .frozen(false)
                 .build();
         User savedUser = userRepository.save(user);
@@ -98,7 +83,6 @@ public class AuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .dateOfBirth(request.getDateOfBirth())
-                .state(normalizedState)
                 .build();
         profileRepository.save(profile);
 
@@ -128,7 +112,6 @@ public class AuthService {
                 .phoneNumber(savedUser.getPhoneNumber())
                 .role(savedUser.getRole())
                 .requires2fa(false)
-                .kycApproved(false)
                 .build();
     }
 
@@ -174,7 +157,6 @@ public class AuthService {
         String accessToken = tokenProvider.generateAccessToken(authentication);
         String refreshToken = tokenProvider.generateRefreshToken(user.getId());
 
-        boolean kycApproved = kycRepository.existsByUserIdAndStatus(user.getId(), KycDocument.KycStatus.APPROVED);
 
         return AuthResponse.builder()
                 .accessToken(accessToken)
@@ -184,7 +166,6 @@ public class AuthService {
                 .phoneNumber(user.getPhoneNumber())
                 .role(user.getRole())
                 .requires2fa(false)
-                .kycApproved(kycApproved)
                 .build();
     }
 

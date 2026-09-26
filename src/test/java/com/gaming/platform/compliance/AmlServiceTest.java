@@ -63,7 +63,7 @@ class AmlServiceTest {
                 .username("testplayer")
                 .role(Role.USER)
                 .active(true)
-                .verified(true)
+
                 .frozen(false)
                 .build();
 

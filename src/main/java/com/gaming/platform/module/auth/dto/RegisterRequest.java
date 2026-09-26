@@ -31,8 +31,6 @@ public class RegisterRequest {
     @NotNull(message = "Date of birth is required for legal age verification")
     private LocalDate dateOfBirth;
 
-    @NotBlank(message = "State/Jurisdiction is required for compliance")
-    private String state;
 
     @AssertTrue(message = "You must be at least 18 years old and confirm age declaration")
     private boolean ageConfirmed;
