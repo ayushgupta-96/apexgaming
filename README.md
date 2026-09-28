@@ -52,19 +52,19 @@ The platform eliminates raw balance manipulation (`UPDATE wallet SET balance = b
 
 ## 3. Manual Payment Verification via WhatsApp
 
-The platform does not rely on third-party automated payment gateways. All deposits and payouts are verified manually by administrators through official WhatsApp channels.
+The platform does not rely on third-party automated payment gateways or inbound WhatsApp webhooks. Deposits are paid through the displayed UPI QR/UPI ID, proof is checked manually through official WhatsApp, and the admin approval action credits the wallet through the ledger.
 
 ### Deposit Workflow:
 1. **User Request**: User specifies deposit amount (minimum ₹100).
 2. **Reference Code**: System generates unique code `DEP-{userId}-{timestamp}`.
-3. **Payment Details**: System displays platform UPI VPA (`rmgfinance@icici`), bank account number, IFSC, and a dynamic WhatsApp Click-to-Chat deep-link:
+3. **Payment Details**: System displays the platform UPI QR/UPI ID and a dynamic WhatsApp Click-to-Chat deep-link:
    ```
    https://wa.me/919876543210?text=Hello+Admin%2C+I+have+initiated+a+deposit+of+%E2%82%B9500+on+RMG+Platform.+Reference+Code%3A+DEP-101-1725984000
    ```
 4. **Proof Submission**: User pays via UPI/IMPS and sends the transaction screenshot and 12-digit UTR to the WhatsApp number.
-5. **Webhook Ingestion**: WhatsApp webhook (`POST /api/webhooks/whatsapp`) ingests the payload, regex parses the `DEP-...` code and UTR, updates deposit status to `UNDER_REVIEW`, and creates an Admin Ticket.
-6. **Admin Verification**: Finance admin inspects physical bank statement in Admin Console.
-7. **Approval**: Admin clicks "Approve" (verified with Admin TOTP 2FA). The ledger credits the user deposit balance, and an outbound WhatsApp notification is automatically dispatched to the user.
+5. **UTR Submission**: User enters the 12-digit UTR on the deposit page. The authenticated API updates the deposit to `UNDER_REVIEW`.
+6. **Manual WhatsApp Verification**: The user is taken to the official WhatsApp chat with the deposit reference and UTR pre-filled. The administrator manually checks the payment and screenshot in WhatsApp.
+7. **Approval**: Admin clicks "Approve" (verified with Admin TOTP 2FA). The ledger credits the user deposit balance. No WhatsApp webhook is involved.
 
 ### Withdrawal Workflow:
 1. **Compliance Check**: System verifies user account is non-frozen, and AML 100% wagering turnover is satisfied.
@@ -130,9 +130,9 @@ The platform does not rely on third-party automated payment gateways. All deposi
 | `POST` | `/api/auth/register` | Register new user (18+ check) | Public |
 | `POST` | `/api/auth/login` | Authenticate with JWT (+ Admin 2FA) | Public |
 | `GET`  | `/api/wallet` | Get deposit, winnings, bonus, locked balances | User |
-| `POST` | `/api/deposits` | Create manual deposit request & WhatsApp link | User |
+| `POST` | `/api/deposits` | Create manual UPI deposit request | User |
+| `POST` | `/api/deposits/{depositId}/utr` | Submit 12-digit UTR and prepare WhatsApp verification link | User |
 | `POST` | `/api/withdrawals` | Request withdrawal of verified winnings | User |
-| `POST` | `/api/webhooks/whatsapp` | Meta WhatsApp Cloud API proof receiver | Public |
 | `GET`  | `/api/games/aviator/state` | Current flight multiplier & history | Public / User |
 | `POST` | `/api/games/aviator/bet` | Place Aviator crash bet | User |
 | `POST` | `/api/games/aviator/cashout` | Manual cashout during flight | User |
