@@ -143,16 +143,6 @@ async function initiateDeposit() {
   } catch (e) { alert("Failed to create deposit request"); }
 }
 
-async function simulateWhatsAppSubmission() {
-  const refEl = document.getElementById("dispDepRefCode"); if (!refEl) return;
-  const utr = document.getElementById("simUtrInput")?.value || "423456789012";
-  try {
-    const res = await fetch("/api/webhooks/whatsapp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ from: "+919876500001", body: "Paid for " + refEl.textContent + " UTR: " + utr, mediaUrl: "/uploads/whatsapp/screenshot_" + refEl.textContent + ".jpg", mediaType: "IMAGE" }) });
-    const data = await safeJsonResponse(res);
-    if (data.success) alert("Payment proof received by webhook."); else alert("Webhook rejected: " + (data.message || "Unknown error"));
-  } catch (e) { alert("Simulation webhook error"); }
-}
-
 async function requestWithdrawal() {
   if (!token) { window.location.href = "/"; return; }
   try {
