@@ -23,7 +23,6 @@
 .result-box{margin-top:16px;background:#03150d;border:1px dashed #0a3a25;border-radius:8px;padding:16px}.reference-code{font-size:18px;font-weight:700;color:#f5cd79;margin:6px 0 14px}.bank-details{background:#052618;border:1px solid #0a3a25;border-radius:8px;padding:12px;margin:8px 0 12px;color:#8fa397;font-size:13px;line-height:1.8}.bank-details b{color:#fff}.btn-whatsapp{background:#20b874!important;color:#fff!important;text-decoration:none;text-align:center;line-height:48px}
 .instructions-panel{margin:16px;background:#052618;border:1px solid #0a3a25;border-radius:12px;padding:20px 16px}.instruction-list{list-style:none;display:flex;flex-direction:column;gap:14px;padding:0;margin:0}.instruction-list li{font-size:13px;color:#8fa397;line-height:1.5;position:relative;padding-left:18px}.instruction-list li:before{content:"◆";position:absolute;left:0;top:0;color:#f5cd79;font-size:10px}
 @media(max-width:420px){.deposit-head{height:56px}.deposit-panel{margin-left:16px;margin-right:16px;padding:18px 14px}.balance-card{margin-left:16px;margin-right:16px}.amounts-grid{gap:8px}.amount-btn{height:42px}.balance-card-amount{font-size:29px}}
-<style>
 /* Deposit mobile polish */
 .deposit-screen{background:linear-gradient(180deg,#03140e 0%,#041b13 55%,#020907 100%)!important;}
 .deposit-screen .deposit-head{background:rgba(3,18,13,.96)!important;border-bottom:1px solid rgba(39,194,130,.14);}
@@ -64,7 +63,7 @@
 @media(max-width:420px){
   .deposit-screen .balance-card,.deposit-screen .deposit-panel{margin-left:12px!important;margin-right:12px!important;}
 }
-</style></style></head>
+</style></head>
 <body class="apex-mobile-app deposit-screen">
 <header class="deposit-head">
   <button class="deposit-back" onclick="window.location.href='/'" aria-label="Back to home">‹</button>
@@ -79,7 +78,7 @@
   </section>
   <section class="deposit-panel">
     <div class="panel-title">Deposit Funds</div>
-    <p class="helper-text">Choose an amount and generate your secure payment reference.</p>
+    <p class="helper-text">Choose an amount, generate your payment QR, then enter the UTR after payment.</p>
     <div class="form-group" style="margin-top:16px">
       <label class="form-label">Quick amount</label>
       <div class="amounts-grid">
@@ -119,9 +118,6 @@
         <button id="btnSubmitUtr" class="btn btn-submit-utr wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">SUBMIT</button>
         <button id="btnGoWhatsApp" class="btn btn-whatsapp wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">Go To WhatsApp</button>
       </div>
-        <input type="text" id="simUtrInput" class="form-control" placeholder="12-digit Bank UTR">
-        <button class="btn btn-success wide-btn" onclick="simulateWhatsAppSubmission()">Simulate WhatsApp Screenshot Webhook</button>
-      </div>
     </div>
   </section>
 </main>
@@ -155,7 +151,7 @@ async function submitUtrAndOpenWhatsApp(){
     const res=await fetch('/api/deposits/'+currentDepositId+'/utr',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('rmg_token')},body:JSON.stringify({utrNumber:utr})});
     const data=await safeJsonResponse(res);
     if(data.success){
-      const link=data.data?.whatsAppLink || document.getElementById('lnkWhatsApp')?.href;
+      const link=data.data?.whatsAppLink;
       if(link) window.location.href=link;
       else alert('UTR submitted successfully. Please contact support on WhatsApp.');
     }else{
