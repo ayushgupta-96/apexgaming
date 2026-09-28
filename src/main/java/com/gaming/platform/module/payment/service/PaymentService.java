@@ -36,9 +36,6 @@ public class PaymentService {
     @Value("${rmg.whatsapp.official-number:+919876543210}")
     private String officialWhatsAppNumber;
 
-    @Value("${rmg.whatsapp.official-upi-id:rmgfinance@icici}")
-    private String officialUpiId;
-
     
     @Transactional
     public DepositCreateResponse createDepositRequest(Long userId, DepositCreateRequest request) {
@@ -69,14 +66,10 @@ public class PaymentService {
                 request.getAmount(), referenceCode);
         String whatsAppLink = "https://wa.me/" + sanitizedPhone + "?text=" + java.net.URLEncoder.encode(prefilledMessage, StandardCharsets.UTF_8);
 
-        String qrCodeString = String.format("upi://pay?pa=%s&pn=ApexGaming&am=%s&tn=%s&cu=INR",
-                officialUpiId, request.getAmount(), referenceCode);
-
         return DepositCreateResponse.builder()
                 .depositId(deposit.getId())
                 .referenceCode(referenceCode)
                 .amount(deposit.getAmount())
-                .officialUpiId(officialUpiId)
                 .whatsAppLink(whatsAppLink)
                 .qrCodeString(qrCodeString)
                 .instructions("1. Pay the displayed amount using the UPI QR or UPI ID.\n" +
@@ -116,14 +109,10 @@ public class PaymentService {
         String whatsAppLink = "https://wa.me/" + sanitizedPhone + "?text=" +
                 java.net.URLEncoder.encode(message, StandardCharsets.UTF_8);
 
-        String qrCodeString = String.format("upi://pay?pa=%s&pn=ApexGaming&am=%s&tn=%s&cu=INR",
-                officialUpiId, deposit.getAmount(), deposit.getReferenceCode());
-
         return DepositCreateResponse.builder()
                 .depositId(deposit.getId())
                 .referenceCode(deposit.getReferenceCode())
                 .amount(deposit.getAmount())
-                .officialUpiId(officialUpiId)
                 .whatsAppLink(whatsAppLink)
                 .qrCodeString(qrCodeString)
                 .instructions("Deposit submitted for manual verification.")
