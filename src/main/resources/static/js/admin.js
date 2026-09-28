@@ -118,7 +118,7 @@ async function approveDeposit(depositId) {
     });
     const data = await res.json();
     if (data.success) {
-      alert("Deposit approved! Double-entry ledger credit posted and WhatsApp message sent to user.");
+      alert("Deposit approved! The payment was manually verified and the user wallet has been credited.");
       loadDeposits();
       loadDashboard();
     } else {
