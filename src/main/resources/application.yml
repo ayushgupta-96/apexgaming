@@ -80,12 +80,6 @@ rmg:
   whatsapp:
     enabled: true
     official-number: "+919876543210"
-    official-upi-id: "rmgfinance@icici"
-    official-bank-name: "HDFC Bank"
-    official-account-no: "50200012345678"
-    official-ifsc: "HDFC0001234"
-    webhook-verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:rmg_secure_webhook_verify_token_2026}
-    api-token: ${WHATSAPP_API_TOKEN:mock_whatsapp_cloud_token}
 
   games:
     ludo:
