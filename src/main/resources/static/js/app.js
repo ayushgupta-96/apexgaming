@@ -133,10 +133,6 @@ async function initiateDeposit() {
     if (data.success) {
       const dep = data.data;
       { const el = document.getElementById("dispDepRefCode"); if (el) el.textContent = dep.referenceCode; }
-      { const el = document.getElementById("dispOfficialUpi"); if (el) el.textContent = dep.officialUpiId; }
-      { const el = document.getElementById("dispOfficialAccount"); if (el) el.textContent = dep.officialAccountNo + " (" + dep.officialBankName + ")"; }
-      { const el = document.getElementById("dispOfficialIfsc"); if (el) el.textContent = dep.officialIfsc; }
-      { const el = document.getElementById("lnkWhatsApp"); if (el) el.href = dep.whatsAppLink; }
       { const el = document.getElementById("depositResultBox"); if (el) el.style.display = "block"; }
       return dep.whatsAppLink;
     } else alert("Deposit request error: " + (data.message || "Unable to create request"));
