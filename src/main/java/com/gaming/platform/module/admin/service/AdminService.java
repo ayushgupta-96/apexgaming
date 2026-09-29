@@ -6,6 +6,7 @@ import com.gaming.platform.common.util.TotpUtil;
 import com.gaming.platform.module.admin.dto.*;
 import com.gaming.platform.module.audit.service.AuditService;
 import com.gaming.platform.module.payment.entity.DepositRequest;
+import com.gaming.platform.module.payment.service.WhatsAppNotificationService;
 import com.gaming.platform.module.payment.entity.WhatsAppMessage;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
 import com.gaming.platform.module.payment.entity.WithdrawalRequest;
@@ -46,6 +47,7 @@ public class AdminService {
     private final LedgerAccountRepository accountRepository;
     private final LedgerService ledgerService;
     private final AuditService auditService;
+    private final WhatsAppNotificationService whatsAppNotificationService;
 
     @Transactional(readOnly = true)
     public AdminDashboardStatsDto getDashboardStats() {
