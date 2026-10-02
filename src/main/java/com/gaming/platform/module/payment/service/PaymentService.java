@@ -20,11 +20,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,18 +38,6 @@ public class PaymentService {
     @Value("${rmg.whatsapp.official-number:+919876543210}")
     private String officialWhatsAppNumber;
 
-    @Value("${rmg.whatsapp.official-upi-id:rmgfinance@icici}")
-    private String officialUpiId;
-
-    @Value("${rmg.whatsapp.official-bank-name:HDFC Bank}")
-    private String officialBankName;
-
-    @Value("${rmg.whatsapp.official-account-no:50200012345678}")
-    private String officialAccountNo;
-
-    @Value("${rmg.whatsapp.official-ifsc:HDFC0001234}")
-    private String officialIfsc;
-
     @Transactional
     public DepositCreateResponse createDepositRequest(Long userId, DepositCreateRequest request) {
         User user = userRepository.findById(userId)
@@ -61,7 +47,6 @@ public class PaymentService {
             throw new BusinessException("Account is frozen. Cannot deposit funds.");
         }
 
-        // Enforce AML deposit velocity and limit surveillance
         amlService.inspectDepositAml(userId, request.getAmount());
 
         long timestamp = Instant.now().getEpochSecond();
@@ -76,41 +61,62 @@ public class PaymentService {
                 .build();
         deposit = depositRepository.save(deposit);
 
-        // Build pre-filled WhatsApp click-to-chat deep-link
         String sanitizedPhone = officialWhatsAppNumber.replace("+", "").replace(" ", "").replace("-", "");
-        String prefilledMessage = String.format("Hello Admin, I have initiated a deposit of ₹%s on RMG Platform.\nReference Code: %s\nAttached is my payment screenshot/UTR.",
+        String prefilledMessage = String.format(
+                "Hello, I have made a payment of ₹%s.\nReference Code: %s\nUTR: ",
                 request.getAmount(), referenceCode);
-        String whatsAppLink = "https://wa.me/" + sanitizedPhone + "?text=" + URLEncoder.encode(prefilledMessage, StandardCharsets.UTF_8);
-
-        // Standard UPI Intent QR string
-        String qrCodeString = String.format("upi://pay?pa=%s&pn=RMGPlatform&am=%s&tn=%s&cu=INR",
-                officialUpiId, request.getAmount(), referenceCode);
-
-        // Pre-create tracking ticket for WhatsApp queue
-        WhatsAppTicket ticket = WhatsAppTicket.builder()
-                .ticketNumber("TKT-" + timestamp)
-                .user(user)
-                .senderPhone(user.getPhoneNumber())
-                .relatedReferenceCode(referenceCode)
-                .ticketType(WhatsAppTicket.TicketType.PAYMENT_VERIFICATION)
-                .status(WhatsAppTicket.TicketStatus.OPEN)
-                .build();
-        ticketRepository.save(ticket);
+        String whatsAppLink = "https://wa.me/" + sanitizedPhone + "?text=" +
+                java.net.URLEncoder.encode(prefilledMessage, StandardCharsets.UTF_8);
 
         return DepositCreateResponse.builder()
                 .depositId(deposit.getId())
                 .referenceCode(referenceCode)
                 .amount(deposit.getAmount())
-                .officialUpiId(officialUpiId)
-                .officialBankName(officialBankName)
-                .officialAccountNo(officialAccountNo)
-                .officialIfsc(officialIfsc)
                 .whatsAppLink(whatsAppLink)
-                .qrCodeString(qrCodeString)
-                .instructions("1. Transfer ₹" + request.getAmount() + " via UPI or Bank IMPS to the details above.\n" +
-                        "2. Note down your Bank Reference / UTR Number.\n" +
-                        "3. Click the WhatsApp button to send your payment screenshot and UTR to our official number.\n" +
-                        "4. Your funds will be credited automatically upon verification.")
+                .instructions("1. Pay the displayed amount using the UPI QR or UPI ID.\n" +
+                        "2. Copy the 12-digit UTR from your payment receipt.\n" +
+                        "3. Enter the UTR on this page and submit it.\n" +
+                        "4. Send the payment proof on WhatsApp. An admin will manually verify and approve the deposit.")
+                .createdAt(deposit.getCreatedAt())
+                .build();
+    }
+
+    @Transactional
+    public DepositCreateResponse submitDepositUtr(Long userId, Long depositId, String utrNumber) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BusinessException("User not found"));
+
+        DepositRequest deposit = depositRepository.findById(depositId)
+                .orElseThrow(() -> new BusinessException("Deposit request not found"));
+
+        if (!deposit.getUser().getId().equals(user.getId())) {
+            throw new BusinessException("You are not allowed to update this deposit request");
+        }
+        if (deposit.getStatus() == DepositRequest.DepositStatus.APPROVED) {
+            throw new BusinessException("Deposit has already been approved");
+        }
+        if (deposit.getStatus() == DepositRequest.DepositStatus.REJECTED ||
+                deposit.getStatus() == DepositRequest.DepositStatus.EXPIRED) {
+            throw new BusinessException("This deposit request is no longer active");
+        }
+
+        deposit.setUtrNumber(utrNumber);
+        deposit.setStatus(DepositRequest.DepositStatus.UNDER_REVIEW);
+        deposit = depositRepository.save(deposit);
+
+        String sanitizedPhone = officialWhatsAppNumber.replace("+", "").replace(" ", "").replace("-", "");
+        String message = String.format(
+                "Hello, I have made a payment of ₹%s.\nReference Code: %s\nUTR: %s",
+                deposit.getAmount(), deposit.getReferenceCode(), utrNumber);
+        String whatsAppLink = "https://wa.me/" + sanitizedPhone + "?text=" +
+                java.net.URLEncoder.encode(message, StandardCharsets.UTF_8);
+
+        return DepositCreateResponse.builder()
+                .depositId(deposit.getId())
+                .referenceCode(deposit.getReferenceCode())
+                .amount(deposit.getAmount())
+                .whatsAppLink(whatsAppLink)
+                .instructions("Deposit submitted for manual verification.")
                 .createdAt(deposit.getCreatedAt())
                 .build();
     }
@@ -120,14 +126,12 @@ public class PaymentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("User not found"));
 
-        // Enforce AML wagering turnover and transaction thresholds
         amlService.validateWithdrawalCompliance(userId, request.getAmount());
 
         long timestamp = Instant.now().getEpochSecond();
         String referenceCode = "WDR-" + userId + "-" + timestamp;
         String idempotencyKey = "WDR-LOCK-" + referenceCode;
 
-        // Double-entry lock: deducts from winnings_balance and moves to locked_balance
         ledgerService.lockFundsForWithdrawal(userId, request.getAmount(), referenceCode, idempotencyKey);
 
         WithdrawalRequest withdrawal = WithdrawalRequest.builder()
@@ -143,7 +147,6 @@ public class PaymentService {
                 .build();
         withdrawal = withdrawalRepository.save(withdrawal);
 
-        // Create Admin verification ticket
         WhatsAppTicket ticket = WhatsAppTicket.builder()
                 .ticketNumber("TKT-WDR-" + timestamp)
                 .user(user)

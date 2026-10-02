@@ -4,6 +4,7 @@ import com.gaming.platform.common.response.ApiResponse;
 import com.gaming.platform.common.security.SecurityUtils;
 import com.gaming.platform.module.payment.dto.DepositCreateRequest;
 import com.gaming.platform.module.payment.dto.DepositCreateResponse;
+import com.gaming.platform.module.payment.dto.DepositUtrSubmitRequest;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,17 +19,27 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/deposits")
 @RequiredArgsConstructor
-@Tag(name = "Deposit Operations", description = "Manual deposit initiation via WhatsApp payment proofs")
+@Tag(name = "Deposit Operations", description = "Manual deposit initiation with UPI and WhatsApp verification")
 public class DepositController {
 
     private final PaymentService paymentService;
 
     @PostMapping
-    @Operation(summary = "Initiate a manual deposit request", description = "Generates unique reference code DEP-..., bank/UPI details, and WhatsApp pre-filled link")
+    @Operation(summary = "Initiate a manual deposit request", description = "Generates unique reference code, UPI QR data, and WhatsApp pre-filled link")
     public ResponseEntity<ApiResponse<DepositCreateResponse>> createDeposit(@Valid @RequestBody DepositCreateRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         DepositCreateResponse response = paymentService.createDepositRequest(userId, request);
         return ResponseEntity.ok(ApiResponse.ok("Deposit request created. Please submit proof on WhatsApp.", response));
+    }
+
+    @PostMapping("/{depositId}/utr")
+    @Operation(summary = "Submit UTR for manual deposit verification")
+    public ResponseEntity<ApiResponse<DepositCreateResponse>> submitUtr(
+            @PathVariable Long depositId,
+            @Valid @RequestBody DepositUtrSubmitRequest request) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        DepositCreateResponse response = paymentService.submitDepositUtr(userId, depositId, request.getUtrNumber());
+        return ResponseEntity.ok(ApiResponse.ok("UTR submitted. Please complete verification on WhatsApp.", response));
     }
 
     @GetMapping("/my")

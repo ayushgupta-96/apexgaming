@@ -6,6 +6,7 @@ import com.gaming.platform.common.util.TotpUtil;
 import com.gaming.platform.module.admin.dto.*;
 import com.gaming.platform.module.audit.service.AuditService;
 import com.gaming.platform.module.payment.entity.DepositRequest;
+import com.gaming.platform.module.payment.service.WhatsAppNotificationService;
 import com.gaming.platform.module.payment.entity.WhatsAppMessage;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
 import com.gaming.platform.module.payment.entity.WithdrawalRequest;
@@ -13,7 +14,6 @@ import com.gaming.platform.module.payment.repository.DepositRequestRepository;
 import com.gaming.platform.module.payment.repository.WhatsAppMessageRepository;
 import com.gaming.platform.module.payment.repository.WhatsAppTicketRepository;
 import com.gaming.platform.module.payment.repository.WithdrawalRequestRepository;
-import com.gaming.platform.module.payment.service.WhatsAppNotificationService;
 import com.gaming.platform.module.user.entity.User;
 import com.gaming.platform.module.user.repository.UserRepository;
 import com.gaming.platform.module.wallet.entity.LedgerAccount;
@@ -109,16 +109,6 @@ public class AdminService {
         // Audit Trail
         auditService.recordAction("APPROVE_DEPOSIT", "DEPOSIT", deposit.getReferenceCode(),
                 "Approved deposit of ₹" + deposit.getAmount() + ". Notes: " + request.getAdminNotes());
-
-        // Notify Player on WhatsApp
-        whatsAppNotificationService.sendDepositApprovalNotification(
-                deposit.getUser().getPhoneNumber(), deposit.getReferenceCode(), deposit.getAmount());
-
-        // Close or resolve related ticket
-        ticketRepository.findByRelatedReferenceCode(deposit.getReferenceCode()).ifPresent(t -> {
-            t.setStatus(WhatsAppTicket.TicketStatus.RESOLVED);
-            ticketRepository.save(t);
-        });
 
         return deposit;
     }

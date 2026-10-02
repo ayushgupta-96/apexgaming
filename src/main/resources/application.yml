@@ -56,7 +56,7 @@ spring:
 # Security & JWT
 security:
   jwt:
-    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5888}
+    secret: ${JWT_SECRET:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5877}
     access-token-expiration-ms: 3600000 # 1 hour
     refresh-token-expiration-ms: 604800000 # 7 days
   admin:
@@ -66,7 +66,6 @@ security:
 # RMG Legal & Compliance Guardrails
 rmg:
   compliance:
-    minimum-age: 18
     aml:
       single-transaction-alert-threshold: 50000.00
       daily-deposit-limit-count: 10
@@ -80,12 +79,6 @@ rmg:
   whatsapp:
     enabled: true
     official-number: "+919876543210"
-    official-upi-id: "rmgfinance@icici"
-    official-bank-name: "HDFC Bank"
-    official-account-no: "50200012345678"
-    official-ifsc: "HDFC0001234"
-    webhook-verify-token: ${WHATSAPP_WEBHOOK_VERIFY_TOKEN:rmg_secure_webhook_verify_token_2026}
-    api-token: ${WHATSAPP_API_TOKEN:mock_whatsapp_cloud_token}
 
   games:
     ludo:

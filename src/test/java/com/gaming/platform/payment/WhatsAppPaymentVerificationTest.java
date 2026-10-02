@@ -3,14 +3,12 @@ package com.gaming.platform.payment;
 import com.gaming.platform.module.compliance.service.AmlService;
 import com.gaming.platform.module.payment.dto.DepositCreateRequest;
 import com.gaming.platform.module.payment.dto.DepositCreateResponse;
-import com.gaming.platform.module.payment.dto.WhatsAppInboundWebhookDto;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
 import com.gaming.platform.module.payment.repository.DepositRequestRepository;
 import com.gaming.platform.module.payment.repository.WhatsAppMessageRepository;
 import com.gaming.platform.module.payment.repository.WhatsAppTicketRepository;
 import com.gaming.platform.module.payment.service.PaymentService;
-import com.gaming.platform.module.payment.service.WhatsAppWebhookService;
 import com.gaming.platform.module.user.entity.Role;
 import com.gaming.platform.module.user.entity.User;
 import com.gaming.platform.module.user.repository.UserRepository;
@@ -54,7 +52,7 @@ class WhatsAppPaymentVerificationTest {
     private PaymentService paymentService;
 
     @InjectMocks
-    private WhatsAppWebhookService webhookService;
+//    private WhatsAppWebhookService webhookService;
 
     private User testUser;
 
