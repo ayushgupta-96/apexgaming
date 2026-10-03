@@ -34,7 +34,6 @@
       <div class="apx-game-brand"><span class="apx-game-brand-mark">A</span><div class="apx-game-brand-copy"><strong>APEX GAMING</strong><small>AVIATOR LIVE</small></div></div>
       <button class="apx-wallet-mini" type="button" onclick="switchTab('wallet')">₹ Wallet</button>
     </div>
-    <div class="apx-history" id="aviatorHistoryRibbon" aria-label="Recent multipliers"></div>
     <section class="apx-aviator-stage" aria-label="Aviator live game">
       <canvas id="flightCanvas" class="apx-aviator-canvas" aria-hidden="true"></canvas>
       <span id="aviatorLiveBadge" class="apx-aviator-live">LIVE</span>
@@ -57,6 +56,10 @@
       </div>
       <div class="apx-cashout" id="aviatorCashoutRow"><button id="btnAviatorCashout" class="apx-action" type="button" style="display:none" onclick="cashoutAviator()"><small>Active bet</small><strong>CASH OUT ₹<span id="cashoutAmountDisplay">0.00</span></strong></button><div id="aviatorNoBetNotice" class="apx-muted">No active bet in this round</div></div>
     </section>
+    <section class="apx-game-history" aria-label="Aviator game history">
+      <div class="apx-history-head"><strong>Game history</strong><span>Latest rounds</span></div>
+      <div class="apx-history" id="aviatorHistoryRibbon"></div>
+    </section>
   </div>
 </section>
 
@@ -74,8 +77,12 @@
         <p class="apx-casino-sub">Choose a colour or exact number before the table locks.</p>
         <div class="apx-round-row"><span id="colourRoundUuid" class="apx-round-id">CP-00000000</span><div id="colourTimerBadge" class="apx-timer" style="--timer-progress:100"><div class="apx-timer-inner">60</div></div></div>
       </section>
-      <section id="colourWheel" class="apx-wheel">
-        <div class="apx-wheel-center">APEX<br>ROYAL</div>
+      <section id="colourWheel" class="apx-wheel" aria-label="Casino colour wheel">
+        <div class="apx-wheel-disc" aria-hidden="true">
+          <div class="apx-wheel-markers"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="apx-wheel-center"><strong>APEX</strong><span>ROYAL</span></div>
+        <div class="apx-wheel-pointer" aria-hidden="true"></div>
       </section>
       <div id="colourLiveResult" class="apx-casino-foot"><span>OPEN FOR PREDICTIONS</span><span>LIVE</span></div>
       <section class="apx-colour-panel">
@@ -89,8 +96,10 @@
         <div class="apx-number-grid">
           <button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','0')">0</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','1')">1</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','2')">2</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','3')">3</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','4')">4</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','5')">5</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','6')">6</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','7')">7</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','8')">8</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','9')">9</button>
         </div>
-        <div class="apx-number-title"><strong>Recent results</strong><span class="apx-payout-note">Latest rounds</span></div>
-        <div class="apx-results" id="colourHistoryRibbon" aria-label="Recent colour results"></div>
+        <div class="apx-game-history apx-colour-history">
+          <div class="apx-history-head"><strong>Game history</strong><span>Latest results</span></div>
+          <div class="apx-results" id="colourHistoryRibbon" aria-label="Recent colour results"></div>
+        </div>
       </section>
     </div>
   </div>
