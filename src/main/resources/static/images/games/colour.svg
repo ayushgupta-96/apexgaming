@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500">
-<defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#073c2b"/><stop offset="1" stop-color="#021711"/></linearGradient>
- <radialGradient id="glow"><stop stop-color="#f6d66f" stop-opacity=".42"/><stop offset="1" stop-color="#f6d66f" stop-opacity="0"/></radialGradient>
-</defs>
-<rect width="600" height="500" rx="30" fill="url(#bg)"/>
-<circle cx="470" cy="105" r="150" fill="url(#glow)"/>
-<circle cx="300" cy="225" r="132" fill="#061e17" stroke="#d9bd55" stroke-width="8"/>
-<circle cx="300" cy="225" r="88" fill="#0c392a"/>
-<circle cx="300" cy="225" r="62" fill="#17b979"/>
-<path d="M300 163v124M238 225h124" stroke="#f5e7ad" stroke-width="8" stroke-linecap="round" opacity=".8"/>
-<circle cx="300" cy="225" r="20" fill="#f5d56d"/>
-<text x="300" y="420" text-anchor="middle" fill="#f5df8b" font-family="Arial,sans-serif" font-size="58" font-weight="900">COLOUR</text>
-<text x="300" y="465" text-anchor="middle" fill="#9ab8ab" font-family="Arial,sans-serif" font-size="24" font-weight="700">PREDICTION</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500"><defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#073c2b"/><stop offset="1" stop-color="#021711"/></linearGradient><radialGradient id="gl"><stop stop-color="#f6d66f" stop-opacity=".42"/><stop offset="1" stop-color="#f6d66f" stop-opacity="0"/></radialGradient></defs><rect width="600" height="500" rx="30" fill="url(#bg)"/><circle cx="470" cy="105" r="150" fill="url(#gl)"/><circle cx="300" cy="215" r="125" fill="#061e17" stroke="#d9bd55" stroke-width="8"/><path d="M300 90a125 125 0 0 1 108 62l-108 63Z" fill="#e84e5e"/><path d="M408 152a125 125 0 0 1 0 126L300 215Z" fill="#8e64de"/><path d="M408 278a125 125 0 0 1-216 0l108-63Z" fill="#16c781"/><path d="M192 278a125 125 0 0 1 0-126l108 63Z" fill="#f1cf67"/><circle cx="300" cy="215" r="42" fill="#092b20" stroke="#f8e8ae" stroke-width="7"/><text x="300" y="405" text-anchor="middle" fill="#f5df8b" font-family="Arial,sans-serif" font-size="54" font-weight="900">COLOUR</text><text x="300" y="450" text-anchor="middle" fill="#9ab8ab" font-family="Arial,sans-serif" font-size="23" font-weight="700">PREDICTION</text></svg>
