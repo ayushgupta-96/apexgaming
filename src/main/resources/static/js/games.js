@@ -118,7 +118,8 @@
     if(round) round.textContent=state.roundUuid||"CP-—";
     const seconds=Math.max(0,Number(state.secondsRemaining)||0);
     if(timer){
-      timer.textContent=state.status==="LOCKED"?"LOCK":state.status==="RESULT"?String(state.winningNumber??"—"):String(seconds).padStart(2,"0");
+      const inner=timer.querySelector(".apx-timer-inner");
+      if(inner) inner.textContent=state.status==="LOCKED"?"LOCK":state.status==="RESULT"?String(state.winningNumber??"—"):String(seconds).padStart(2,"0");
       const pct=clamp((seconds/60)*100,0,100);timer.style.setProperty("--timer-progress",pct);
       timer.classList.toggle("locked",state.status==="LOCKED");
     }
