@@ -110,6 +110,10 @@ async function fetchWallet() {
       const walletDeposit = document.getElementById("walletDepositBalance");
       const walletWinnings = document.getElementById("walletWinningsBalance");
       const walletBonus = document.getElementById("walletBonusBalance");
+      const walletTotal = document.getElementById("walletTotalBalance");
+      const walletThird = document.getElementById("walletThirdBalance");
+      const walletMainPercent = document.getElementById("walletMainPercent");
+      const walletThirdPercent = document.getElementById("walletThirdPercent");
       if (deposit) deposit.textContent = Number(w.depositBalance).toFixed(2);
       const aviatorWallet = document.getElementById("aviatorWalletAmount");
       if (aviatorWallet) aviatorWallet.textContent = Number(w.depositBalance).toFixed(2);
@@ -119,6 +123,10 @@ async function fetchWallet() {
       if (walletDeposit) walletDeposit.textContent = Number(w.depositBalance).toFixed(2);
       if (walletWinnings) walletWinnings.textContent = Number(w.winningsBalance).toFixed(2);
       if (walletBonus) walletBonus.textContent = Number(w.bonusBalance).toFixed(2);
+      if (walletTotal) walletTotal.textContent = Number(w.totalPlayableBalance ?? w.depositBalance ?? 0).toFixed(2);
+      if (walletThird) walletThird.textContent = Number(w.winningsBalance ?? 0).toFixed(2);
+      if (walletMainPercent) walletMainPercent.textContent = "100%";
+      if (walletThirdPercent) walletThirdPercent.textContent = "0%";
     }
   } catch (e) { console.error("Wallet error", e); }
 }
@@ -133,10 +141,6 @@ async function initiateDeposit() {
     if (data.success) {
       const dep = data.data;
       { const el = document.getElementById("dispDepRefCode"); if (el) el.textContent = dep.referenceCode; }
-      { const el = document.getElementById("dispOfficialUpi"); if (el) el.textContent = dep.officialUpiId; }
-      { const el = document.getElementById("dispOfficialAccount"); if (el) el.textContent = dep.officialAccountNo + " (" + dep.officialBankName + ")"; }
-      { const el = document.getElementById("dispOfficialIfsc"); if (el) el.textContent = dep.officialIfsc; }
-      { const el = document.getElementById("lnkWhatsApp"); if (el) el.href = dep.whatsAppLink; }
       { const el = document.getElementById("depositResultBox"); if (el) el.style.display = "block"; }
       return dep.whatsAppLink;
     } else alert("Deposit request error: " + (data.message || "Unable to create request"));

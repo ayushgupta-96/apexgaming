@@ -142,11 +142,26 @@ public class LedgerService {
         accountRepository.save(bankAccount);
         accountRepository.save(userAccount);
 
-        // Update user wallet deposit bucket
-        wallet.setDepositBalance(wallet.getDepositBalance().add(amount));
-        walletRepository.save(wallet);
+        // Update user wallet deposit bucket.
+        // Flush immediately so the wallet credit is persisted before this method
+        // returns, then verify the persisted balance while the row is still locked.
+        BigDecimal expectedDepositBalance = wallet.getDepositBalance().add(amount);
+        wallet.setDepositBalance(expectedDepositBalance);
+        walletRepository.saveAndFlush(wallet);
 
-        log.info("Deposit successfully processed: user={}, amount={}, ref={}", userId, amount, referenceCode);
+        Wallet verifiedWallet = walletRepository.findByUserIdForUpdate(userId)
+                .orElseThrow(() -> new BusinessException("Wallet disappeared while processing deposit: " + userId));
+
+        if (verifiedWallet.getDepositBalance().compareTo(expectedDepositBalance) != 0) {
+            throw new BusinessException(
+                    "Wallet deposit credit verification failed for user " + userId
+                            + ". Expected " + expectedDepositBalance
+                            + " but found " + verifiedWallet.getDepositBalance()
+            );
+        }
+
+        log.info("Deposit successfully processed and verified: user={}, amount={}, ref={}, newDepositBalance={}",
+                userId, amount, referenceCode, verifiedWallet.getDepositBalance());
         return tx;
     }
 
