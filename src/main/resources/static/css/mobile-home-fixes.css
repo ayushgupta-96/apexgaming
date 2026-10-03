@@ -224,3 +224,20 @@ body.apex-mobile-app{
   .apex-mobile-app .catalog-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .apex-mobile-app .game-summary-grid{grid-template-columns:repeat(3,1fr)}
 }
+
+/* Wallet + deposit premium mobile screens */
+.wallet-screen,.deposit-screen{background:linear-gradient(180deg,#03150e,#020c08)!important;color:#f7f5e9}
+.wallet-head,.deposit-head{background:rgba(3,19,13,.96)!important;border-bottom:1px solid rgba(19,194,126,.15)}
+.wallet-panel,.deposit-card,.deposit-box{background:linear-gradient(180deg,#082e23,#051d16)!important;border-color:rgba(19,194,126,.15)!important;border-radius:20px!important;box-shadow:0 14px 30px rgba(0,0,0,.24)}
+.wallet-total{background:radial-gradient(circle at 50% 0,rgba(19,194,126,.35),transparent 45%),linear-gradient(180deg,#0a543c,#041c13)!important}
+.wallet-total-amount{font-size:clamp(2rem,9vw,2.8rem)!important;color:#f3d978}
+.wallet-actions{gap:8px!important}
+.wallet-action,.wallet-transfer{border-radius:14px!important}
+.wallet-transfer{background:linear-gradient(135deg,#f5dc7d,#bd922c)!important;color:#082016!important}
+.wallet-ring{border-color:#e9ca5d!important;background:rgba(240,207,104,.04)}
+.wallet-ring-amount{color:#f4e9bf!important}
+.deposit-screen .form-control,.deposit-screen input,.deposit-screen select{background:#03150f!important;border-color:rgba(19,194,126,.2)!important;border-radius:13px!important;color:#fff!important}
+.deposit-screen .btn{min-height:48px!important;border-radius:14px!important}
+.deposit-screen .qr-card{border-radius:20px!important;background:linear-gradient(180deg,#082e23,#041a12)!important;border-color:rgba(240,207,104,.18)!important;box-shadow:0 14px 30px rgba(0,0,0,.24)}
+.deposit-screen .utr-box{border-radius:16px!important;background:#041a12!important;border-color:rgba(19,194,126,.2)!important}
+@media(max-width:600px){.wallet-panel,.deposit-card,.deposit-box{margin-left:10px!important;margin-right:10px!important}.wallet-actions{grid-template-columns:repeat(2,1fr)!important}}
