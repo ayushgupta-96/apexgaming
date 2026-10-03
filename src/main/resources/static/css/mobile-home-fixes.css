@@ -528,7 +528,7 @@ body.apex-mobile-app{
   justify-content:center;
   transform:
     rotate(calc(var(--i) * 36deg))
-    translateY(calc(min(78vw,290px) / -2 + 25px));
+    translateY(-115px);
 }
 #colourWheel .wheel-sector:nth-child(1){--i:0}
 #colourWheel .wheel-sector:nth-child(2){--i:1}
@@ -553,7 +553,7 @@ body.apex-mobile-app{
   background:rgba(4,12,10,.72);
   border:1px solid rgba(255,255,255,.20);
   box-shadow:0 3px 10px rgba(0,0,0,.35);
-  transform:rotate(calc(var(--i) * -36deg));
+  transform:rotate(calc(var(--i) * -36deg + var(--wheel-counter-rotation, 0deg)));
 }
 #colourWheel .apx-wheel-rim{
   position:absolute;
@@ -635,6 +635,7 @@ body.apex-mobile-app{
   #colourWheel.apx-wheel{min-height:300px}
   #colourWheel .apx-wheel-center{width:92px;height:92px}
   #colourWheel .apx-wheel-center strong{font-size:27px}
+  #colourWheel .wheel-sector{transform:rotate(calc(var(--i) * 36deg)) translateY(-105px)}
   #colourWheel .wheel-sector b{width:27px;height:27px;font-size:11px}
 }
 
