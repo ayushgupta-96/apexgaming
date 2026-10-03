@@ -36,6 +36,13 @@ function closeModal(id) {
   document.getElementById(id)?.classList.remove("active");
 }
 
+function safeExternalUrl(value) {
+  try {
+    const url = new URL(String(value), window.location.origin);
+    return url.protocol === "https:" || url.origin === window.location.origin ? url.href : "#";
+  } catch (_) { return "#"; }
+}
+
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, ch => ({
     "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
@@ -89,12 +96,12 @@ async function loadDeposits() {
 
         tr.innerHTML = `
           <td><b style="color: var(--accent-gold);">${escapeHtml(dep.referenceCode)}</b></td>
-          <td>${dep.user.phoneNumber}</td>
+          <td>${escapeHtml(dep.phoneNumber || dep.user?.phoneNumber || "-")}</td>
           <td><b>₹${Number(dep.amount).toFixed(2)}</b></td>
           <td><span class="badge ${statusBadge}">${escapeHtml(dep.status)}</span></td>
           <td>
             ${dep.utrNumber ? `<div style="font-size: 0.8rem;">UTR: <b>${escapeHtml(dep.utrNumber)}</b></div>` : ''}
-            ${dep.proofImageUrl ? `<a href="${escapeHtml(dep.proofImageUrl)}" target="_blank" style="color: #60a5fa; font-size: 0.8rem;">View Screenshot</a>` : 'No proof attached'}
+            ${dep.proofImageUrl ? `<a href="${safeExternalUrl(dep.proofImageUrl)}" target="_blank" style="color: #60a5fa; font-size: 0.8rem;">View Screenshot</a>` : 'No proof attached'}
           </td>
           <td>${new Date(dep.createdAt).toLocaleString()}</td>
           <td>
@@ -314,7 +321,7 @@ async function openTicketChat(id, phone, ref, status) {
         bubble.innerHTML = `
           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.2rem;">${escapeHtml(m.senderType)}</div>
           <div>${escapeHtml(m.messageBody || "")}</div>
-          ${m.mediaUrl ? `<div style="margin-top: 0.5rem;"><a href="${m.mediaUrl}" target="_blank" style="color: #60a5fa; font-weight: 600;">[Attached Proof / Screenshot]</a></div>` : ''}
+          ${m.mediaUrl ? `<div style="margin-top: 0.5rem;"><a href="${safeExternalUrl(m.mediaUrl)}" target="_blank" style="color: #60a5fa; font-weight: 600;">[Attached Proof / Screenshot]</a></div>` : ''}
           <div style="font-size: 0.7rem; color: var(--text-secondary); text-align: right; margin-top: 0.3rem;">
             ${new Date(m.createdAt).toLocaleTimeString()}
           </div>
