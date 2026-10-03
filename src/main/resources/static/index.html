@@ -42,6 +42,10 @@
       <div class="apx-aviator-crash-label">Provably fair round · live server state</div>
       <span id="aviatorSeedHash" class="apx-seed">Seed: connecting…</span>
     </section>
+    <section class="apx-round-results" aria-label="Aviator round result history">
+      <div class="apx-round-results-head"><strong>Round results</strong><span>Recent crashes</span></div>
+      <div class="apx-round-results-list" id="aviatorRoundResults"></div>
+    </section>
     <section class="apx-console">
       <div class="apx-console-head"><span class="apx-console-title">Your bet</span><div class="apx-mode" role="tablist"><button type="button" class="active" data-aviator-mode="bet">Manual</button><button type="button" data-aviator-mode="auto">Auto</button></div></div>
       <div class="apx-aviator-controls">
@@ -78,7 +82,7 @@
         <div class="apx-round-row"><span id="colourRoundUuid" class="apx-round-id">CP-00000000</span><div id="colourTimerBadge" class="apx-timer" style="--timer-progress:100"><div class="apx-timer-inner">60</div></div></div>
       </section>
       <section id="colourWheel" class="apx-wheel" aria-label="Colour result wheel">
-        <div class="apx-wheel-disc" aria-hidden="true">
+        <div id="colourWheelDisc" class="apx-wheel-disc" aria-hidden="true">
           <div class="apx-wheel-sectors">
             <span class="wheel-sector red"><b>0</b></span><span class="wheel-sector green"><b>1</b></span>
             <span class="wheel-sector red"><b>2</b></span><span class="wheel-sector green"><b>3</b></span>
@@ -92,6 +96,10 @@
         <div class="apx-wheel-pointer" aria-hidden="true"></div>
       </section>
       <div id="colourLiveResult" class="apx-casino-foot"><span>OPEN FOR PREDICTIONS</span><span>LIVE</span></div>
+      <section class="apx-round-results apx-colour-round-results" aria-label="Colour round result history">
+        <div class="apx-round-results-head"><strong>Round results</strong><span>Recent winning numbers</span></div>
+        <div class="apx-round-results-list" id="colourRoundResults"></div>
+      </section>
       <section class="apx-colour-panel">
         <div class="apx-panel-title"><strong>Choose your colour</strong><span class="apx-payout-note">Payouts shown by table rules</span></div>
         <div class="apx-colour-bets">
@@ -117,6 +125,6 @@
   <div id="loginModal" class="modal"><div class="modal-content auth-modal"><button class="modal-close" onclick="closeModal('loginModal')">×</button><div class="auth-brand">A<span>pex</span></div><h3>Welcome back</h3><p class="auth-subtitle">Log in to continue playing</p><div class="form-group icon-input"><label class="form-label" for="loginUsername">Username or phone</label><div class="input-wrap"><span>◉</span><input type="text" id="loginUsername" class="form-control" value="" placeholder="Enter username or phone"></div></div><div class="form-group icon-input"><label class="form-label" for="loginPassword">Password</label><div class="input-wrap"><span>🔒</span><input type="password" id="loginPassword" class="form-control" value="" placeholder="Enter password"><button type="button" onclick="togglePassword('loginPassword',this)">◉</button></div></div><label class="check-row"><input type="checkbox" id="rememberLogin"><span>Remember me on this device</span><button type="button" class="link-btn">Forgot password?</button></label><button class="btn btn-primary wide-btn auth-submit" onclick="doLogin()">Log in</button><button class="btn btn-outline-gold wide-btn" onclick="closeModal('loginModal');openModal('registerModal')">Register</button></div></div>
   <div id="registerModal" class="modal"><div class="modal-content auth-modal register-modal"><button class="modal-close" onclick="closeModal('registerModal')">×</button><div class="auth-brand">A<span>pex</span></div><h3>Register</h3><p class="auth-subtitle">Create your player account</p><div class="form-group icon-input"><label class="form-label" for="regUsername">Username</label><div class="input-wrap"><span>◉</span><input type="text" id="regUsername" class="form-control" placeholder="Create username"></div></div><div class="form-group icon-input"><label class="form-label" for="regPhone">Phone number</label><div class="input-wrap"><span>☎</span><input type="text" id="regPhone" class="form-control" placeholder="+91 9876543210"></div></div><div class="form-group icon-input"><label class="form-label" for="regEmail">Email <small>(optional)</small></label><div class="input-wrap"><span>✉</span><input type="email" id="regEmail" class="form-control" placeholder="name@example.com"></div></div><div class="form-group icon-input"><label class="form-label" for="regPassword">Password</label><div class="input-wrap"><span>🔒</span><input type="password" id="regPassword" class="form-control" placeholder="At least 8 characters"><button type="button" onclick="togglePassword('regPassword',this)">◉</button></div></div><div class="form-group icon-input"><label class="form-label" for="regConfirmPassword">Confirm password</label><div class="input-wrap"><span>🔒</span><input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-enter password"><button type="button" onclick="togglePassword('regConfirmPassword',this)">◉</button></div></div><div class="form-group"><label class="form-label" for="regDob">Date of birth</label><input type="date" id="regDob" class="form-control"></div><label class="check-row"><input type="checkbox" id="regAgeConfirm"><span>I confirm that I am 18+ and legally eligible to participate.</span></label><button class="btn btn-gold wide-btn auth-submit" onclick="doRegister()">Register</button><button class="btn btn-outline-gold wide-btn" onclick="closeModal('registerModal');openModal('loginModal')">I have an account · Login</button></div></div>
   <div id="colourBetModal" class="modal"><div class="modal-content"><button class="modal-close" onclick="closeModal('colourBetModal')">×</button><h3>Place Bet on <span id="modalBetTarget">-</span></h3><p class="helper-text">Estimated Payout: <b id="modalBetMultiplier" class="amount-winnings">-</b></p><div class="form-group"><label class="form-label" for="colourModalAmount">Bet Amount (₹)</label><input type="number" id="colourModalAmount" class="form-control" value="100" min="10" step="50"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('colourBetModal')">Cancel</button><button class="btn btn-primary" onclick="confirmColourBet()">Confirm Bet</button></div></div></div>
-  <script src="/js/game-assets.js"></script><script src="/js/home-games.js"></script><script src="/js/game-page-animations.js"></script><script src="/js/app.js"></script><script src="/js/games.js?v=20261003-5"></script>
+  <script src="/js/game-assets.js"></script><script src="/js/home-games.js"></script><script src="/js/game-page-animations.js"></script><script src="/js/app.js"></script><script src="/js/game-round-ui.js?v=20261004-1"></script><script src="/js/games.js?v=20261003-5"></script>
 </body>
 </html>
