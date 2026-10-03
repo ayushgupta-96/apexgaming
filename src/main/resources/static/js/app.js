@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function switchTab(tabId) {
   document.querySelectorAll(".tab-content").forEach(el => el.style.display = "none");
   document.querySelectorAll(".bottom-nav-btn").forEach(el => el.classList.toggle("active", el.dataset.tab === tabId));
+  document.body.classList.toggle("game-mode", tabId === "aviator" || tabId === "colour");
   const target = document.getElementById("tab-" + tabId);
   if (target) target.style.display = "block";
   if (tabId === "wallet") fetchWallet();
@@ -137,6 +138,7 @@ async function fetchWallet() {
       const walletMainPercent = document.getElementById("walletMainPercent");
       const walletThirdPercent = document.getElementById("walletThirdPercent");
       const depositPageBalance = document.getElementById("depositPageBalance");
+      const gameWalletValues = document.querySelectorAll(".apx-wallet-balance-value");
       if (deposit) deposit.textContent = Number(w.depositBalance).toFixed(2);
       const aviatorWallet = document.getElementById("aviatorWalletAmount");
       if (aviatorWallet) aviatorWallet.textContent = Number(w.depositBalance).toFixed(2);
@@ -151,6 +153,10 @@ async function fetchWallet() {
       if (walletMainPercent) walletMainPercent.textContent = "100%";
       if (walletThirdPercent) walletThirdPercent.textContent = "0%";
       if (depositPageBalance) depositPageBalance.textContent = Number(w.totalPlayableBalance ?? w.depositBalance ?? 0).toFixed(2);
+      const mainBalance = Number(w.depositBalance ?? 0);
+      const withdrawalBalance = Number(w.winningsBalance ?? w.totalWithdrawableBalance ?? 0);
+      const gameBalance = (mainBalance + withdrawalBalance).toFixed(2);
+      gameWalletValues.forEach(node => { node.textContent = "₹" + gameBalance; });
     }
   } catch (e) { console.error("Wallet error", e); }
 }
@@ -304,10 +310,10 @@ function setupMobileNavigation(){
   if(!home||!games)return;
   const originalSwitchTab = window.switchTab;
   window.switchTab=function(tabId){
-    if(tabId==='home'){document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');home.style.display='block';games.style.display='none';setNavActive('home');window.scrollTo(0,0);return;}
-    if(tabId==='games'){document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');home.style.display='none';games.style.display='block';setNavActive('games');window.scrollTo(0,0);return;}
-    if(tabId==='deposit'){window.location.href='/deposit.html';return;}
-    if(tabId==='wallet'){window.location.href='/wallet.html';return;}
+    if(tabId==='home'){document.body.classList.remove('game-mode');document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');home.style.display='block';games.style.display='none';setNavActive('home');window.scrollTo(0,0);return;}
+    if(tabId==='games'){document.body.classList.remove('game-mode');document.querySelectorAll('.tab-content').forEach(el=>el.style.display='none');home.style.display='none';games.style.display='block';setNavActive('games');window.scrollTo(0,0);return;}
+    if(tabId==='deposit'){document.body.classList.remove('game-mode');window.location.href='/deposit.html';return;}
+    if(tabId==='wallet'){document.body.classList.remove('game-mode');window.location.href='/wallet.html';return;}
     home.style.display='none';games.style.display='none';originalSwitchTab(tabId);setNavActive(tabId);window.scrollTo(0,0);
   };
   showGameCategory();
