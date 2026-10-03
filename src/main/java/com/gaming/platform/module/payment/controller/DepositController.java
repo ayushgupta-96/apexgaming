@@ -5,6 +5,7 @@ import com.gaming.platform.common.security.SecurityUtils;
 import com.gaming.platform.module.payment.dto.DepositCreateRequest;
 import com.gaming.platform.module.payment.dto.DepositCreateResponse;
 import com.gaming.platform.module.payment.dto.DepositUtrSubmitRequest;
+import com.gaming.platform.module.payment.dto.UserDepositResponse;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,9 +45,9 @@ public class DepositController {
 
     @GetMapping("/my")
     @Operation(summary = "Get current player deposit history")
-    public ResponseEntity<ApiResponse<List<DepositRequest>>> getMyDeposits() {
+    public ResponseEntity<ApiResponse<List<UserDepositResponse>>> getMyDeposits() {
         Long userId = SecurityUtils.getCurrentUserId();
-        List<DepositRequest> list = paymentService.getUserDeposits(userId);
+        List<UserDepositResponse> list = paymentService.getUserDeposits(userId);
         return ResponseEntity.ok(ApiResponse.ok(list));
     }
 }
