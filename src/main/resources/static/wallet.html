@@ -336,13 +336,13 @@
         <button class="wallet-action deposit" onclick="window.location.href='/deposit.html'">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M10 28h44v20a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V28Z" fill="#FFF5D8"/><path d="M15 28c0-12 8-20 17-20s17 8 17 20" stroke="#E6C36A" stroke-width="7"/><path d="M17 35h30v13H17z" fill="#EBD59A"/></svg></span><span>Deposit</span>
         </button>
-        <button class="wallet-action withdraw" onclick="document.getElementById('withdrawPanel').classList.toggle('open')">
+        <button class="wallet-action withdraw" type="button" onclick="toggleWithdrawalPanel()">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><rect x="10" y="9" width="44" height="46" rx="5" fill="#EAF3FF"/><rect x="17" y="18" width="30" height="18" rx="3" fill="#5B91E4"/><path d="M22 44h20" stroke="#4A7DCC" stroke-width="5" stroke-linecap="round"/><path d="M28 25h8" stroke="#EAF3FF" stroke-width="4" stroke-linecap="round"/></svg></span><span>Withdraw</span>
         </button>
         <button class="wallet-action dep-history" onclick="openDepositHistory()">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M15 8h34v48H15z" fill="#FFF2F4"/><path d="M24 18h16M24 28h16M24 38h16M24 48h10" stroke="#D9556C" stroke-width="4" stroke-linecap="round"/></svg></span><span>Deposit<br>history</span>
         </button>
-        <button class="wallet-action wdr-history" onclick="alert('Withdrawal history will appear here.')">
+        <button class="wallet-action wdr-history" type="button" onclick="openWithdrawalHistory()">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M8 20c0-5 4-9 9-9h30c5 0 9 4 9 9v25c0 5-4 9-9 9H17c-5 0-9-4-9-9V20Z" fill="#E8FFF7"/><path d="M8 23h48v13H8z" fill="#B5EEDC"/><circle cx="21" cy="44" r="7" fill="#3AC09A"/><path d="m18 44 2 2 4-5" stroke="#E8FFF7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Withdrawal<br>history</span>
         </button>
       </div>
@@ -378,7 +378,7 @@
         <label class="form-label" for="wdrVpaInput">UPI VPA or Bank Account Number</label>
         <input type="text" id="wdrVpaInput" class="form-control" placeholder="username@okhdfcbank or account number">
       </div>
-      <button class="btn btn-primary wide-btn" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
+      <button id="submitWithdrawalBtn" class="btn btn-primary wide-btn" type="button" onclick="requestWithdrawal()">Submit Withdrawal Request</button>
     </section>
   </main>
 
@@ -497,9 +497,151 @@
       document.body.classList.remove('history-open');
     }
 
+    function toggleWithdrawalPanel() {
+      const panel = document.getElementById('withdrawPanel');
+      if (!panel) return;
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setTimeout(() => document.getElementById('wdrAmountInput')?.focus(), 250);
+      }
+    }
+
+    async function requestWithdrawal() {
+      const token = localStorage.getItem('rmg_token');
+      if (!token) { window.location.href = '/'; return; }
+
+      const amount = Number(document.getElementById('wdrAmountInput')?.value || 0);
+      const destinationType = document.getElementById('wdrTypeSelect')?.value || 'UPI';
+      const accountHolderName = (document.getElementById('wdrNameInput')?.value || '').trim();
+      const accountNumberOrVpa = (document.getElementById('wdrVpaInput')?.value || '').trim();
+      const button = document.getElementById('submitWithdrawalBtn');
+
+      if (amount < 200) { alert('Minimum withdrawal amount is ₹200.'); return; }
+      if (!accountHolderName) { alert('Enter the account holder name.'); return; }
+      if (!accountNumberOrVpa) { alert(destinationType === 'UPI' ? 'Enter your UPI VPA.' : 'Enter your bank account number.'); return; }
+
+      if (button) { button.disabled = true; button.textContent = 'Submitting…'; }
+      try {
+        const res = await fetch('/api/withdrawals', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json','Authorization':'Bearer '+token},
+          body: JSON.stringify({amount, destinationType, accountHolderName, accountNumberOrVpa})
+        });
+        const data = await safeJsonResponse(res);
+        if (!data.success) {
+          alert('Withdrawal failed: ' + (data.message || 'Unable to submit request.'));
+          return;
+        }
+        alert('Withdrawal request submitted successfully.');
+        document.getElementById('wdrAmountInput').value = '';
+        document.getElementById('wdrVpaInput').value = '';
+        toggleWithdrawalPanel();
+        if (typeof fetchWallet === 'function') fetchWallet();
+      } catch (error) {
+        console.error('Withdrawal error', error);
+        alert('Withdrawal request failed. Please try again.');
+      } finally {
+        if (button) { button.disabled = false; button.textContent = 'Submit Withdrawal Request'; }
+      }
+    }
+
+    async function openWithdrawalHistory() {
+      const modal = document.getElementById('withdrawalHistoryModal');
+      const list = document.getElementById('withdrawalHistoryList');
+      if (!modal || !list) return;
+      modal.hidden = false;
+      document.body.classList.add('history-open');
+      list.replaceChildren();
+      const loading = document.createElement('div');
+      loading.className = 'wallet-history-empty';
+      loading.textContent = 'Loading withdrawal history…';
+      list.appendChild(loading);
+
+      try {
+        const res = await fetch('/api/withdrawals/my', {
+          headers: {'Authorization':'Bearer '+localStorage.getItem('rmg_token')}
+        });
+        const data = await safeJsonResponse(res);
+        if (!data.success) throw new Error(data.message || 'Unable to load history');
+        const rows = Array.isArray(data.data) ? data.data : [];
+        list.replaceChildren();
+        if (!rows.length) {
+          const empty = document.createElement('div');
+          empty.className = 'wallet-history-empty';
+          empty.textContent = 'No withdrawal requests yet.';
+          list.appendChild(empty);
+          return;
+        }
+
+        rows.forEach(item => {
+          const card = document.createElement('article');
+          card.className = 'wallet-history-item';
+
+          const top = document.createElement('div');
+          top.className = 'wallet-history-item-top';
+
+          const ref = document.createElement('strong');
+          ref.textContent = item.referenceCode || 'Withdrawal';
+
+          const status = document.createElement('span');
+          const statusKey = String(item.status || 'UNKNOWN').toLowerCase();
+          status.className = 'wallet-history-status status-' + statusKey;
+          status.textContent = String(item.status || 'UNKNOWN').replaceAll('_',' ');
+          top.append(ref, status);
+
+          const amount = document.createElement('div');
+          amount.className = 'wallet-history-amount';
+          amount.textContent = '₹' + Number(item.amount || 0).toFixed(2);
+
+          const meta = document.createElement('div');
+          meta.className = 'wallet-history-meta';
+          meta.textContent = (item.destinationType || 'UPI') + ' • ' +
+            (item.createdAt ? new Date(item.createdAt).toLocaleString() : 'Date unavailable');
+
+          card.append(top, amount, meta);
+
+          if (item.accountNumberOrVpa) {
+            const destination = document.createElement('div');
+            destination.className = 'wallet-history-utr';
+            destination.textContent = 'Destination: ' + item.accountNumberOrVpa;
+            card.appendChild(destination);
+          }
+          if (item.payoutUtr) {
+            const payout = document.createElement('div');
+            payout.className = 'wallet-history-utr';
+            payout.textContent = 'Payout UTR: ' + item.payoutUtr;
+            card.appendChild(payout);
+          }
+          if (item.rejectionReason) {
+            const reason = document.createElement('div');
+            reason.className = 'wallet-history-utr';
+            reason.textContent = 'Reason: ' + item.rejectionReason;
+            card.appendChild(reason);
+          }
+          list.appendChild(card);
+        });
+      } catch (error) {
+        console.error('Withdrawal history error', error);
+        list.replaceChildren();
+        const errorBox = document.createElement('div');
+        errorBox.className = 'wallet-history-empty';
+        errorBox.textContent = 'Unable to load withdrawal history. Please try again.';
+        list.appendChild(errorBox);
+      }
+    }
+
+    function closeWithdrawalHistory() {
+      const modal = document.getElementById('withdrawalHistoryModal');
+      if (modal) modal.hidden = true;
+      document.body.classList.remove('history-open');
+    }
+
     document.addEventListener('click', function (event) {
       const modal = document.getElementById('depositHistoryModal');
       if (modal && !modal.hidden && event.target === modal) closeDepositHistory();
+      const withdrawalModal = document.getElementById('withdrawalHistoryModal');
+      if (withdrawalModal && !withdrawalModal.hidden && event.target === withdrawalModal) closeWithdrawalHistory();
     });
   </script>
 </body>
