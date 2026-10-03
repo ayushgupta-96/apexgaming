@@ -7,6 +7,7 @@ import com.gaming.platform.module.payment.dto.DepositCreateResponse;
 import com.gaming.platform.module.payment.dto.WithdrawalCreateRequest;
 import com.gaming.platform.module.payment.dto.UserDepositResponse;
 import com.gaming.platform.module.payment.dto.WithdrawalResponse;
+import com.gaming.platform.module.payment.dto.UserWithdrawalResponse;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
 import com.gaming.platform.module.payment.entity.WithdrawalRequest;
@@ -189,7 +190,22 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<WithdrawalRequest> getUserWithdrawals(Long userId) {
-        return withdrawalRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<UserWithdrawalResponse> getUserWithdrawals(Long userId) {
+        return withdrawalRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(withdrawal -> UserWithdrawalResponse.builder()
+                        .id(withdrawal.getId())
+                        .referenceCode(withdrawal.getReferenceCode())
+                        .amount(withdrawal.getAmount())
+                        .status(withdrawal.getStatus())
+                        .destinationType(withdrawal.getDestinationType())
+                        .accountHolderName(withdrawal.getAccountHolderName())
+                        .accountNumberOrVpa(withdrawal.getAccountNumberOrVpa())
+                        .payoutUtr(withdrawal.getPayoutUtr())
+                        .rejectionReason(withdrawal.getRejectionReason())
+                        .processedAt(withdrawal.getProcessedAt())
+                        .createdAt(withdrawal.getCreatedAt())
+                        .updatedAt(withdrawal.getUpdatedAt())
+                        .build())
+                .toList();
     }
 }
