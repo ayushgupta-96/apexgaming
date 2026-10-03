@@ -35,7 +35,29 @@ function togglePassword(id, button) {
   if (button) button.textContent = input.type === "password" ? "◉" : "◌";
 }
 
-function safeJsonResponse(res) { return res.json().catch(() => ({ success: false, message: "Invalid server response" })); }
+function safeJsonResponse(res) {
+  if (res.status === 401 || res.status === 403) {
+    clearClientSession();
+    return Promise.resolve({ success: false, message: "Your session has expired. Please log in again." });
+  }
+  return res.json().catch(() => ({ success: false, message: "Invalid server response" }));
+}
+function clearClientSession() {
+  token = null;
+  currentUserId = null;
+  localStorage.removeItem("rmg_token");
+  localStorage.removeItem("rmg_userId");
+}
+function renderHistoryPills(container, values, formatter) {
+  if (!container) return;
+  container.replaceChildren();
+  (Array.isArray(values) ? values : []).slice(0, 20).forEach(value => {
+    const pill = document.createElement("span");
+    pill.className = "history-pill";
+    pill.textContent = formatter(value);
+    container.appendChild(pill);
+  });
+}
 
 async function doLogin() {
   const u = document.getElementById("loginUsername").value.trim();
@@ -165,7 +187,7 @@ function connectWebSocket() {
 let canvas, ctx;
 function initAviatorCanvas() { canvas = document.getElementById("flightCanvas"); if (!canvas) return; ctx = canvas.getContext("2d"); resizeCanvas(); window.addEventListener("resize", resizeCanvas); }
 function resizeCanvas() { if (!canvas) return; canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
-function handleAviatorTick(state) { currentAviatorState=state; const mult=document.getElementById("multiplier-display"),sub=document.getElementById("aviatorStatusSubtitle"),seed=document.getElementById("aviatorSeedHash"); if(!mult||!sub)return; if(seed&&state.serverSeedHash)seed.textContent=state.serverSeedHash.substring(0,24)+"..."; if(state.status==="BETTING"){mult.classList.remove("crashed");mult.textContent=state.countdownSeconds+"s";sub.textContent="NEXT ROUND STARTS IN...";}else if(state.status==="FLYING"){mult.classList.remove("crashed");mult.textContent=Number(state.currentMultiplier).toFixed(2)+"x";sub.textContent="PLANE IS IN FLIGHT!";renderAviatorFlight(state.currentMultiplier);}else if(state.status==="CRASHED"){mult.classList.add("crashed");mult.textContent=Number(state.crashMultiplier||state.currentMultiplier).toFixed(2)+"x";sub.textContent="FLEW AWAY!";renderCrashExplosion();} const ribbon=document.getElementById("aviatorHistoryRibbon"); if(ribbon&&state.recentHistory) ribbon.innerHTML=state.recentHistory.map(m=>`<span class="history-pill">${Number(m).toFixed(2)}x</span>`).join(""); }
+function handleAviatorTick(state) { currentAviatorState=state; const mult=document.getElementById("multiplier-display"),sub=document.getElementById("aviatorStatusSubtitle"),seed=document.getElementById("aviatorSeedHash"); if(!mult||!sub)return; if(seed&&state.serverSeedHash)seed.textContent=state.serverSeedHash.substring(0,24)+"..."; if(state.status==="BETTING"){mult.classList.remove("crashed");mult.textContent=state.countdownSeconds+"s";sub.textContent="NEXT ROUND STARTS IN...";}else if(state.status==="FLYING"){mult.classList.remove("crashed");mult.textContent=Number(state.currentMultiplier).toFixed(2)+"x";sub.textContent="PLANE IS IN FLIGHT!";renderAviatorFlight(state.currentMultiplier);}else if(state.status==="CRASHED"){mult.classList.add("crashed");mult.textContent=Number(state.crashMultiplier||state.currentMultiplier).toFixed(2)+"x";sub.textContent="FLEW AWAY!";renderCrashExplosion();} const ribbon=document.getElementById("aviatorHistoryRibbon"); if(ribbon) renderHistoryPills(ribbon, state.recentHistory, m => Number(m).toFixed(2) + "x"); }
 let aviatorAnimFrame = null;
 let aviatorFlightMultiplier = 1;
 let aviatorFlightStartedAt = null;
@@ -326,7 +348,7 @@ if(cashout){cashout.style.display="none";}
 if(notice){notice.style.display="block";}
 fetchWallet();
 }else alert("Cashout error: "+(data.message||"Unknown error"));}catch(e){alert("Cashout failed");}}
-function handleColourTick(state){currentColourState=state;const round=document.getElementById("colourRoundUuid"),timer=document.getElementById("colourTimerBadge");if(!round||!timer)return;round.textContent=state.roundUuid;timer.textContent="00:"+(state.secondsRemaining<10?"0":"")+state.secondsRemaining;if(state.status==="LOCKED"){timer.className="badge badge-rejected";timer.textContent="LOCKED ("+state.secondsRemaining+"s)";}else if(state.status==="RESULT"){timer.className="badge badge-verified";timer.textContent="RESULT: "+state.winningNumber+" ("+state.winningColor+")";}else timer.className="badge badge-approved";const ribbon=document.getElementById("colourHistoryRibbon");if(ribbon&&state.recentResults)ribbon.innerHTML=state.recentResults.map(r=>`<span class="history-pill">${r.number}</span>`).join("");}
+function handleColourTick(state){currentColourState=state;const round=document.getElementById("colourRoundUuid"),timer=document.getElementById("colourTimerBadge");if(!round||!timer)return;round.textContent=state.roundUuid;timer.textContent="00:"+(state.secondsRemaining<10?"0":"")+state.secondsRemaining;if(state.status==="LOCKED"){timer.className="badge badge-rejected";timer.textContent="LOCKED ("+state.secondsRemaining+"s)";}else if(state.status==="RESULT"){timer.className="badge badge-verified";timer.textContent="RESULT: "+state.winningNumber+" ("+state.winningColor+")";}else timer.className="badge badge-approved";const ribbon=document.getElementById("colourHistoryRibbon");if(ribbon)renderHistoryPills(ribbon,state.recentResults,r=>String(r.number));}
 function openColourBetModal(type,val){if(!token){openModal("loginModal");return;}selectedColourTarget={type,value:val};document.getElementById("modalBetTarget").textContent=val;document.getElementById("modalBetMultiplier").textContent=type==="NUMBER"?"9.0x":(val==="VIOLET"?"4.5x":"2.0x");openModal("colourBetModal");}
 async function confirmColourBet(){const amt=document.getElementById("colourModalAmount")?.value;try{const res=await fetch("/api/games/colour/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentColourState.roundUuid,targetType:selectedColourTarget.type,targetValue:selectedColourTarget.value,amount:amt})});const data=await safeJsonResponse(res);if(data.success){alert("Bet placed!");closeModal("colourBetModal");fetchWallet();}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to submit bet");}}
 async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await safeJsonResponse(res);if(data.success){currentLudoMatch=data.data;document.getElementById("ludoLobbySection").style.display="none";document.getElementById("ludoGameSection").style.display="block";drawLudoBoard();fetchWallet();}else alert("Ludo room error: "+(data.message||"Unknown error"));}catch(e){alert("Error creating match");}}
@@ -362,7 +384,25 @@ const catalog = {
 
 function showGameCategory() {
   const target = document.getElementById('categoryGames');
-  if (target) target.innerHTML = catalog.popular.map(cardHTML).join('');
+  if (!target) return;
+  target.replaceChildren();
+  catalog.popular.forEach(game => {
+    const card = document.createElement('button');
+    card.type = 'button';
+    card.className = 'catalog-card ' + game.key;
+    card.setAttribute('aria-label', 'Open ' + game.name);
+    card.addEventListener('click', () => switchTab(game.key === 'fruit' || game.key === 'mines' ? 'games' : game.key));
+    const image = document.createElement('img');
+    image.className = 'catalog-image';
+    image.src = game.image;
+    image.alt = game.name;
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    const title = document.createElement('b');
+    title.textContent = game.name;
+    card.append(image, title);
+    target.appendChild(card);
+  });
 }
 
 function setupMobileNavigation(){
