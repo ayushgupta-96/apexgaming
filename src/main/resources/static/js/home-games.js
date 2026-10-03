@@ -6,41 +6,48 @@ const HOME_GAMES = [
   { name: 'Mines', type: 'mines', image: '/images/games/mines.svg' }
 ];
 
+function gameTarget(type) {
+  if (type === 'aviator' || type === 'colour' || type === 'ludo') return type;
+  return 'games';
+}
+
 function renderHomeGames() {
   const target = document.getElementById('categoryGames');
   if (!target) return;
-  target.innerHTML = HOME_GAMES.map(game => `
-    <button class="catalog-card ${game.type}" onclick="switchTab('${game.type === 'aviator' ? 'aviator' : game.type === 'colour' ? 'colour' : game.type === 'ludo' ? 'ludo' : game.type === 'fruit' ? 'games' : 'games'}')">
-      <img class="catalog-image" src="${game.image}" alt="${game.name}" loading="eager" width="333" height="450">
-      <b>${game.name}</b>
-    </button>
-  `).join('');
+
+  const fragment = document.createDocumentFragment();
+
+  HOME_GAMES.forEach((game) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'catalog-card ' + game.type;
+    button.setAttribute('aria-label', 'Open ' + game.name);
+    button.addEventListener('click', () => {
+      if (typeof switchTab === 'function') switchTab(gameTarget(game.type));
+    });
+
+    const image = document.createElement('img');
+    image.className = 'catalog-image';
+    image.src = game.image;
+    image.alt = game.name;
+    image.loading = 'lazy';
+    image.width = 333;
+    image.height = 450;
+    image.decoding = 'async';
+
+    const title = document.createElement('b');
+    title.textContent = game.name;
+
+    button.append(image, title);
+    fragment.appendChild(button);
+  });
+
+  target.replaceChildren(fragment);
 }
 
-function setupPremiumBottomNav() {
-  const nav = document.querySelector('.bottom-nav');
-  if (!nav) return;
-
-  nav.innerHTML = `
-    <button class="bottom-nav-btn active" type="button" onclick="switchTab('home')" data-tab="home" aria-label="Home">
-      <span>⌂</span><small>Home</small>
-    </button>
-    <button class="bottom-nav-btn" type="button" onclick="switchTab('games')" data-tab="games" aria-label="Games">
-      <span>✦</span><small>Games</small>
-    </button>
-    <button class="bottom-nav-btn center-action play-action" type="button" onclick="switchTab('aviator')" data-tab="aviator" aria-label="Play Aviator">
-      <span>▶</span><small>Play</small>
-    </button>
-    <button class="bottom-nav-btn" type="button" onclick="switchTab('deposit')" data-tab="deposit" aria-label="Deposit">
-      <span>₹</span><small>Deposit</small>
-    </button>
-    <button class="bottom-nav-btn" type="button" onclick="switchTab('wallet')" data-tab="wallet" aria-label="Wallet">
-      <span>◈</span><small>Wallet</small>
-    </button>
-  `;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  renderHomeGames();
-  setupPremiumBottomNav();
-});
+/*
+ * The bottom navigation is intentionally left in index.html.
+ * Keeping it declarative prevents another script from silently replacing
+ * navigation controls and preserves the user's chosen mobile structure.
+ */
+document.addEventListener('DOMContentLoaded', renderHomeGames);
