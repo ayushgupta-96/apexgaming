@@ -297,6 +297,35 @@ function animateAviatorFlight(now) {
   ctx.fill();
   ctx.restore();
 
+  // Visible Aviator plane: follows the same curve as the multiplier.
+  const t = Math.max(0, Math.min(progress, 1));
+  const dx = 2 * (1 - t) * (controlX - startX) + 2 * t * (endX - controlX);
+  const dy = 2 * (1 - t) * (controlY - startY) + 2 * t * (endY - controlY);
+  const angle = Math.atan2(dy, dx);
+
+  ctx.save();
+  ctx.translate(endX, endY);
+  ctx.rotate(angle);
+  ctx.shadowBlur = 18;
+  ctx.shadowColor = "#ff3155";
+  ctx.fillStyle = "#ff3155";
+  ctx.strokeStyle = "#fff3f5";
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(18, 0);
+  ctx.lineTo(-10, -5);
+  ctx.lineTo(-4, -1.5);
+  ctx.lineTo(-16, 10);
+  ctx.lineTo(-12, 11);
+  ctx.lineTo(1, 3);
+  ctx.lineTo(8, 8);
+  ctx.lineTo(11, 7);
+  ctx.lineTo(6, 1.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.restore();
+
   aviatorAnimFrame = requestAnimationFrame(animateAviatorFlight);
 }
 
