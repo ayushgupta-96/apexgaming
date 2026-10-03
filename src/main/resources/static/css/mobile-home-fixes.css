@@ -1,4 +1,226 @@
-.game-categories,.manufacturer-section,.floating-promo{display:none!important}.catalog-grid{grid-template-columns:repeat(5,minmax(0,1fr))}.catalog-image{display:block!important;width:100%;height:100%;aspect-ratio:333/450;object-fit:cover;object-position:center;border-radius:18px 18px 12px 12px}.catalog-card{overflow:hidden;animation:gameCardFloat 3s ease-in-out infinite}.catalog-card:nth-child(2){animation-delay:.2s}.catalog-card:nth-child(3){animation-delay:.4s}.catalog-card:nth-child(4){animation-delay:.6s}.catalog-card:nth-child(5){animation-delay:.8s}@keyframes gameCardFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@media(max-width:520px){.catalog-grid{grid-template-columns:repeat(5,minmax(160px,1fr));overflow-x:auto;padding-bottom:.25rem;scrollbar-width:none}.catalog-grid::-webkit-scrollbar{display:none}.catalog-card{min-width:160px}}
-.auth-tabs{display:none!important}.bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr));align-items:end;padding:7px 7px calc(7px + env(safe-area-inset-bottom));gap:2px}.bottom-nav-btn{min-width:0;min-height:58px;padding:5px 2px 4px;border:0;background:transparent;color:#8fa39c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.64rem;font-weight:800;transition:transform .18s ease,color .18s ease,filter .18s ease}.bottom-nav-btn span{display:flex;align-items:center;justify-content:center;width:34px;height:28px;font-size:1rem;border-radius:11px}.bottom-nav-btn small{font-size:.62rem;font-weight:800;line-height:1}.bottom-nav-btn.active{color:#f3dda0}.bottom-nav-btn.active span{background:rgba(230,196,91,.12);color:#f3dda0}.bottom-nav-btn.center-action{margin-top:-20px;min-height:72px;color:#1a1608;position:relative;z-index:2}.bottom-nav-btn.center-action span{width:54px;height:54px;border-radius:50%;background:linear-gradient(145deg,#f7db72,#c69b2f);color:#1a1608;font-size:1.2rem;border:4px solid #06251e;box-shadow:0 8px 20px rgba(230,196,91,.28),0 0 0 1px rgba(230,196,91,.4)}.bottom-nav-btn.center-action small{color:#f3dda0;margin-top:-1px}.bottom-nav-btn.play-action span{animation:playPulse 2.2s ease-in-out infinite}.bottom-nav-btn:nth-child(4),.bottom-nav-btn:nth-child(5){color:#98aaa3}@keyframes playPulse{0%,100%{transform:scale(1);box-shadow:0 8px 20px rgba(230,196,91,.28),0 0 0 1px rgba(230,196,91,.4)}50%{transform:scale(1.06);box-shadow:0 10px 24px rgba(230,196,91,.4),0 0 0 4px rgba(230,196,91,.08)}}
-.mobile-game-browser .game-summary-grid{grid-template-columns:1fr}
+/* Apex Gaming — fresh mobile-first visual layer
+   Keeps the existing green/gold brand and game/API structure.
+   Presentation only: no auth, wallet or game rules are changed.
+*/
+:root{
+  --apx-bg:#02100b;
+  --apx-bg2:#041c13;
+  --apx-card:#06271d;
+  --apx-card2:#083225;
+  --apx-line:rgba(224,194,91,.16);
+  --apx-gold:#f0cf68;
+  --apx-green:#13c27e;
+  --apx-green2:#0b8f60;
+  --apx-text:#f7f5e9;
+  --apx-muted:#93aaa0;
+  --apx-danger:#ef526b;
+  --apx-radius:18px;
+}
+
+html{background:var(--apx-bg);color-scheme:dark}
+body.apex-mobile-app{
+  background:
+    radial-gradient(800px 360px at 50% -180px,rgba(27,194,126,.24),transparent 65%),
+    linear-gradient(180deg,#03150e 0%,#02110c 48%,#010a07 100%);
+  color:var(--apx-text);
+}
+.apex-mobile-app .navbar{
+  position:sticky;
+  top:0;
+  z-index:100;
+  min-height:64px;
+  padding:calc(8px + env(safe-area-inset-top)) 12px 8px;
+  background:rgba(2,13,9,.88);
+  border-bottom:1px solid var(--apx-line);
+  box-shadow:0 10px 30px rgba(0,0,0,.28);
+  backdrop-filter:blur(18px);
+}
+.apex-mobile-app .brand-mark{
+  width:40px;height:40px;flex-basis:40px;
+  border-radius:13px;
+  background:linear-gradient(145deg,#f5dc82,#a87e21);
+  box-shadow:0 7px 24px rgba(240,207,104,.18);
+}
+.apex-mobile-app .brand-copy{font-size:.92rem}
+.apex-mobile-app .brand-badge{font-size:.5rem;letter-spacing:.18em}
+.apex-mobile-app .topbar-actions{gap:6px}
+.apex-mobile-app .topbar-actions .btn{min-height:40px;padding:0 12px;border-radius:12px}
+.apex-mobile-app .icon-action{width:40px;height:40px;border-radius:12px;background:#08291f}
+
+.apex-mobile-app .container{
+  max-width:760px;
+  padding:12px 12px calc(92px + env(safe-area-inset-bottom));
+}
+.apex-mobile-app .mobile-hero{
+  min-height:218px;
+  margin:0 0 12px;
+  padding:20px;
+  border:1px solid rgba(240,207,104,.2);
+  border-radius:24px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 90% 18%,rgba(240,207,104,.22),transparent 23%),
+    radial-gradient(circle at 8% 100%,rgba(19,194,126,.28),transparent 40%),
+    linear-gradient(145deg,#0b5b42,#063a2a 55%,#05251c);
+  box-shadow:0 18px 44px rgba(0,0,0,.3);
+}
+.apex-mobile-app .mobile-hero::after{
+  content:"";
+  position:absolute;inset:auto -45px -75px auto;width:190px;height:190px;
+  border:1px solid rgba(240,207,104,.18);border-radius:50%;
+  box-shadow:0 0 0 22px rgba(240,207,104,.035),0 0 0 44px rgba(240,207,104,.02);
+}
+.apex-mobile-app .mobile-hero-copy{max-width:76%;z-index:3}
+.apex-mobile-app .eyebrow{font-size:.61rem;letter-spacing:.13em;color:#f5d975}
+.apex-mobile-app .mobile-hero h1{font-size:clamp(1.55rem,7vw,2.05rem);line-height:1.04;margin-top:8px;letter-spacing:-.04em}
+.apex-mobile-app .mobile-hero p{font-size:.76rem;line-height:1.5;color:#c0d0c9;margin-top:10px}
+.apex-mobile-app .hero-cta-row{gap:8px;margin-top:15px}
+.apex-mobile-app .hero-cta-row .btn{min-height:42px;border-radius:12px;padding:0 13px;font-size:.75rem}
+.apex-mobile-app .hero-orb{
+  right:-18px;top:30px;width:116px;height:116px;
+  border-color:rgba(240,207,104,.65);
+  background:radial-gradient(circle at 35% 30%,#8a681e,#26351c 50%,#09231a 74%);
+  box-shadow:0 0 0 8px rgba(240,207,104,.05),0 18px 36px rgba(0,0,0,.35);
+}
+.apex-mobile-app .hero-orb span{font-size:1.35rem}
+.apex-mobile-app .hero-orb small{font-size:.5rem}
+
+.apex-mobile-app .earnings-strip{
+  gap:8px;margin:0 0 14px;
+}
+.apex-mobile-app .earnings-strip>div{
+  border:1px solid rgba(19,194,126,.14);
+  border-radius:15px;
+  background:linear-gradient(180deg,#082e23,#052019);
+  box-shadow:0 8px 20px rgba(0,0,0,.18);
+}
+.apex-mobile-app .earnings-strip span{color:#b4c5bd}
+.apex-mobile-app .earnings-strip b,.apex-mobile-app .earning-item strong{color:#f0d474}
+
+.apex-mobile-app .section-heading{margin:16px 2px 9px}
+.apex-mobile-app .section-heading h2{font-size:1.02rem;color:#f1d67c}
+.apex-mobile-app .section-heading span,.apex-mobile-app .section-heading button{color:#829b90}
+
+.apex-mobile-app .catalog-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+}
+.apex-mobile-app .catalog-card{
+  border:1px solid rgba(19,194,126,.13);
+  border-radius:17px;
+  background:linear-gradient(180deg,#092e23,#061d16);
+  box-shadow:0 9px 22px rgba(0,0,0,.25);
+  transition:transform .16s ease,border-color .16s ease;
+}
+.apex-mobile-app .catalog-card:active{transform:scale(.975)}
+.apex-mobile-app .catalog-image{
+  display:block;width:100%;aspect-ratio:1/1.12;object-fit:cover;
+  background:#0b3024;
+}
+.apex-mobile-app .catalog-card b{
+  min-height:36px;padding:8px 6px;
+  display:flex;align-items:center;justify-content:center;
+  color:#f3eee0;font-size:.69rem;
+}
+
+.apex-mobile-app .winner-board{
+  padding:7px 12px;
+  border:1px solid rgba(240,207,104,.12);
+  border-radius:18px;
+  background:linear-gradient(180deg,#082c21,#051c15);
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+.apex-mobile-app .winner-row{min-height:47px}
+.apex-mobile-app .winner-row strong{color:#f1d375}
+
+.apex-mobile-app .mobile-game-browser,
+.apex-mobile-app .tab-content{
+  animation:apxPageIn .2s ease-out;
+}
+@keyframes apxPageIn{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:none}}
+
+.apex-mobile-app .game-summary-grid{
+  display:grid;grid-template-columns:1fr;gap:9px;
+}
+.apex-mobile-app .game-tile{
+  min-height:72px;border-radius:17px;
+  border:1px solid rgba(19,194,126,.14);
+  background:linear-gradient(135deg,#093427,#061e17);
+  box-shadow:0 9px 20px rgba(0,0,0,.2);
+}
+.apex-mobile-app .game-icon{
+  width:44px;height:44px;border-radius:14px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#f0d06b,#a87c21);
+  color:#062016;font-weight:950;
+}
+
+.apex-mobile-app .card,
+.apex-mobile-app .game-card,
+.apex-mobile-app .wallet-panel{
+  border-color:rgba(19,194,126,.14);
+  background:linear-gradient(180deg,#082d22,#051c15);
+  border-radius:19px;
+  box-shadow:0 12px 28px rgba(0,0,0,.25);
+}
+.apex-mobile-app .form-control,
+.apex-mobile-app select{
+  min-height:48px;
+  border-radius:13px;
+  background:#03150f;
+  border-color:rgba(19,194,126,.2);
+  color:#f7f5e9;
+}
+.apex-mobile-app .btn{
+  border-radius:13px;
+  font-weight:850;
+  min-height:44px;
+}
+.apex-mobile-app .btn-primary{
+  background:linear-gradient(135deg,#16c781,#0b9964);
+  box-shadow:0 9px 22px rgba(11,153,100,.2);
+}
+.apex-mobile-app .btn-gold{
+  background:linear-gradient(135deg,#f6dc7d,#bd922c);
+  color:#082016;
+  box-shadow:0 9px 22px rgba(240,207,104,.18);
+}
+.apex-mobile-app .modal{
+  background:rgba(0,7,5,.78);
+  backdrop-filter:blur(9px);
+}
+.apex-mobile-app .modal-content{
+  width:min(92vw,430px);
+  border:1px solid rgba(240,207,104,.18);
+  border-radius:22px;
+  background:linear-gradient(180deg,#093226,#041a12);
+  box-shadow:0 30px 70px rgba(0,0,0,.55);
+}
+
+.apex-mobile-app .bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:120;
+  min-height:76px;padding:7px 7px calc(7px + env(safe-area-inset-bottom));
+  background:rgba(2,18,12,.95);
+  border-top:1px solid rgba(19,194,126,.18);
+  box-shadow:0 -12px 30px rgba(0,0,0,.3);
+  backdrop-filter:blur(18px);
+}
+.apex-mobile-app .bottom-nav-btn{border-radius:14px;color:#769187;min-height:58px}
+.apex-mobile-app .bottom-nav-btn.active{color:#f2d875}
+.apex-mobile-app .bottom-nav-btn.active span{background:rgba(240,207,104,.12);border-radius:11px}
+.apex-mobile-app .bottom-nav-btn.center-action span{
+  width:50px;height:50px;
+  background:linear-gradient(145deg,#f5db7d,#b98825);
+  color:#062016;border:3px solid #062117;
+  box-shadow:0 8px 24px rgba(240,207,104,.2);
+}
+@media(max-width:380px){
+  .apex-mobile-app .mobile-hero{padding:17px;min-height:202px}
+  .apex-mobile-app .mobile-hero-copy{max-width:78%}
+  .apex-mobile-app .hero-orb{width:100px;height:100px;right:-22px}
+  .apex-mobile-app .hero-cta-row .btn{padding:0 10px}
+}
+@media(min-width:700px){
+  .apex-mobile-app .catalog-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .apex-mobile-app .game-summary-grid{grid-template-columns:repeat(3,1fr)}
+}
