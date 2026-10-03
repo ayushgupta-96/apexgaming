@@ -5,6 +5,7 @@ import com.gaming.platform.module.compliance.service.AmlService;
 import com.gaming.platform.module.payment.dto.DepositCreateRequest;
 import com.gaming.platform.module.payment.dto.DepositCreateResponse;
 import com.gaming.platform.module.payment.dto.WithdrawalCreateRequest;
+import com.gaming.platform.module.payment.dto.UserDepositResponse;
 import com.gaming.platform.module.payment.dto.WithdrawalResponse;
 import com.gaming.platform.module.payment.entity.DepositRequest;
 import com.gaming.platform.module.payment.entity.WhatsAppTicket;
@@ -170,8 +171,21 @@ public class PaymentService {
     }
 
     @Transactional(readOnly = true)
-    public List<DepositRequest> getUserDeposits(Long userId) {
-        return depositRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<UserDepositResponse> getUserDeposits(Long userId) {
+        return depositRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(deposit -> UserDepositResponse.builder()
+                        .id(deposit.getId())
+                        .referenceCode(deposit.getReferenceCode())
+                        .amount(deposit.getAmount())
+                        .status(deposit.getStatus())
+                        .paymentMethod(deposit.getPaymentMethod())
+                        .utrNumber(deposit.getUtrNumber())
+                        .adminNotes(deposit.getAdminNotes())
+                        .processedAt(deposit.getProcessedAt())
+                        .createdAt(deposit.getCreatedAt())
+                        .updatedAt(deposit.getUpdatedAt())
+                        .build())
+                .toList();
     }
 
     @Transactional(readOnly = true)
