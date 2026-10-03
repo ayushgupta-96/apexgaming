@@ -77,12 +77,12 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public Page<DepositRequest> getDepositQueue(Pageable pageable) {
-        return depositRepository.findAll(pageable);
+    public Page<AdminDepositResponse> getDepositQueue(Pageable pageable) {
+        return depositRepository.findAll(pageable).map(this::toAdminDepositResponse);
     }
 
     @Transactional
-    public DepositRequest approveDeposit(ApproveDepositRequest request) {
+    public AdminDepositResponse approveDeposit(ApproveDepositRequest request) {
         Long adminId = SecurityUtils.getCurrentUserId();
         User admin = userRepository.findById(adminId)
                 .orElseThrow(() -> new BusinessException("Admin user not found"));
@@ -110,7 +110,31 @@ public class AdminService {
         auditService.recordAction("APPROVE_DEPOSIT", "DEPOSIT", deposit.getReferenceCode(),
                 "Approved deposit of ₹" + deposit.getAmount() + ". Notes: " + request.getAdminNotes());
 
-        return deposit;
+        return toAdminDepositResponse(deposit);
+    }
+
+    private AdminDepositResponse toAdminDepositResponse(DepositRequest deposit) {
+        User user = deposit.getUser();
+        User processedBy = deposit.getProcessedBy();
+
+        return AdminDepositResponse.builder()
+                .id(deposit.getId())
+                .referenceCode(deposit.getReferenceCode())
+                .userId(user.getId())
+                .username(user.getUsername())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .amount(deposit.getAmount())
+                .status(deposit.getStatus())
+                .paymentMethod(deposit.getPaymentMethod())
+                .utrNumber(deposit.getUtrNumber())
+                .proofImageUrl(deposit.getProofImageUrl())
+                .adminNotes(deposit.getAdminNotes())
+                .processedBy(processedBy != null ? processedBy.getUsername() : null)
+                .processedAt(deposit.getProcessedAt())
+                .createdAt(deposit.getCreatedAt())
+                .updatedAt(deposit.getUpdatedAt())
+                .build();
     }
 
     @Transactional
