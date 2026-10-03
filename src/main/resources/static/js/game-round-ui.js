@@ -78,7 +78,8 @@
     wheel?.classList.remove("is-spinning","is-result");
     void disc.offsetWidth;
     wheel?.classList.add("is-spinning");
-    disc.style.transform="rotate("+wheelRotation+"deg)";
+    disc.style.setProperty("--wheel-counter-rotation",(-wheelRotation)+"deg");
+    disc.style.transform="translate(-50%,-50%) rotate("+wheelRotation+"deg)";
 
     window.setTimeout(function(){
       center.textContent=String(number);
