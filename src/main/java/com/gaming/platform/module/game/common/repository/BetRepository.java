@@ -1,6 +1,7 @@
 package com.gaming.platform.module.game.common.repository;
 
 import com.gaming.platform.module.game.common.entity.Bet;
+import com.gaming.platform.module.game.common.entity.GameType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,5 @@ public interface BetRepository extends JpaRepository<Bet, Long> {
     List<Bet> findByRoundIdAndUserId(Long roundId, Long userId);
     List<Bet> findByRoundIdAndStatus(Long roundId, Bet.BetStatus status);
     Page<Bet> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    Page<Bet> findByUserIdAndRoundGameTypeOrderByCreatedAtDesc(Long userId, GameType gameType, Pageable pageable);
 }
