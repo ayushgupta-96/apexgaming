@@ -241,3 +241,32 @@ body.apex-mobile-app{
 .deposit-screen .qr-card{border-radius:20px!important;background:linear-gradient(180deg,#082e23,#041a12)!important;border-color:rgba(240,207,104,.18)!important;box-shadow:0 14px 30px rgba(0,0,0,.24)}
 .deposit-screen .utr-box{border-radius:16px!important;background:#041a12!important;border-color:rgba(19,194,126,.2)!important}
 @media(max-width:600px){.wallet-panel,.deposit-card,.deposit-box{margin-left:10px!important;margin-right:10px!important}.wallet-actions{grid-template-columns:repeat(2,1fr)!important}}
+
+/* Admin console — mobile-first responsive layer */
+.admin-page{
+  background:
+    radial-gradient(700px 300px at 50% -120px,rgba(19,194,126,.18),transparent 65%),
+    #020d08;
+  color:#eef6f0;
+  min-height:100vh;
+}
+.admin-page .navbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(2,13,8,.94);
+  border-bottom:1px solid rgba(19,194,126,.16);
+  backdrop-filter:blur(16px);
+}
+.admin-page .container{width:min(1400px,100%);padding:14px}
+.admin-page .tab-btn{border-radius:12px}
+.admin-page .card{border-radius:18px!important;border-color:rgba(19,194,126,.14)!important;background:linear-gradient(180deg,#082b20,#041a12)!important}
+.admin-page table{min-width:760px}
+.admin-page .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:14px}
+@media(max-width:700px){
+  .admin-page .navbar{padding:10px 12px}
+  .admin-page .brand{font-size:.78rem}
+  .admin-page .container{padding:10px 8px 24px}
+  .admin-page .tab-btn{min-height:42px;padding:8px 10px}
+  .admin-page .btn{min-height:42px}
+  .admin-page .modal-content{width:calc(100vw - 20px);max-height:90vh;border-radius:20px}
+  .admin-page table{font-size:.78rem}
+}
