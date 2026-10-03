@@ -132,7 +132,6 @@
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   if(!localStorage.getItem('rmg_token')){window.location.href='/';return;}
-  if(typeof fetchWallet==='function') fetchWallet();
   if(typeof fetchWallet==="function") fetchWallet();
 });
 let currentDepositId = null;
