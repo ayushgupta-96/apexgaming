@@ -406,11 +406,11 @@ function cardHTML(game) {
 
 const catalog = {
   popular:[
-    {name:'Aviator',key:'aviator',image:'/images/games/aviator.webp'},
+    {name:'Aviator',key:'aviator',image:'/images/games/aviator.svg'},
     {name:'Colour Prediction',key:'colour',image:'/images/games/colour.svg'},
-    {name:'Ludo',key:'ludo',image:'/images/games/ludo.webp'},
+    {name:'Ludo',key:'ludo',image:'/images/games/ludo.svg'},
     {name:'Mines',key:'mines',image:'/images/games/mines.svg'},
-    {name:'Fruit 777',key:'fruit',image:'/images/games/fruit.svg'}
+    {name:'Fruit 777',key:'fruit',image:'/images/games/fruit-777.svg'}
   ]
 };
 
