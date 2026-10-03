@@ -295,3 +295,45 @@ body.apex-mobile-app{
     font-size:.58rem;
   }
 }
+
+
+/* Auth modal refresh: keep the login sheet above the fixed five-item navbar. */
+.apex-mobile-app .modal{z-index:300!important;padding:10px 0 calc(10px + env(safe-area-inset-bottom))!important;align-items:flex-end!important;}
+.apex-mobile-app .auth-modal{
+  width:min(100%,520px)!important;
+  max-height:calc(100dvh - 18px)!important;
+  overflow-y:auto!important;
+  padding:20px 18px calc(22px + env(safe-area-inset-bottom))!important;
+  border:1px solid rgba(240,207,104,.18)!important;
+  border-radius:26px!important;
+  background:
+    radial-gradient(circle at 50% -15%,rgba(19,194,126,.18),transparent 38%),
+    linear-gradient(180deg,#09372a 0%,#041b13 100%)!important;
+}
+.apex-mobile-app .auth-brand{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:58px!important;
+  height:58px!important;
+  margin:0 auto 8px!important;
+  border-radius:17px!important;
+  background:linear-gradient(145deg,#f5dc82,#b78625)!important;
+  color:#082016!important;
+  font-size:1.35rem!important;
+  box-shadow:0 10px 28px rgba(240,207,104,.16)!important;
+}
+.apex-mobile-app .auth-brand span{color:#082016!important}
+.apex-mobile-app .auth-modal h3{font-size:1.65rem!important;margin-top:4px!important}
+.apex-mobile-app .auth-subtitle{font-size:.82rem!important;margin-bottom:18px!important}
+.apex-mobile-app .auth-modal .form-group{margin-bottom:14px!important}
+.apex-mobile-app .auth-modal .form-label{font-size:.8rem!important;margin-bottom:7px!important}
+.apex-mobile-app .auth-modal .input-wrap{min-height:54px!important;border-radius:15px!important;background:#031a12!important;border-color:rgba(240,207,104,.16)!important}
+.apex-mobile-app .auth-modal .input-wrap .form-control{min-height:52px!important;font-size:1rem!important}
+.apex-mobile-app .auth-modal .check-row{font-size:.72rem!important;display:flex!important;align-items:center!important;gap:7px!important;flex-wrap:wrap!important}
+.apex-mobile-app .auth-modal .check-row .link-btn{margin-left:auto!important}
+.apex-mobile-app .auth-modal .auth-submit{min-height:54px!important;border-radius:15px!important;font-size:1rem!important;margin-top:8px!important}
+@media(max-width:420px){
+  .apex-mobile-app .auth-modal{padding-left:16px!important;padding-right:16px!important}
+  .apex-mobile-app .auth-modal h3{font-size:1.48rem!important}
+}
