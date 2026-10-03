@@ -36,6 +36,12 @@ function closeModal(id) {
   document.getElementById(id)?.classList.remove("active");
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+  }[ch]));
+}
+
 function getAuthHeaders() {
   return {
     "Content-Type": "application/json",
@@ -82,13 +88,13 @@ async function loadDeposits() {
         const statusBadge = dep.status === "APPROVED" ? "badge-approved" : (dep.status === "REJECTED" ? "badge-rejected" : "badge-pending");
 
         tr.innerHTML = `
-          <td><b style="color: var(--accent-gold);">${dep.referenceCode}</b></td>
+          <td><b style="color: var(--accent-gold);">${escapeHtml(dep.referenceCode)}</b></td>
           <td>${dep.user.phoneNumber}</td>
           <td><b>₹${Number(dep.amount).toFixed(2)}</b></td>
-          <td><span class="badge ${statusBadge}">${dep.status}</span></td>
+          <td><span class="badge ${statusBadge}">${escapeHtml(dep.status)}</span></td>
           <td>
-            ${dep.utrNumber ? `<div style="font-size: 0.8rem;">UTR: <b>${dep.utrNumber}</b></div>` : ''}
-            ${dep.proofImageUrl ? `<a href="${dep.proofImageUrl}" target="_blank" style="color: #60a5fa; font-size: 0.8rem;">View Screenshot</a>` : 'No proof attached'}
+            ${dep.utrNumber ? `<div style="font-size: 0.8rem;">UTR: <b>${escapeHtml(dep.utrNumber)}</b></div>` : ''}
+            ${dep.proofImageUrl ? `<a href="${escapeHtml(dep.proofImageUrl)}" target="_blank" style="color: #60a5fa; font-size: 0.8rem;">View Screenshot</a>` : 'No proof attached'}
           </td>
           <td>${new Date(dep.createdAt).toLocaleString()}</td>
           <td>
@@ -168,17 +174,17 @@ async function loadWithdrawals() {
         const statusBadge = wdr.status === "PAID" ? "badge-approved" : (wdr.status === "REJECTED" ? "badge-rejected" : "badge-pending");
 
         tr.innerHTML = `
-          <td><b style="color: var(--accent-gold);">${wdr.referenceCode}</b></td>
+          <td><b style="color: var(--accent-gold);">${escapeHtml(wdr.referenceCode)}</b></td>
           <td>${wdr.user.phoneNumber} (${wdr.accountHolderName})</td>
           <td><b>₹${Number(wdr.amount).toFixed(2)}</b></td>
-          <td>${wdr.destinationType}</td>
-          <td><code>${wdr.accountNumberOrVpa}</code></td>
-          <td><span class="badge ${statusBadge}">${wdr.status}</span></td>
+          <td>${escapeHtml(wdr.destinationType)}</td>
+          <td><code>${escapeHtml(wdr.accountNumberOrVpa)}</code></td>
+          <td><span class="badge ${statusBadge}">${escapeHtml(wdr.status)}</span></td>
           <td>
             ${wdr.status !== 'PAID' && wdr.status !== 'REJECTED' ? `
               <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="openPayoutModal(${wdr.id})">Mark Paid</button>
               <button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="rejectWithdrawal(${wdr.id})">Reject</button>
-            ` : (wdr.status === 'PAID' ? `<span style="color: var(--accent-emerald);">UTR: ${wdr.payoutUtr}</span>` : 'Refunded')}
+            ` : (wdr.status === 'PAID' ? `<span style="color: var(--accent-emerald);">UTR: ${escapeHtml(wdr.payoutUtr)}</span>` : 'Refunded')}
           </td>
         `;
         tbody.appendChild(tr);
@@ -267,11 +273,11 @@ async function loadTickets() {
 
         div.innerHTML = `
           <div style="display: flex; justify-content: space-between; font-weight: 700;">
-            <span>${t.senderPhone}</span>
-            <span class="badge badge-pending">${t.status}</span>
+            <span>${escapeHtml(t.senderPhone)}</span>
+            <span class="badge badge-pending">${escapeHtml(t.status)}</span>
           </div>
           <div style="font-size: 0.8rem; color: var(--accent-gold); margin-top: 0.2rem;">
-            ${t.relatedReferenceCode || 'General Support'}
+            ${escapeHtml(t.relatedReferenceCode || "General Support")}
           </div>
         `;
         container.appendChild(div);
@@ -306,8 +312,8 @@ async function openTicketChat(id, phone, ref, status) {
         bubble.style.border = "1px solid var(--border-color)";
 
         bubble.innerHTML = `
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.2rem;">${m.senderType}</div>
-          <div>${m.messageBody || ''}</div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.2rem;">${escapeHtml(m.senderType)}</div>
+          <div>${escapeHtml(m.messageBody || "")}</div>
           ${m.mediaUrl ? `<div style="margin-top: 0.5rem;"><a href="${m.mediaUrl}" target="_blank" style="color: #60a5fa; font-weight: 600;">[Attached Proof / Screenshot]</a></div>` : ''}
           <div style="font-size: 0.7rem; color: var(--text-secondary); text-align: right; margin-top: 0.3rem;">
             ${new Date(m.createdAt).toLocaleTimeString()}
@@ -364,10 +370,10 @@ async function loadAml() {
         d.style.backgroundColor = "rgba(244, 63, 94, 0.05)";
         d.style.borderColor = "rgba(244, 63, 94, 0.3)";
         d.innerHTML = `
-          <div style="font-weight: 700; color: var(--accent-rose);">${a.alertType}</div>
-          <div style="font-size: 0.85rem; margin-top: 0.2rem;">${a.details}</div>
+          <div style="font-weight: 700; color: var(--accent-rose);">${escapeHtml(a.alertType)}</div>
+          <div style="font-size: 0.85rem; margin-top: 0.2rem;">${escapeHtml(a.details)}</div>
           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.4rem;">
-            User ID: ${a.user.id} | Amount: ₹${a.triggerAmount} | ${new Date(a.createdAt).toLocaleString()}
+            User ID: ${escapeHtml(a.user?.id)} | Amount: ₹${a.triggerAmount} | ${new Date(a.createdAt).toLocaleString()}
           </div>
         `;
         container.appendChild(d);
@@ -386,10 +392,10 @@ async function loadAml() {
         d.style.backgroundColor = "rgba(245, 158, 11, 0.05)";
         d.style.borderColor = "rgba(245, 158, 11, 0.3)";
         d.innerHTML = `
-          <div style="font-weight: 700; color: var(--accent-gold);">${f.flagType} (${f.severity})</div>
-          <div style="font-size: 0.85rem; margin-top: 0.2rem;">${f.description}</div>
+          <div style="font-weight: 700; color: var(--accent-gold);">${escapeHtml(f.flagType)} (${escapeHtml(f.severity)})</div>
+          <div style="font-size: 0.85rem; margin-top: 0.2rem;">${escapeHtml(f.description)}</div>
           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.4rem;">
-            User ID: ${f.user.id} | ${new Date(f.createdAt).toLocaleString()}
+            User ID: ${escapeHtml(f.user?.id)} | ${new Date(f.createdAt).toLocaleString()}
           </div>
         `;
         container.appendChild(d);
@@ -414,11 +420,11 @@ async function loadAuditLogs() {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td style="font-size: 0.8rem;">${new Date(log.createdAt).toLocaleString()}</td>
-          <td><b>${log.actorUsername}</b></td>
-          <td><span class="badge badge-verified">${log.actorRole}</span></td>
-          <td><code>${log.action}</code></td>
-          <td>${log.targetEntity}: ${log.targetId}</td>
-          <td style="font-size: 0.85rem;">${log.reason || '-'}</td>
+          <td><b>${escapeHtml(log.actorUsername)}</b></td>
+          <td><span class="badge badge-verified">${escapeHtml(log.actorRole)}</span></td>
+          <td><code>${escapeHtml(log.action)}</code></td>
+          <td>${escapeHtml(log.targetEntity)}: ${escapeHtml(log.targetId)}</td>
+          <td style="font-size: 0.85rem;">${escapeHtml(log.reason || "-")}</td>
         `;
         tbody.appendChild(tr);
       });
