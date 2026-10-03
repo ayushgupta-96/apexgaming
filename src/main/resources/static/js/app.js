@@ -136,6 +136,7 @@ async function fetchWallet() {
       const walletThird = document.getElementById("walletThirdBalance");
       const walletMainPercent = document.getElementById("walletMainPercent");
       const walletThirdPercent = document.getElementById("walletThirdPercent");
+      const depositPageBalance = document.getElementById("depositPageBalance");
       if (deposit) deposit.textContent = Number(w.depositBalance).toFixed(2);
       const aviatorWallet = document.getElementById("aviatorWalletAmount");
       if (aviatorWallet) aviatorWallet.textContent = Number(w.depositBalance).toFixed(2);
@@ -149,6 +150,7 @@ async function fetchWallet() {
       if (walletThird) walletThird.textContent = Number(w.winningsBalance ?? 0).toFixed(2);
       if (walletMainPercent) walletMainPercent.textContent = "100%";
       if (walletThirdPercent) walletThirdPercent.textContent = "0%";
+      if (depositPageBalance) depositPageBalance.textContent = Number(w.totalPlayableBalance ?? w.depositBalance ?? 0).toFixed(2);
     }
   } catch (e) { console.error("Wallet error", e); }
 }
@@ -162,6 +164,7 @@ async function initiateDeposit() {
     const data = await safeJsonResponse(res);
     if (data.success) {
       const dep = data.data;
+      if (typeof currentDepositId !== "undefined") currentDepositId = dep.depositId;
       { const el = document.getElementById("dispDepRefCode"); if (el) el.textContent = dep.referenceCode; }
       { const el = document.getElementById("depositResultBox"); if (el) el.style.display = "block"; }
       return dep.whatsAppLink;
