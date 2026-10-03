@@ -112,11 +112,10 @@
       <div class="form-group" style="margin-top:16px;">
         <label class="form-label" for="depositUtrInput">Payment UTR</label>
         <input type="text" id="depositUtrInput" class="form-control" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="Enter 12-digit UTR">
-        <div class="helper-text" style="margin-top:6px;">After payment, enter your UTR. Both buttons below submit the UTR and open WhatsApp.</div>
+        <div class="helper-text" style="margin-top:6px;">After payment, enter your UTR. The button below submits the UTR first, then opens WhatsApp.</div>
       </div>
-      <div class="deposit-action-grid">
-        <button id="btnSubmitUtr" class="btn btn-submit-utr wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">SUBMIT</button>
-        <button id="btnGoWhatsApp" class="btn btn-whatsapp wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">Go To WhatsApp</button>
+      <div class="deposit-action-grid deposit-single-action">
+        <button id="btnSubmitUtr" class="btn btn-submit-utr wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">SUBMIT &amp; GO TO WHATSAPP</button>
       </div>
     </div>
   </section>
@@ -143,7 +142,7 @@ async function submitUtrAndOpenWhatsApp(){
   const utr=(document.getElementById('depositUtrInput')?.value||'').trim();
   if(!currentDepositId){alert('First generate the payment code.');return;}
   if(!/^\d{12}$/.test(utr)){alert('Please enter the 12-digit UTR.');return;}
-  const buttons=[document.getElementById('btnSubmitUtr'),document.getElementById('btnGoWhatsApp')];
+  const buttons=[document.getElementById('btnSubmitUtr')];
   buttons.forEach(b=>{if(b)b.disabled=true;});
   try{
     const res=await fetch('/api/deposits/'+currentDepositId+'/utr',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+localStorage.getItem('rmg_token')},body:JSON.stringify({utrNumber:utr})});
