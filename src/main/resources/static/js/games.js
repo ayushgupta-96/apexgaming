@@ -8,7 +8,7 @@
       canvas:null, ctx:null, raf:0, lastTs:0, target:1, visual:1,
       phase:"BETTING", crashed:false, roundKey:null, width:0, height:0
     },
-    colour: { lastRound:null, lastResult:null }
+    colour: { lastRound:null, lastResult:null, wheelRotation:0 }
   };
 
   function el(id){ return document.getElementById(id); }
@@ -158,26 +158,55 @@
   function renderColour(state){
     const timer=el("colourTimerBadge"),round=el("colourRoundUuid"),wrap=el("colourWheel");
     if(round) round.textContent=state.roundUuid||"CP-—";
+
     const seconds=Math.max(0,Number(state.secondsRemaining)||0);
     if(timer){
       const inner=timer.querySelector(".apx-timer-inner");
       if(inner) inner.textContent=state.status==="LOCKED"?"LOCK":state.status==="RESULT"?String(state.winningNumber??"—"):String(seconds).padStart(2,"0");
-      const pct=clamp((seconds/60)*100,0,100);timer.style.setProperty("--timer-progress",pct);
+      const pct=clamp((seconds/60)*100,0,100);
+      timer.style.setProperty("--timer-progress",pct);
       timer.classList.toggle("locked",state.status==="LOCKED");
     }
+
+    const resultNumber=Number(state.winningNumber);
+    const resultKey=state.status==="RESULT" && Number.isFinite(resultNumber)
+      ? String(state.roundUuid||"")+"|"+resultNumber
+      : null;
+
     if(wrap){
       wrap.classList.toggle("result",state.status==="RESULT");
       wrap.classList.toggle("locked",state.status==="LOCKED");
       wrap.dataset.winningColor=state.winningColor||"";
+
+      const disc=wrap.querySelector(".apx-wheel-disc");
+      const centerNumber=el("colourWheelCenterNumber");
+      const centerLabel=el("colourWheelCenterLabel");
+
+      if(state.status==="RESULT" && Number.isFinite(resultNumber)){
+        if(resultKey!==ui.colour.lastResult){
+          const sectorCenter=(resultNumber*36)+18;
+          ui.colour.wheelRotation=1440 + (360-sectorCenter);
+          if(disc){
+            disc.style.setProperty("--wheel-target-rotation", ui.colour.wheelRotation+"deg");
+            disc.classList.remove("spin-result");
+            void disc.offsetWidth;
+            disc.classList.add("spin-result");
+          }
+          ui.colour.lastResult=resultKey;
+        }
+        if(centerNumber) centerNumber.textContent=String(resultNumber);
+        if(centerLabel) centerLabel.textContent=String(state.winningColor||"").replace("_"," + ").toUpperCase();
+      }else{
+        if(centerNumber) centerNumber.textContent="?";
+        if(centerLabel) centerLabel.textContent=state.status==="LOCKED"?"TABLE LOCKED":"NEXT RESULT";
+      }
     }
+
     const result=el("colourLiveResult");
-    if(result) result.textContent=state.status==="RESULT" ? "WINNING "+String(state.winningNumber??"—")+" · "+String(state.winningColor||"").toUpperCase() : state.status==="LOCKED" ? "BETS LOCKED" : "OPEN FOR PREDICTIONS";
-    const ribbon=el("colourHistoryRibbon");
-    if(ribbon){
-      ribbon.replaceChildren();
-      (state.recentResults||[]).slice(0,16).forEach(item=>{
-        const chip=document.createElement("span");chip.className="apx-result-chip "+colourClass(item.color);chip.textContent=String(item.number??"—");ribbon.appendChild(chip);
-      });
+    if(result){
+      result.textContent=state.status==="RESULT"
+        ? "WINNING "+String(state.winningNumber??"—")+" · "+String(state.winningColor||"").toUpperCase()
+        : state.status==="LOCKED" ? "BETS LOCKED" : "OPEN FOR PREDICTIONS";
     }
   }
 
