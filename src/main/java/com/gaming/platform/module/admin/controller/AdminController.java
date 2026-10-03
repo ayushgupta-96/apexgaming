@@ -1,7 +1,6 @@
 package com.gaming.platform.module.admin.controller;
 
 import com.gaming.platform.common.response.ApiResponse;
-import com.gaming.platform.common.security.SecurityUtils;
 import com.gaming.platform.module.admin.dto.*;
 import com.gaming.platform.module.admin.service.AdminService;
 import com.gaming.platform.module.audit.entity.AuditLog;
@@ -51,18 +50,20 @@ public class AdminController {
 
     @GetMapping("/deposits")
     @Operation(summary = "Get manual deposit queue awaiting review or approval")
-    public ResponseEntity<ApiResponse<Page<DepositRequest>>> getDeposits(
+    public ResponseEntity<ApiResponse<Page<AdminDepositResponse>>> getDeposits(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Page<DepositRequest> list = adminService.getDepositQueue(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Page<AdminDepositResponse> list = adminService.getDepositQueue(
+                PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
         return ResponseEntity.ok(ApiResponse.ok(list));
     }
 
     @PostMapping("/deposits/approve")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'FINANCE')")
     @Operation(summary = "Approve deposit and credit user wallet via double-entry ledger")
-    public ResponseEntity<ApiResponse<DepositRequest>> approveDeposit(@Valid @RequestBody ApproveDepositRequest request) {
-        DepositRequest approved = adminService.approveDeposit(request);
+    public ResponseEntity<ApiResponse<AdminDepositResponse>> approveDeposit(
+            @Valid @RequestBody ApproveDepositRequest request) {
+        AdminDepositResponse approved = adminService.approveDeposit(request);
         return ResponseEntity.ok(ApiResponse.ok("Deposit approved and credited", approved));
     }
 
