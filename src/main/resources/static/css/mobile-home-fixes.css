@@ -376,3 +376,12 @@ body.apex-mobile-app{
 .wallet-history-amount{margin-top:9px;color:#f2d879;font-size:1.2rem;font-weight:950}
 .wallet-history-meta,.wallet-history-utr{margin-top:4px;color:#80978d;font-size:.65rem;overflow-wrap:anywhere}
 .wallet-history-empty{padding:28px 10px;text-align:center;color:#8fa69c;font-size:.8rem}
+
+.deposit-single-action{grid-template-columns:1fr!important}
+.deposit-single-action .btn-submit-utr{width:100%;font-size:.9rem;letter-spacing:.01em}
+.wallet-history-status.status-pending_verification,
+.wallet-history-status.status-pending{background:rgba(240,207,104,.12);color:#f0d475}
+.wallet-history-status.status-paid{background:rgba(19,194,126,.16);color:#55e0aa}
+.wallet-history-status.status-under_review{background:rgba(142,100,222,.14);color:#b89bf3}
+.wallet-withdraw-panel.open{animation:apxPanelIn .18s ease-out}
+@keyframes apxPanelIn{from{opacity:.5;transform:translateY(-6px)}to{opacity:1;transform:none}}
