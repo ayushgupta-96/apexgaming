@@ -8,7 +8,7 @@
   <title>Apex Gaming | Deposit</title>
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/mobile-home-fixes.css?v=20261003">
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  
 <style>
 .deposit-screen{min-height:100vh;background:#03150d;color:#fff;padding-bottom:110px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.deposit-screen *{box-sizing:border-box}
 .deposit-head{height:56px;background:#03150d;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:relative;border-bottom:1px solid rgba(255,255,255,.04)}
@@ -104,8 +104,8 @@
       <div id="dispDepRefCode" class="reference-code">DEP-000</div>
       <div class="helper-text">My UPI QR & UPI ID</div>
       <div class="upi-payment-box">
-        <div class="qr-title">Scan to pay</div>
-        <div id="depositQrCode" class="qr-holder" aria-label="UPI payment QR code"></div>
+        <div class="qr-title">Scan this static UPI QR to pay</div>
+        <div class="qr-holder"><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=12&data=upi%3A%2F%2Fpay%3Fpa%3Dpaytmqr5i37ho%40ptys%26pn%3DApex%2520Gaming%26cu%3DINR" alt="Apex Gaming UPI QR" width="220" height="220" loading="eager" decoding="async"></div>
         <div class="upi-id-label">UPI ID</div>
         <div id="dispOfficialUpi" class="upi-id-value">paytmqr5i37ho@ptys</div>
       </div>
@@ -133,8 +133,7 @@
 document.addEventListener('DOMContentLoaded',function(){
   if(!localStorage.getItem('rmg_token')){window.location.href='/';return;}
   if(typeof fetchWallet==='function') fetchWallet();
-  const dep=document.getElementById('txtDepositBal'), out=document.getElementById('depositPageBalance');
-  if(dep&&out){const sync=()=>out.textContent=dep.textContent;sync();new MutationObserver(sync).observe(dep,{childList:true,subtree:true});}
+  if(typeof fetchWallet==="function") fetchWallet();
 });
 let currentDepositId = null;
 async function openWhatsAppPayment(){
