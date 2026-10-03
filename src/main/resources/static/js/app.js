@@ -154,7 +154,7 @@ async function fetchWallet() {
       if (walletThirdPercent) walletThirdPercent.textContent = "0%";
       if (depositPageBalance) depositPageBalance.textContent = Number(w.totalPlayableBalance ?? w.depositBalance ?? 0).toFixed(2);
       const mainBalance = Number(w.depositBalance ?? 0);
-      const withdrawalBalance = Number(w.winningsBalance ?? w.totalWithdrawableBalance ?? 0);
+      const withdrawalBalance = Number(w.totalWithdrawableBalance ?? w.winningsBalance ?? 0);
       const gameBalance = (mainBalance + withdrawalBalance).toFixed(2);
       gameWalletValues.forEach(node => { node.textContent = "₹" + gameBalance; });
     }
