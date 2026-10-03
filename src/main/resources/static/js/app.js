@@ -188,177 +188,40 @@ function connectWebSocket() {
 }
 
 let canvas, ctx;
-function initAviatorCanvas() { canvas = document.getElementById("flightCanvas"); if (!canvas) return; ctx = canvas.getContext("2d"); resizeCanvas(); window.addEventListener("resize", resizeCanvas); }
-function resizeCanvas() { if (!canvas) return; canvas.width = canvas.parentElement.clientWidth; canvas.height = canvas.parentElement.clientHeight; }
-function handleAviatorTick(state) { currentAviatorState=state; const mult=document.getElementById("multiplier-display"),sub=document.getElementById("aviatorStatusSubtitle"),seed=document.getElementById("aviatorSeedHash"); if(!mult||!sub)return; if(seed&&state.serverSeedHash)seed.textContent=state.serverSeedHash.substring(0,24)+"..."; if(state.status==="BETTING"){mult.classList.remove("crashed");mult.textContent=state.countdownSeconds+"s";sub.textContent="NEXT ROUND STARTS IN...";}else if(state.status==="FLYING"){mult.classList.remove("crashed");mult.textContent=Number(state.currentMultiplier).toFixed(2)+"x";sub.textContent="PLANE IS IN FLIGHT!";renderAviatorFlight(state.currentMultiplier);}else if(state.status==="CRASHED"){mult.classList.add("crashed");mult.textContent=Number(state.crashMultiplier||state.currentMultiplier).toFixed(2)+"x";sub.textContent="FLEW AWAY!";renderCrashExplosion();} const ribbon=document.getElementById("aviatorHistoryRibbon"); if(ribbon) renderHistoryPills(ribbon, state.recentHistory, m => Number(m).toFixed(2) + "x"); }
-let aviatorAnimFrame = null;
-let aviatorFlightMultiplier = 1;
-let aviatorFlightStartedAt = null;
-let aviatorFlewAway = false;
 
 function initAviatorCanvas() {
-  canvas = document.getElementById("flightCanvas");
-  if (!canvas) return;
-  ctx = canvas.getContext("2d");
-  resizeCanvas();
-  window.removeEventListener("resize", resizeCanvas);
-  window.addEventListener("resize", resizeCanvas);
+  if (window.ApexGameUI && typeof window.ApexGameUI.initAviator === "function") {
+    window.ApexGameUI.initAviator();
+  }
 }
 
 function resizeCanvas() {
-  if (!canvas || !canvas.parentElement) return;
-  const rect = canvas.parentElement.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  canvas.width = Math.max(1, Math.floor(rect.width * dpr));
-  canvas.height = Math.max(1, Math.floor(rect.height * dpr));
-  canvas.style.width = rect.width + "px";
-  canvas.style.height = rect.height + "px";
-  if (ctx) ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  if (window.ApexGameUI && typeof window.ApexGameUI.resizeAviatorCanvas === "function") {
+    window.ApexGameUI.resizeAviatorCanvas();
+  }
 }
 
-function lerp(start, end, amt) {
-  return (1 - amt) * start + amt * end;
+function handleAviatorTick(state) {
+  currentAviatorState = state;
+  if (window.ApexGameUI && typeof window.ApexGameUI.renderAviator === "function") {
+    window.ApexGameUI.renderAviator(state);
+  }
+  const ribbon = document.getElementById("aviatorHistoryRibbon");
+  if (ribbon && !window.ApexGameUI) {
+    renderHistoryPills(ribbon, state.recentHistory, m => Number(m).toFixed(2) + "x");
+  }
 }
 
-function renderAviatorFlight(mult) {
-  if (!ctx || !canvas || aviatorFlewAway) return;
-  aviatorFlightMultiplier = Number(mult) || 1;
-  if (!aviatorFlightStartedAt) aviatorFlightStartedAt = performance.now();
-  if (!aviatorAnimFrame) aviatorAnimFrame = requestAnimationFrame(animateAviatorFlight);
-}
-
-function animateAviatorFlight(now) {
-  if (!ctx || !canvas || aviatorFlewAway) {
-    aviatorAnimFrame = null;
+function handleColourTick(state) {
+  currentColourState = state;
+  if (window.ApexGameUI && typeof window.ApexGameUI.renderColour === "function") {
+    window.ApexGameUI.renderColour(state);
     return;
   }
-
-  const w = canvas.clientWidth || canvas.width;
-  const h = canvas.clientHeight || canvas.height;
-  const elapsed = aviatorFlightStartedAt ? now - aviatorFlightStartedAt : 0;
-  const timeProgress = Math.min(elapsed / 15000, 1);
-  const multiplierProgress = Math.min(Math.max((aviatorFlightMultiplier - 1) / 20, 0), 1);
-  const progress = Math.max(timeProgress * 0.35, multiplierProgress);
-
-  const startX = w * 0.05;
-  const startY = h * 0.90;
-  const endX = lerp(startX, w * 0.85, progress);
-  const endY = lerp(startY, h * 0.20, progress);
-  const controlX = endX;
-  const controlY = startY;
-
-  ctx.clearRect(0, 0, w, h);
-
-  // Soft graph/grid ambience.
-  ctx.save();
-  ctx.globalAlpha = 0.16;
-  ctx.strokeStyle = "#64748b";
-  ctx.lineWidth = 1;
-  for (let i = 1; i < 5; i++) {
-    const y = h * (0.15 + i * 0.15);
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
-    ctx.stroke();
-  }
-  ctx.restore();
-
-  // Filled flight area.
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(startX, startY);
-  ctx.quadraticCurveTo(controlX, controlY, endX, endY);
-  ctx.lineTo(endX, startY);
-  ctx.closePath();
-  const gradient = ctx.createLinearGradient(0, endY, 0, startY);
-  gradient.addColorStop(0, "rgba(234,34,70,.35)");
-  gradient.addColorStop(1, "rgba(234,34,70,0)");
-  ctx.fillStyle = gradient;
-  ctx.fill();
-  ctx.restore();
-
-  // Neon red curve.
-  ctx.save();
-  ctx.beginPath();
-  ctx.moveTo(startX, startY);
-  ctx.quadraticCurveTo(controlX, controlY, endX, endY);
-  ctx.strokeStyle = "#ea2246";
-  ctx.lineWidth = 4;
-  ctx.lineCap = "round";
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = "#ea2246";
-  ctx.stroke();
-  ctx.restore();
-
-  // Flight indicator.
-  ctx.save();
-  ctx.fillStyle = "#ea2246";
-  ctx.shadowBlur = 14;
-  ctx.shadowColor = "#ea2246";
-  ctx.beginPath();
-  ctx.arc(endX, endY, 8, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-
-  // Visible Aviator plane: follows the same curve as the multiplier.
-  const t = Math.max(0, Math.min(progress, 1));
-  const dx = 2 * (1 - t) * (controlX - startX) + 2 * t * (endX - controlX);
-  const dy = 2 * (1 - t) * (controlY - startY) + 2 * t * (endY - controlY);
-  const angle = Math.atan2(dy, dx);
-
-  ctx.save();
-  ctx.translate(endX, endY);
-  ctx.rotate(angle);
-  ctx.shadowBlur = 18;
-  ctx.shadowColor = "#ff3155";
-  ctx.fillStyle = "#ff3155";
-  ctx.strokeStyle = "#fff3f5";
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(18, 0);
-  ctx.lineTo(-10, -5);
-  ctx.lineTo(-4, -1.5);
-  ctx.lineTo(-16, 10);
-  ctx.lineTo(-12, 11);
-  ctx.lineTo(1, 3);
-  ctx.lineTo(8, 8);
-  ctx.lineTo(11, 7);
-  ctx.lineTo(6, 1.5);
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
-  ctx.restore();
-
-  aviatorAnimFrame = requestAnimationFrame(animateAviatorFlight);
-}
-
-function renderCrashExplosion() {
-  if (!ctx || !canvas) return;
-  if (aviatorAnimFrame) cancelAnimationFrame(aviatorAnimFrame);
-  aviatorAnimFrame = null;
-  aviatorFlewAway = true;
-
-  const w = canvas.clientWidth || canvas.width;
-  const h = canvas.clientHeight || canvas.height;
-  ctx.clearRect(0, 0, w, h);
-
-  ctx.save();
-  ctx.fillStyle = "rgba(21,23,30,.6)";
-  ctx.fillRect(0, 0, w, h);
-  ctx.restore();
-}
-
-function clearCanvas() {
-  if (aviatorAnimFrame) cancelAnimationFrame(aviatorAnimFrame);
-  aviatorAnimFrame = null;
-  aviatorFlightStartedAt = null;
-  aviatorFlightMultiplier = 1;
-  aviatorFlewAway = false;
-  if (ctx && canvas) {
-    const w = canvas.clientWidth || canvas.width;
-    const h = canvas.clientHeight || canvas.height;
-    ctx.clearRect(0, 0, w, h);
-  }
+  const round = document.getElementById("colourRoundUuid");
+  const timer = document.getElementById("colourTimerBadge");
+  if (round) round.textContent = state.roundUuid || "-";
+  if (timer) timer.textContent = String(state.secondsRemaining ?? 0).padStart(2, "0");
 }
 
 async function placeAviatorBet(){if(!token){openModal("loginModal");return;}if(!currentAviatorState)return;const amt=document.getElementById("aviatorBetAmount")?.value,auto=document.getElementById("aviatorAutoCashout")?.value||null;try{const res=await fetch("/api/games/aviator/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentAviatorState.roundUuid,amount:amt,autoCashoutMultiplier:auto})});const data=await safeJsonResponse(res);if(data.success){
@@ -492,8 +355,11 @@ function setupAviatorControls() {
     btn.addEventListener("click", () => {
       document.querySelectorAll("[data-aviator-mode]").forEach(item => item.classList.remove("active"));
       btn.classList.add("active");
+      const autoField = document.getElementById("aviatorAutoField");
       const auto = document.getElementById("aviatorAutoCashout");
-      if (auto) auto.focus();
+      const isAuto = btn.dataset.aviatorMode === "auto";
+      if (autoField) autoField.classList.toggle("visible", isAuto);
+      if (auto && isAuto) auto.focus();
     });
   });
 
