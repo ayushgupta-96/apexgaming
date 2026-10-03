@@ -1,8 +1,8 @@
 const HOME_GAMES = [
   { name: 'Aviator', type: 'aviator', image: '/images/games/aviator.webp' },
-  { name: 'Fruit 777', type: 'fruit', image: '/images/games/fruit.webp' },
+  { name: 'Fruit 777', type: 'fruit', image: '/images/games/fruit.svg' },
   { name: 'Ludo', type: 'ludo', image: '/images/games/ludo.webp' },
-  { name: 'Colour Prediction', type: 'colour', image: '/images/games/colour.webp' },
+  { name: 'Colour Prediction', type: 'colour', image: '/images/games/colour.svg' },
   { name: 'Mines', type: 'mines', image: '/images/games/mines.svg' }
 ];
 
