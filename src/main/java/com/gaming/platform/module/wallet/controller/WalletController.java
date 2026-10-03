@@ -3,6 +3,7 @@ package com.gaming.platform.module.wallet.controller;
 import com.gaming.platform.common.exception.BusinessException;
 import com.gaming.platform.common.response.ApiResponse;
 import com.gaming.platform.common.security.SecurityUtils;
+import com.gaming.platform.module.wallet.dto.WalletResponse;
 import com.gaming.platform.module.wallet.entity.Transaction;
 import com.gaming.platform.module.wallet.entity.Wallet;
 import com.gaming.platform.module.wallet.repository.TransactionRepository;
@@ -27,11 +28,21 @@ public class WalletController {
 
     @GetMapping
     @Operation(summary = "Get user wallet balances (deposit, winnings, bonus, locked)")
-    public ResponseEntity<ApiResponse<Wallet>> getWallet() {
+    public ResponseEntity<ApiResponse<WalletResponse>> getWallet() {
         Long userId = SecurityUtils.getCurrentUserId();
         Wallet wallet = walletRepository.findByUserId(userId)
                 .orElseThrow(() -> new BusinessException("Wallet not found"));
-        return ResponseEntity.ok(ApiResponse.ok(wallet));
+
+        WalletResponse response = WalletResponse.builder()
+                .depositBalance(wallet.getDepositBalance())
+                .winningsBalance(wallet.getWinningsBalance())
+                .bonusBalance(wallet.getBonusBalance())
+                .lockedBalance(wallet.getLockedBalance())
+                .totalPlayableBalance(wallet.getTotalPlayableBalance())
+                .totalWithdrawableBalance(wallet.getTotalWithdrawableBalance())
+                .build();
+
+        return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @GetMapping("/transactions")
