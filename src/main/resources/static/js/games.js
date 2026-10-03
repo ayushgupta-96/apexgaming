@@ -34,10 +34,52 @@
   }
 
   function planePath(c,x,y,scale,angle){
-    c.save(); c.translate(x,y); c.rotate(angle); c.scale(scale,scale);
-    c.beginPath(); c.moveTo(22,0); c.lineTo(-11,-5); c.lineTo(-4,-1); c.lineTo(-18,10);
-    c.lineTo(-13,11); c.lineTo(0,3); c.lineTo(8,8); c.lineTo(12,7); c.lineTo(6,1);
-    c.closePath(); c.fillStyle="#f04b62"; c.strokeStyle="#ffe6ea"; c.lineWidth=1.1; c.fill(); c.stroke(); c.restore();
+    c.save();
+    c.translate(x,y);
+    c.rotate(angle);
+    c.scale(scale,scale);
+
+    // Custom aircraft silhouette: fuselage, swept wings, tail and cockpit.
+    c.shadowColor="rgba(255,70,100,.45)";
+    c.shadowBlur=14;
+    c.beginPath();
+    c.moveTo(30,0);
+    c.quadraticCurveTo(20,-4,9,-4);
+    c.lineTo(-13,-3);
+    c.lineTo(-28,-10);
+    c.lineTo(-31,-8);
+    c.lineTo(-17,1);
+    c.lineTo(-31,10);
+    c.lineTo(-28,12);
+    c.lineTo(-5,5);
+    c.lineTo(5,7);
+    c.lineTo(12,15);
+    c.lineTo(16,14);
+    c.lineTo(12,5);
+    c.lineTo(24,3);
+    c.quadraticCurveTo(29,2,30,0);
+    c.closePath();
+    const body=c.createLinearGradient(-30,-10,30,10);
+    body.addColorStop(0,"#ff6b80");
+    body.addColorStop(.5,"#ef3f5b");
+    body.addColorStop(1,"#b81e39");
+    c.fillStyle=body;
+    c.fill();
+
+    c.shadowBlur=0;
+    c.beginPath();
+    c.moveTo(4,-3); c.lineTo(13,-12); c.lineTo(19,-11); c.lineTo(12,-2); c.closePath();
+    c.fillStyle="#ff9aaa"; c.fill();
+
+    c.beginPath();
+    c.moveTo(8,0); c.quadraticCurveTo(17,-1,22,0); c.lineTo(16,3); c.lineTo(8,3); c.closePath();
+    c.fillStyle="#e8eff0"; c.fill();
+
+    c.beginPath();
+    c.arc(12,0,2.2,0,Math.PI*2);
+    c.fillStyle="#6fd4ff";
+    c.fill();
+    c.restore();
   }
 
   function drawAviator(ts){
@@ -125,6 +167,7 @@
     }
     if(wrap){
       wrap.classList.toggle("result",state.status==="RESULT");
+      wrap.classList.toggle("locked",state.status==="LOCKED");
       wrap.dataset.winningColor=state.winningColor||"";
     }
     const result=el("colourLiveResult");
