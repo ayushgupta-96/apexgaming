@@ -4,7 +4,7 @@ import com.gaming.platform.common.response.ApiResponse;
 import com.gaming.platform.common.security.SecurityUtils;
 import com.gaming.platform.module.payment.dto.WithdrawalCreateRequest;
 import com.gaming.platform.module.payment.dto.WithdrawalResponse;
-import com.gaming.platform.module.payment.entity.WithdrawalRequest;
+import com.gaming.platform.module.payment.dto.UserWithdrawalResponse;
 import com.gaming.platform.module.payment.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,9 +33,9 @@ public class WithdrawalController {
 
     @GetMapping("/my")
     @Operation(summary = "Get current player withdrawal history")
-    public ResponseEntity<ApiResponse<List<WithdrawalRequest>>> getMyWithdrawals() {
+    public ResponseEntity<ApiResponse<List<UserWithdrawalResponse>>> getMyWithdrawals() {
         Long userId = SecurityUtils.getCurrentUserId();
-        List<WithdrawalRequest> list = paymentService.getUserWithdrawals(userId);
+        List<UserWithdrawalResponse> list = paymentService.getUserWithdrawals(userId);
         return ResponseEntity.ok(ApiResponse.ok(list));
     }
 }
