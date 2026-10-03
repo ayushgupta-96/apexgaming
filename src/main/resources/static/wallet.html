@@ -339,7 +339,7 @@
         <button class="wallet-action withdraw" onclick="document.getElementById('withdrawPanel').classList.toggle('open')">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><rect x="10" y="9" width="44" height="46" rx="5" fill="#EAF3FF"/><rect x="17" y="18" width="30" height="18" rx="3" fill="#5B91E4"/><path d="M22 44h20" stroke="#4A7DCC" stroke-width="5" stroke-linecap="round"/><path d="M28 25h8" stroke="#EAF3FF" stroke-width="4" stroke-linecap="round"/></svg></span><span>Withdraw</span>
         </button>
-        <button class="wallet-action dep-history" onclick="alert('Deposit history will appear here.')">
+        <button class="wallet-action dep-history" onclick="openDepositHistory()">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M15 8h34v48H15z" fill="#FFF2F4"/><path d="M24 18h16M24 28h16M24 38h16M24 48h10" stroke="#D9556C" stroke-width="4" stroke-linecap="round"/></svg></span><span>Deposit<br>history</span>
         </button>
         <button class="wallet-action wdr-history" onclick="alert('Withdrawal history will appear here.')">
@@ -382,7 +382,19 @@
     </section>
   </main>
 
-  <nav class="bottom-nav" aria-label="Mobile bottom navigation">
+  <div id="depositHistoryModal" class="wallet-history-modal" role="dialog" aria-modal="true" aria-labelledby="depositHistoryTitle" hidden>
+  <div class="wallet-history-sheet">
+    <button class="wallet-history-close" type="button" onclick="closeDepositHistory()" aria-label="Close">×</button>
+    <div class="wallet-history-kicker">TRANSACTIONS</div>
+    <h2 id="depositHistoryTitle">Deposit History</h2>
+    <p class="wallet-history-subtitle">Your recent deposit requests and verification status.</p>
+    <div id="depositHistoryList" class="wallet-history-list">
+      <div class="wallet-history-empty">Loading deposit history…</div>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav" aria-label="Mobile bottom navigation">
     <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
     <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games"><span>✦</span><small>Games</small></a>
     <a class="bottom-nav-btn center-action play-action" href="/" data-tab="aviator" aria-label="Play"><span>▶</span><small>Play</small></a>
@@ -409,6 +421,85 @@
       });
       const dep = document.getElementById('txtDepositBal');
       if (dep) observer.observe(dep, {childList:true,subtree:true});
+    });
+
+    async function openDepositHistory() {
+      const modal = document.getElementById('depositHistoryModal');
+      const list = document.getElementById('depositHistoryList');
+      if (!modal || !list) return;
+      modal.hidden = false;
+      document.body.classList.add('history-open');
+      list.replaceChildren();
+      const loading = document.createElement('div');
+      loading.className = 'wallet-history-empty';
+      loading.textContent = 'Loading deposit history…';
+      list.appendChild(loading);
+      try {
+        const res = await fetch('/api/deposits/my', {
+          headers: { 'Authorization': 'Bearer ' + localStorage.getItem('rmg_token') }
+        });
+        const data = await safeJsonResponse(res);
+        if (!data.success) throw new Error(data.message || 'Unable to load history');
+        const rows = Array.isArray(data.data) ? data.data : [];
+        list.replaceChildren();
+        if (!rows.length) {
+          const empty = document.createElement('div');
+          empty.className = 'wallet-history-empty';
+          empty.textContent = 'No deposit requests yet.';
+          list.appendChild(empty);
+          return;
+        }
+        rows.forEach(dep => {
+          const card = document.createElement('article');
+          card.className = 'wallet-history-item';
+
+          const top = document.createElement('div');
+          top.className = 'wallet-history-item-top';
+
+          const ref = document.createElement('strong');
+          ref.textContent = dep.referenceCode || 'Deposit';
+          const status = document.createElement('span');
+          status.className = 'wallet-history-status status-' + String(dep.status || '').toLowerCase();
+          status.textContent = String(dep.status || 'UNKNOWN').replaceAll('_', ' ');
+          top.append(ref, status);
+
+          const amount = document.createElement('div');
+          amount.className = 'wallet-history-amount';
+          amount.textContent = '₹' + Number(dep.amount || 0).toFixed(2);
+
+          const meta = document.createElement('div');
+          meta.className = 'wallet-history-meta';
+          const date = dep.createdAt ? new Date(dep.createdAt).toLocaleString() : 'Date unavailable';
+          meta.textContent = (dep.paymentMethod || 'UPI') + ' • ' + date;
+
+          card.append(top, amount, meta);
+          if (dep.utrNumber) {
+            const utr = document.createElement('div');
+            utr.className = 'wallet-history-utr';
+            utr.textContent = 'UTR: ' + dep.utrNumber;
+            card.appendChild(utr);
+          }
+          list.appendChild(card);
+        });
+      } catch (err) {
+        list.replaceChildren();
+        const error = document.createElement('div');
+        error.className = 'wallet-history-empty';
+        error.textContent = 'Unable to load deposit history. Please try again.';
+        list.appendChild(error);
+        console.error('Deposit history error', err);
+      }
+    }
+
+    function closeDepositHistory() {
+      const modal = document.getElementById('depositHistoryModal');
+      if (modal) modal.hidden = true;
+      document.body.classList.remove('history-open');
+    }
+
+    document.addEventListener('click', function (event) {
+      const modal = document.getElementById('depositHistoryModal');
+      if (modal && !modal.hidden && event.target === modal) closeDepositHistory();
     });
   </script>
 </body>
