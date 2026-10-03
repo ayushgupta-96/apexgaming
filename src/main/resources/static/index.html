@@ -56,9 +56,9 @@
       </div>
       <div class="apx-cashout" id="aviatorCashoutRow"><button id="btnAviatorCashout" class="apx-action" type="button" style="display:none" onclick="cashoutAviator()"><small>Active bet</small><strong>CASH OUT ₹<span id="cashoutAmountDisplay">0.00</span></strong></button><div id="aviatorNoBetNotice" class="apx-muted">No active bet in this round</div></div>
     </section>
-    <section class="apx-game-history" aria-label="Aviator game history">
-      <div class="apx-history-head"><strong>Game history</strong><span>Latest rounds</span></div>
-      <div class="apx-history" id="aviatorHistoryRibbon"></div>
+    <section class="apx-bet-history" aria-label="Aviator bet history">
+      <div class="apx-history-head"><strong>Bet history</strong><span>Wins & losses</span></div>
+      <div class="apx-bet-history-list" id="aviatorBetHistory"></div>
     </section>
   </div>
 </section>
@@ -77,11 +77,18 @@
         <p class="apx-casino-sub">Choose a colour or exact number before the table locks.</p>
         <div class="apx-round-row"><span id="colourRoundUuid" class="apx-round-id">CP-00000000</span><div id="colourTimerBadge" class="apx-timer" style="--timer-progress:100"><div class="apx-timer-inner">60</div></div></div>
       </section>
-      <section id="colourWheel" class="apx-wheel" aria-label="Casino colour wheel">
+      <section id="colourWheel" class="apx-wheel" aria-label="Colour result wheel">
         <div class="apx-wheel-disc" aria-hidden="true">
-          <div class="apx-wheel-markers"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+          <div class="apx-wheel-sectors">
+            <span class="wheel-sector red"><b>0</b></span><span class="wheel-sector green"><b>1</b></span>
+            <span class="wheel-sector red"><b>2</b></span><span class="wheel-sector green"><b>3</b></span>
+            <span class="wheel-sector red"><b>4</b></span><span class="wheel-sector green"><b>5</b></span>
+            <span class="wheel-sector red"><b>6</b></span><span class="wheel-sector green"><b>7</b></span>
+            <span class="wheel-sector red"><b>8</b></span><span class="wheel-sector green"><b>9</b></span>
+          </div>
+          <div class="apx-wheel-rim"></div>
         </div>
-        <div class="apx-wheel-center"><strong>APEX</strong><span>ROYAL</span></div>
+        <div class="apx-wheel-center"><strong id="colourWheelCenterNumber">?</strong><span id="colourWheelCenterLabel">NEXT RESULT</span></div>
         <div class="apx-wheel-pointer" aria-hidden="true"></div>
       </section>
       <div id="colourLiveResult" class="apx-casino-foot"><span>OPEN FOR PREDICTIONS</span><span>LIVE</span></div>
@@ -96,9 +103,9 @@
         <div class="apx-number-grid">
           <button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','0')">0</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','1')">1</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','2')">2</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','3')">3</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','4')">4</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','5')">5</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','6')">6</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','7')">7</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','8')">8</button><button class="apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','9')">9</button>
         </div>
-        <div class="apx-game-history apx-colour-history">
-          <div class="apx-history-head"><strong>Game history</strong><span>Latest results</span></div>
-          <div class="apx-results" id="colourHistoryRibbon" aria-label="Recent colour results"></div>
+        <div class="apx-bet-history apx-colour-history">
+          <div class="apx-history-head"><strong>Bet history</strong><span>Wins & losses</span></div>
+          <div class="apx-bet-history-list" id="colourBetHistory"></div>
         </div>
       </section>
     </div>
