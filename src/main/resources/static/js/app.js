@@ -23,6 +23,14 @@ function switchTab(tabId) {
   const target = document.getElementById("tab-" + tabId);
   if (target) target.style.display = "block";
   if (tabId === "wallet") fetchWallet();
+  if (tabId === "aviator" || tabId === "colour") {
+    fetchWallet();
+    loadBetHistory(tabId === "aviator" ? "AVIATOR" : "COLOUR_PREDICTION");
+    if (window.ApexGameUI && typeof window.ApexGameUI.resizeAviatorCanvas === "function") {
+      requestAnimationFrame(() => window.ApexGameUI.resizeAviatorCanvas());
+      setTimeout(() => window.ApexGameUI.resizeAviatorCanvas(), 120);
+    }
+  }
   if (tabId === "ludo" && currentLudoMatch) drawLudoBoard();
 }
 
@@ -161,6 +169,97 @@ async function fetchWallet() {
   } catch (e) { console.error("Wallet error", e); }
 }
 
+function formatBetSelection(selection) {
+  const raw = String(selection || "BET");
+  const parts = raw.split(":");
+  if (parts.length < 2) return raw;
+  const type = parts[0] === "NUMBER" ? "Number" : "Colour";
+  return type + ": " + parts.slice(1).join(":");
+}
+
+function renderBetHistory(container, rows) {
+  if (!container) return;
+  container.replaceChildren();
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "apx-bet-history-empty";
+    empty.textContent = "No bets placed yet.";
+    container.appendChild(empty);
+    return;
+  }
+
+  rows.forEach(item => {
+    const row = document.createElement("article");
+    row.className = "apx-bet-history-row " + String(item.status || "PLACED").toLowerCase();
+
+    const main = document.createElement("div");
+    main.className = "apx-bet-history-main";
+
+    const game = document.createElement("strong");
+    game.textContent = item.gameType === "AVIATOR" ? "Aviator" : "Colour Prediction";
+
+    const selection = document.createElement("span");
+    selection.textContent = formatBetSelection(item.selection);
+
+    const round = document.createElement("small");
+    round.textContent = String(item.roundUuid || "Round");
+
+    main.append(game, selection, round);
+
+    const right = document.createElement("div");
+    right.className = "apx-bet-history-result";
+
+    const status = document.createElement("span");
+    status.className = "apx-bet-status";
+    status.textContent = item.status === "WON" ? "WON" : item.status === "LOST" ? "LOST" : String(item.status || "PLACED");
+
+    const amount = document.createElement("strong");
+    const payout = Number(item.payoutAmount || 0);
+    const stake = Number(item.amount || 0);
+    amount.textContent = item.status === "WON" ? "+₹" + payout.toFixed(2) : "₹" + stake.toFixed(2);
+
+    const meta = document.createElement("small");
+    meta.textContent = item.status === "WON"
+      ? "Payout"
+      : item.status === "LOST" ? "Lost" : "Stake";
+
+    right.append(status, amount, meta);
+    row.append(main, right);
+    container.appendChild(row);
+  });
+}
+
+async function loadBetHistory(gameType) {
+  const container = document.getElementById(gameType === "AVIATOR" ? "aviatorBetHistory" : "colourBetHistory");
+  if (!container || !token) return;
+
+  container.replaceChildren();
+  const loading = document.createElement("div");
+  loading.className = "apx-bet-history-empty";
+  loading.textContent = "Loading bet history…";
+  container.appendChild(loading);
+
+  try {
+    const res = await fetch("/api/games/bets/history?gameType=" + encodeURIComponent(gameType) + "&size=20", {
+      headers: { "Authorization": "Bearer " + token }
+    });
+    const data = await safeJsonResponse(res);
+    if (data.success) {
+      renderBetHistory(container, data.data);
+    } else {
+      renderBetHistory(container, []);
+    }
+  } catch (e) {
+    console.error("Bet history error", e);
+    container.replaceChildren();
+    const error = document.createElement("div");
+    error.className = "apx-bet-history-empty";
+    error.textContent = "Bet history unavailable right now.";
+    container.appendChild(error);
+  }
+}
+
 async function initiateDeposit() {
   if (!token) { window.location.href = "/"; return; }
   const input = document.getElementById("depositAmountInput"); if (!input) return;
@@ -212,10 +311,7 @@ function handleAviatorTick(state) {
   if (window.ApexGameUI && typeof window.ApexGameUI.renderAviator === "function") {
     window.ApexGameUI.renderAviator(state);
   }
-  const ribbon = document.getElementById("aviatorHistoryRibbon");
-  if (ribbon && !window.ApexGameUI) {
-    renderHistoryPills(ribbon, state.recentHistory, m => Number(m).toFixed(2) + "x");
-  }
+  if (currentAviatorState?.status === "CRASHED") loadBetHistory("AVIATOR");
 }
 
 function handleColourTick(state) {
