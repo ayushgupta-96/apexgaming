@@ -5,7 +5,7 @@
 
   const ui = {
     aviator: {
-      canvas:null, ctx:null, raf:0, lastTs:0, target:1, visual:1,
+      canvas:null, ctx:null, observer:null, raf:0, lastTs:0, target:1, visual:1,
       phase:"BETTING", crashed:false, roundKey:null, width:0, height:0
     },
     colour: { lastRound:null, lastResult:null, wheelRotation:0 }
@@ -30,6 +30,11 @@
     resizeAviatorCanvas();
     window.addEventListener("resize",resizeAviatorCanvas,{passive:true});
     window.addEventListener("orientationchange",()=>setTimeout(resizeAviatorCanvas,120),{passive:true});
+    const stage=s.closest(".apx-aviator-stage");
+    if(stage && "ResizeObserver" in window && !ui.aviator.observer){
+      ui.aviator.observer=new ResizeObserver(()=>resizeAviatorCanvas());
+      ui.aviator.observer.observe(stage);
+    }
     if(!ui.aviator.raf) ui.aviator.raf=requestAnimationFrame(drawAviator);
   }
 
