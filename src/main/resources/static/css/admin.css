@@ -53,3 +53,31 @@ body.admin-page{margin:0;background:
  .admin-table{min-width:760px}.admin-table-wrap{padding:4px 7px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}.admin-table th{position:sticky;top:0}
  .admin-split{gap:9px}.admin-chat{min-height:520px}.admin-messages{min-height:230px;max-height:380px}.admin-chat-reply{padding:9px}.admin-chat-reply button{padding:0 12px}
 }
+
+
+/* Hamburger admin navigation */
+.admin-menu-btn{display:none;border:1px solid var(--adm-line);background:#08241b;color:#f1d979;border-radius:11px;width:42px;height:42px;font-size:20px;cursor:pointer;flex:0 0 auto}
+.admin-menu-overlay{position:fixed;inset:0;z-index:180;background:rgba(0,5,3,.7);backdrop-filter:blur(4px)}
+.admin-menu-overlay[hidden]{display:none}
+.admin-side-menu{position:fixed;top:0;left:0;bottom:0;width:min(320px,86vw);z-index:200;padding:14px;background:linear-gradient(180deg,#071f17,#020d09);border-right:1px solid rgba(240,207,104,.18);box-shadow:24px 0 70px rgba(0,0,0,.55);transform:translateX(-105%);transition:transform .22s ease;overflow-y:auto}
+.admin-side-menu.open{transform:translateX(0)}
+.admin-side-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 4px 15px;border-bottom:1px solid var(--adm-line)}
+.admin-side-head strong{display:block;color:#f4dc82;font-size:14px}.admin-side-head small{display:block;margin-top:3px;color:var(--adm-muted);font-size:9px}
+.admin-side-head button{border:1px solid var(--adm-line);background:#08241b;color:#dcebe4;border-radius:10px;width:36px;height:36px;font-size:22px;cursor:pointer}
+.admin-side-menu .admin-nav{position:static;margin:14px 0 0;padding:0;display:grid;gap:7px;overflow:visible;border:0;background:transparent;backdrop-filter:none}
+.admin-side-menu .admin-tab-btn{width:100%;text-align:left;padding:13px 14px;min-height:46px;border:1px solid rgba(68,220,157,.1);background:#061b14;color:#9ab0a6;border-radius:13px}
+.admin-side-menu .admin-tab-btn.active{color:#f6df83;background:linear-gradient(90deg,rgba(240,207,104,.14),rgba(32,201,135,.06));border-color:rgba(240,207,104,.18)}
+.admin-side-menu .admin-tab-btn .count{float:right;margin-top:0}
+@media(max-width:700px){
+  .admin-menu-btn{display:grid;place-items:center}
+  .admin-brand{gap:7px}
+  .admin-brand-copy strong{font-size:10px}
+  .admin-brand-copy span{font-size:7px}
+  .admin-topbar{z-index:210}
+  .admin-nav{display:none}
+  .admin-side-menu .admin-nav{display:grid}
+}
+@media(min-width:701px){
+  .admin-menu-btn{display:grid;place-items:center}
+  .admin-side-menu{width:340px}
+}
