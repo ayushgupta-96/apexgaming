@@ -11,15 +11,33 @@ document.addEventListener("DOMContentLoaded", () => {
   loadAuditLogs();
 });
 
+const ADMIN_TABS = {
+  dashboard: ["Operations Overview", "Monitor the platform, money movement and support queues."],
+  deposits: ["Deposit Verification", "Review manual UPI deposits before wallet credit."],
+  withdrawals: ["Withdrawal Queue", "Settle verified payouts and record payout UTRs."],
+  whatsapp: ["Support Inbox", "Review and respond to player conversations."],
+  aml: ["Risk & AML", "Review velocity alerts and fraud signals."],
+  audit: ["Audit Trail", "Inspect administrative actions and reasons."]
+};
+
 function switchAdminTab(tabId) {
-  document.querySelectorAll(".admin-tab").forEach(el => el.style.display = "none");
-  document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".admin-section").forEach(el => el.classList.remove("active"));
+  document.querySelectorAll(".admin-tab-btn").forEach(el => el.classList.remove("active"));
 
   const target = document.getElementById("adm-tab-" + tabId);
-  if (target) target.style.display = "block";
+  if (target) target.classList.add("active");
 
-  const btn = Array.from(document.querySelectorAll(".tab-btn")).find(b => b.getAttribute("onclick").includes(tabId));
-  if (btn) btn.classList.add("active");
+  const btn = document.querySelector('.admin-tab-btn[data-tab="' + tabId + '"]');
+  if (btn) {
+    btn.classList.add("active");
+    btn.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }
+
+  const meta = ADMIN_TABS[tabId] || ADMIN_TABS.dashboard;
+  const title = document.getElementById("adminSectionTitle");
+  const subtitle = document.getElementById("adminSectionSubtitle");
+  if (title) title.textContent = meta[0];
+  if (subtitle) subtitle.textContent = meta[1];
 
   if (tabId === "deposits") loadDeposits();
   if (tabId === "withdrawals") loadWithdrawals();
@@ -29,11 +47,17 @@ function switchAdminTab(tabId) {
 }
 
 function openModal(id) {
-  document.getElementById(id)?.classList.add("active");
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.hidden = false;
+  modal.classList.add("active");
 }
 
 function closeModal(id) {
-  document.getElementById(id)?.classList.remove("active");
+  const modal = document.getElementById(id);
+  if (!modal) return;
+  modal.classList.remove("active");
+  modal.hidden = true;
 }
 
 function safeExternalUrl(value) {
@@ -274,7 +298,7 @@ async function loadTickets() {
 
       data.data.content.forEach(t => {
         const div = document.createElement("div");
-        div.className = "balance-chip";
+        div.className = "admin-ticket";
         div.style.cursor = "pointer";
         div.onclick = () => openTicketChat(t.id, t.senderPhone, t.relatedReferenceCode, t.status);
 
