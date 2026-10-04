@@ -119,11 +119,20 @@ async function doLogin() {
       }
 
       closeModal("loginModal");
-      onLoginSuccess();
 
       const returnTo = loginParams.get("return");
+      if (isAdminLogin) {
+        // Do not run the player-session UI flow with an admin token.
+        // The admin console has its own session bootstrap and authorization checks.
+        const adminTarget = returnTo && returnTo.startsWith("/") ? returnTo : "/admin.html";
+        window.location.replace(adminTarget);
+        return;
+      }
+
+      onLoginSuccess();
+
       if (returnTo && returnTo.startsWith("/")) {
-        window.location.href = returnTo;
+        window.location.replace(returnTo);
         return;
       }
 
