@@ -107,39 +107,67 @@ async function loadDashboard() {
 // Deposit Approvals Queue
 // ----------------------------------------------------
 async function loadDeposits() {
+  const tbody = document.getElementById("depositsTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="7" class="admin-empty">Loading deposit requests…</td></tr>`;
+
   try {
-    const res = await fetch("/api/admin/deposits?page=0&size=50", { headers: getAuthHeaders() });
-    const data = await res.json();
-    if (data.success) {
-      const tbody = document.getElementById("depositsTableBody");
-      tbody.innerHTML = "";
+    const res = await fetch("/api/admin/deposits?page=0&size=50", {
+      headers: getAuthHeaders(),
+      cache: "no-store"
+    });
 
-      data.data.content.forEach(dep => {
-        const tr = document.createElement("tr");
-        const statusBadge = dep.status === "APPROVED" ? "badge-approved" : (dep.status === "REJECTED" ? "badge-rejected" : "badge-pending");
-
-        tr.innerHTML = `
-          <td><b style="color: var(--accent-gold);">${escapeHtml(dep.referenceCode)}</b></td>
-          <td>${escapeHtml(dep.phoneNumber || dep.user?.phoneNumber || "-")}</td>
-          <td><b>₹${Number(dep.amount).toFixed(2)}</b></td>
-          <td><span class="badge ${statusBadge}">${escapeHtml(dep.status)}</span></td>
-          <td>
-            ${dep.utrNumber ? `<div style="font-size: 0.8rem;">UTR: <b>${escapeHtml(dep.utrNumber)}</b></div>` : ''}
-            ${dep.proofImageUrl ? `<a href="${safeExternalUrl(dep.proofImageUrl)}" target="_blank" style="color: #60a5fa; font-size: 0.8rem;">View Screenshot</a>` : 'No proof attached'}
-          </td>
-          <td>${new Date(dep.createdAt).toLocaleString()}</td>
-          <td>
-            ${dep.status !== 'APPROVED' ? `
-              <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="approveDeposit(${dep.id})">Approve</button>
-              <button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="rejectDeposit(${dep.id})">Reject</button>
-            ` : '<span style="color: var(--accent-emerald);">Credited ✓</span>'}
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (_) {
+      data = null;
     }
+
+    if (!res.ok) {
+      const message = data?.message || `HTTP ${res.status}`;
+      throw new Error(message);
+    }
+
+    if (!data?.success) {
+      throw new Error(data?.message || "Deposit queue request failed");
+    }
+
+    const page = data.data;
+    const deposits = Array.isArray(page?.content) ? page.content : [];
+
+    tbody.innerHTML = "";
+
+    if (!deposits.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="admin-empty">No pending or under-review deposit requests.</td></tr>`;
+      return;
+    }
+
+    deposits.forEach(dep => {
+      const tr = document.createElement("tr");
+      const statusBadge = dep.status === "UNDER_REVIEW" ? "badge-verified" : "badge-pending";
+
+      tr.innerHTML = `
+        <td><b style="color: var(--accent-gold);">${escapeHtml(dep.referenceCode)}</b></td>
+        <td>${escapeHtml(dep.phoneNumber || dep.user?.phoneNumber || "-")}</td>
+        <td><b>₹${Number(dep.amount || 0).toFixed(2)}</b></td>
+        <td><span class="admin-badge ${statusBadge}">${escapeHtml(dep.status)}</span></td>
+        <td>
+          ${dep.utrNumber ? `<div style="font-size: 0.8rem;">UTR: <b>${escapeHtml(dep.utrNumber)}</b></div>` : '<span style="color:#81978e">UTR not submitted</span>'}
+          ${dep.proofImageUrl ? `<a href="${safeExternalUrl(dep.proofImageUrl)}" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; font-size: 0.8rem;">View Screenshot</a>` : ''}
+        </td>
+        <td>${dep.createdAt ? new Date(dep.createdAt).toLocaleString() : "-"}</td>
+        <td>
+          <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="approveDeposit(${Number(dep.id)})">Approve</button>
+          <button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="rejectDeposit(${Number(dep.id)})">Reject</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
   } catch (e) {
     console.error("Deposits load error", e);
+    tbody.innerHTML = `<tr><td colspan="7" class="admin-empty" style="color:#ff8b9a">Could not load deposit requests: ${escapeHtml(e.message || "Unknown error")}</td></tr>`;
   }
 }
 
