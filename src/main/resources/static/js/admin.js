@@ -238,7 +238,7 @@ async function confirmApproveDeposit() {
     return;
   }
 
-  if (!/^\\d{6}$/.test(totpRaw)) {
+  if (!/^\d{6}$/.test(totpRaw)) {
     alert("Enter a valid 6-digit Admin 2FA code from your authenticator app.");
     document.getElementById("approvalTotpInput")?.focus();
     return;
