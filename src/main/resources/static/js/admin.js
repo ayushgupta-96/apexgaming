@@ -29,6 +29,23 @@ document.addEventListener("DOMContentLoaded", () => {
   loadAuditLogs();
 });
 
+function toggleAdminMenu(force) {
+  const menu = document.getElementById("adminSideMenu");
+  const overlay = document.getElementById("adminMenuOverlay");
+  const button = document.getElementById("adminMenuBtn");
+  if (!menu || !overlay) return;
+
+  const shouldOpen = typeof force === "boolean"
+    ? force
+    : !menu.classList.contains("open");
+
+  menu.classList.toggle("open", shouldOpen);
+  overlay.hidden = !shouldOpen;
+  menu.setAttribute("aria-hidden", String(!shouldOpen));
+  if (button) button.setAttribute("aria-expanded", String(shouldOpen));
+  document.body.style.overflow = shouldOpen ? "hidden" : "";
+}
+
 const ADMIN_TABS = {
   dashboard: ["Operations Overview", "Monitor the platform, money movement and support queues."],
   deposits: ["Deposit Verification", "Review manual UPI deposits before wallet credit."],
@@ -62,6 +79,9 @@ function switchAdminTab(tabId) {
   if (tabId === "whatsapp") loadTickets();
   if (tabId === "aml") loadAml();
   if (tabId === "audit") loadAuditLogs();
+
+  // Close the drawer after choosing a section.
+  toggleAdminMenu(false);
 }
 
 function openModal(id) {
