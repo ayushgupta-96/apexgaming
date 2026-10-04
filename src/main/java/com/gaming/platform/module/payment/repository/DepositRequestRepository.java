@@ -14,5 +14,6 @@ public interface DepositRequestRepository extends JpaRepository<DepositRequest, 
     Optional<DepositRequest> findByReferenceCode(String referenceCode);
     List<DepositRequest> findByUserIdOrderByCreatedAtDesc(Long userId);
     Page<DepositRequest> findByStatusOrderByCreatedAtAsc(DepositRequest.DepositStatus status, Pageable pageable);
+    Page<DepositRequest> findByStatusInOrderByCreatedAtDesc(List<DepositRequest.DepositStatus> statuses, Pageable pageable);
     long countByStatus(DepositRequest.DepositStatus status);
 }
