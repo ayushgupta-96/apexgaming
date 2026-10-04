@@ -1,5 +1,5 @@
 // Admin Console JavaScript Controller
-let adminToken = localStorage.getItem("rmg_admin_token") || localStorage.getItem("rmg_token");
+let adminToken = localStorage.getItem("rmg_admin_token");
 let activeTicketId = null;
 
 function isValidAccessToken(value) {
@@ -12,12 +12,10 @@ function ensureAdminSession() {
 
   // Never send "Bearer null", "Bearer undefined", or an empty bearer token.
   localStorage.removeItem("rmg_admin_token");
-  localStorage.removeItem("rmg_token");
-  localStorage.removeItem("rmg_userId");
   adminToken = null;
 
   // Route unauthenticated admins through the normal login flow and return here.
-  window.location.href = "/?login=1&return=/admin.html";
+  window.location.href = "/?login=1&return=/admin.html&admin=1";
   return false;
 }
 
