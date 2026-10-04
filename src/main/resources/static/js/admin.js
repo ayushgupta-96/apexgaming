@@ -16,9 +16,8 @@ function ensureAdminSession() {
   localStorage.removeItem("rmg_userId");
   adminToken = null;
 
-  // Keep the admin page itself reachable. The page will show the API/session
-  // error instead of trapping the browser in a redirect loop. The login flow
-  // can then return the user to /admin.html after authentication.
+  // Route unauthenticated admins through the normal login flow and return here.
+  window.location.href = "/?login=1&return=/admin.html";
   return false;
 }
 
