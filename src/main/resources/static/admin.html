@@ -121,6 +121,20 @@
   </main>
 </div>
 
+<div id="depositApprovalModal" class="admin-modal" hidden>
+  <div class="admin-modal-card">
+    <h3>Approve deposit</h3>
+    <p>Verify the UTR/payment first. Your current 6-digit Admin 2FA code is required before the wallet is credited.</p>
+    <input type="hidden" id="approvalDepositId">
+    <label class="form-label">Verification notes</label>
+    <textarea id="approvalNotesInput" class="admin-form-control" rows="3" placeholder="Verified in bank statement"></textarea>
+    <div style="height:10px"></div>
+    <label class="form-label">Admin 2FA TOTP Code</label>
+    <input type="text" id="approvalTotpInput" class="admin-form-control" placeholder="6-digit authenticator code" inputmode="numeric" maxlength="6" autocomplete="one-time-code">
+    <div class="admin-modal-actions"><button class="admin-cancel" onclick="closeModal('depositApprovalModal')">Cancel</button><button class="admin-confirm" onclick="confirmApproveDeposit()">Approve & credit wallet</button></div>
+  </div>
+</div>
+
 <div id="payoutModal" class="admin-modal" hidden>
   <div class="admin-modal-card">
     <h3>Confirm payout</h3>
