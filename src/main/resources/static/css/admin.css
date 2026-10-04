@@ -50,6 +50,6 @@ body.admin-page{margin:0;background:
  .admin-page-title{margin:15px 2px 12px}.admin-page-title h1{font-size:1.35rem}.admin-page-title p{font-size:9px}.admin-live{font-size:8px}
  .admin-kpis{grid-template-columns:1fr 1fr;gap:8px}.admin-kpi{padding:13px;border-radius:16px}.admin-kpi small{font-size:8px}.admin-kpi strong{font-size:1.12rem}
  .admin-grid{gap:9px}.admin-card{border-radius:17px}.admin-card-head,.admin-toolbar{padding:13px}.admin-card-body{padding:12px 13px}.admin-actions{gap:7px}.admin-quick{padding:11px}
- .admin-table{min-width:0}.admin-table thead{display:none}.admin-table,.admin-table tbody,.admin-table tr,.admin-table td{display:block;width:100%}.admin-table tr{margin:9px;padding:11px;border:1px solid var(--adm-line);border-radius:15px;background:#061d16}.admin-table td{display:flex;justify-content:space-between;gap:12px;padding:7px 2px;border:0;text-align:right;font-size:10px}.admin-table td:before{content:attr(data-label);color:#789087;text-align:left;font-size:8px;text-transform:uppercase;letter-spacing:.08em}.admin-table td:last-child{padding-top:10px;border-top:1px solid rgba(255,255,255,.05);justify-content:flex-end}.admin-table td:last-child:before{display:none}.admin-table-wrap{padding:4px 7px 8px}
+ .admin-table{min-width:760px}.admin-table-wrap{padding:4px 7px 8px;overflow-x:auto;-webkit-overflow-scrolling:touch}.admin-table th{position:sticky;top:0}
  .admin-split{gap:9px}.admin-chat{min-height:520px}.admin-messages{min-height:230px;max-height:380px}.admin-chat-reply{padding:9px}.admin-chat-reply button{padding:0 12px}
 }
