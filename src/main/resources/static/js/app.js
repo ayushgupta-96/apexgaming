@@ -107,12 +107,21 @@ async function doLogin() {
     if (data.success && data.data?.accessToken) {
       token = data.data.accessToken;
       currentUserId = data.data.userId;
-      localStorage.setItem("rmg_token", token);
-      localStorage.setItem("rmg_userId", currentUserId);
+
+      const loginParams = new URLSearchParams(window.location.search);
+      const isAdminLogin = loginParams.get("admin") === "1" || loginParams.get("return") === "/admin.html";
+
+      if (isAdminLogin) {
+        localStorage.setItem("rmg_admin_token", token);
+      } else {
+        localStorage.setItem("rmg_token", token);
+        localStorage.setItem("rmg_userId", currentUserId);
+      }
+
       closeModal("loginModal");
       onLoginSuccess();
 
-      const returnTo = new URLSearchParams(window.location.search).get("return");
+      const returnTo = loginParams.get("return");
       if (returnTo && returnTo.startsWith("/")) {
         window.location.href = returnTo;
         return;
