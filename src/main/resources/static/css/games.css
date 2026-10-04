@@ -522,3 +522,41 @@
   .apx-wheel-disc{width:166px;height:166px}
   .wheel-sector{transform:rotate(var(--wheel-angle)) translateY(-63px)}
 }
+
+
+/* =========================================================
+   Colour wheel positioning fix
+   Keep the wheel centered inside the result stage.
+   The previous rule used only rotate(), which cancelled the
+   translate(-50%, -50%) positioning and pushed the wheel
+   into the bottom-right corner on mobile.
+   ========================================================= */
+#colourWheel .apx-wheel-disc{
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%) rotate(0deg);
+  transform-origin:center center;
+}
+
+#colourWheel .apx-wheel-disc.spin-result{
+  animation:apxWheelResultCentered 2.4s cubic-bezier(.12,.72,.16,1) forwards !important;
+}
+
+@keyframes apxWheelResultCentered{
+  from{
+    transform:translate(-50%,-50%) rotate(0deg);
+  }
+  to{
+    transform:translate(-50%,-50%) rotate(var(--wheel-target-rotation,1440deg));
+  }
+}
+
+@media(max-width:420px){
+  #colourWheel .apx-wheel-disc{
+    left:50%;
+    top:50%;
+    width:166px;
+    height:166px;
+    transform:translate(-50%,-50%) rotate(0deg);
+  }
+}
