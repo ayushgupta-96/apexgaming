@@ -2,7 +2,30 @@
 let adminToken = localStorage.getItem("rmg_admin_token") || localStorage.getItem("rmg_token");
 let activeTicketId = null;
 
+function isValidAccessToken(value) {
+  // This application uses signed JWT access tokens (three dot-separated segments).
+  return typeof value === "string" && value.trim().split(".").length === 3;
+}
+
+function ensureAdminSession() {
+  if (isValidAccessToken(adminToken)) return true;
+
+  // Never send "Bearer null", "Bearer undefined", or an empty bearer token.
+  localStorage.removeItem("rmg_admin_token");
+  localStorage.removeItem("rmg_token");
+  localStorage.removeItem("rmg_userId");
+  adminToken = null;
+
+  // The admin console has no standalone login form; send the user to the
+  // application login instead of repeatedly generating invalid-JWT errors.
+  if (!window.location.pathname.endsWith("/")) {
+    window.location.href = "/?login=1";
+  }
+  return false;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (!ensureAdminSession()) return;
   loadDashboard();
   loadDeposits();
   loadWithdrawals();
@@ -74,6 +97,9 @@ function escapeHtml(value) {
 }
 
 function getAuthHeaders() {
+  if (!ensureAdminSession()) {
+    throw new Error("Admin session missing or invalid. Please log in again.");
+  }
   return {
     "Content-Type": "application/json",
     "Authorization": "Bearer " + adminToken
