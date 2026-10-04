@@ -97,7 +97,7 @@ async function doLogin() {
 
     if (data.success && data.data?.requires2fa) {
       const totp = prompt("Admin 2FA required. Enter your 6-digit authenticator code:");
-      if (!totp || !/^\\d{6}$/.test(totp)) {
+      if (!totp || !/^\d{6}$/.test(totp.trim())) {
         alert("A valid 6-digit 2FA code is required.");
         return;
       }
