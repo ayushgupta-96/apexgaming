@@ -72,16 +72,52 @@ async function doLogin() {
   const u = document.getElementById("loginUsername").value.trim();
   const p = document.getElementById("loginPassword").value;
   if (!u || !p) { alert("Please enter username/phone and password."); return; }
+
+  const login = async (totpCode = null) => {
+    const body = { usernameOrPhone: u, password: p };
+    if (totpCode) body.totpCode = totpCode;
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+    return safeJsonResponse(res);
+  };
+
   try {
-    const res = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ usernameOrPhone: u, password: p }) });
-    const data = await safeJsonResponse(res);
-    if (data.success) {
-      if (data.data?.requires2fa) { alert("Two-factor authentication is required for this account."); return; }
-      token = data.data.accessToken; currentUserId = data.data.userId;
-      localStorage.setItem("rmg_token", token); localStorage.setItem("rmg_userId", currentUserId);
-      closeModal("loginModal"); onLoginSuccess(); alert("Logged in successfully!");
-    } else alert("Login failed: " + (data.message || "Unable to log in"));
-  } catch (err) { console.error(err); alert("Error connecting to server"); }
+    let data = await login();
+
+    if (data.success && data.data?.requires2fa) {
+      const totp = prompt("Admin 2FA required. Enter your 6-digit authenticator code:");
+      if (!totp || !/^\\d{6}$/.test(totp)) {
+        alert("A valid 6-digit 2FA code is required.");
+        return;
+      }
+      data = await login(totp);
+    }
+
+    if (data.success && data.data?.accessToken) {
+      token = data.data.accessToken;
+      currentUserId = data.data.userId;
+      localStorage.setItem("rmg_token", token);
+      localStorage.setItem("rmg_userId", currentUserId);
+      closeModal("loginModal");
+      onLoginSuccess();
+
+      const returnTo = new URLSearchParams(window.location.search).get("return");
+      if (returnTo && returnTo.startsWith("/")) {
+        window.location.href = returnTo;
+        return;
+      }
+
+      alert("Logged in successfully!");
+    } else {
+      alert("Login failed: " + (data.message || "Unable to log in"));
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error connecting to server");
+  }
 }
 
 async function doRegister() {
