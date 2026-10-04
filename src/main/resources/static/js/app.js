@@ -10,6 +10,14 @@ let currentLudoMatch = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   if (token) onLoginSuccess();
+
+  // Allow protected pages such as /admin.html to send the user through the
+  // normal login modal and then return to the requested path.
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("login") === "1" && !token) {
+    requestAnimationFrame(() => openModal("loginModal"));
+  }
+
   connectWebSocket();
   initAviatorCanvas();
   setupAviatorControls();
