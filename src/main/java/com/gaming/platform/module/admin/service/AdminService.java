@@ -78,7 +78,7 @@ public class AdminService {
 
     @Transactional(readOnly = true)
     public Page<AdminDepositResponse> getDepositQueue(Pageable pageable) {
-        return depositRepository.findAll(pageable).map(this::toAdminDepositResponse);
+        // The admin queue should contain only deposits that still need a decision.\n        // This keeps approved/rejected historical records out of the actionable queue.\n        List<DepositRequest.DepositStatus> actionableStatuses = List.of(\n                DepositRequest.DepositStatus.PENDING,\n                DepositRequest.DepositStatus.UNDER_REVIEW\n        );\n        return depositRepository.findByStatusInOrderByCreatedAtDesc(actionableStatuses, pageable)\n                .map(this::toAdminDepositResponse);
     }
 
     @Transactional
