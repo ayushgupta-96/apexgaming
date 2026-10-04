@@ -16,11 +16,9 @@ function ensureAdminSession() {
   localStorage.removeItem("rmg_userId");
   adminToken = null;
 
-  // The admin console has no standalone login form; send the user to the
-  // application login instead of repeatedly generating invalid-JWT errors.
-  if (!window.location.pathname.endsWith("/")) {
-    window.location.href = "/?login=1";
-  }
+  // Keep the admin page itself reachable. The page will show the API/session
+  // error instead of trapping the browser in a redirect loop. The login flow
+  // can then return the user to /admin.html after authentication.
   return false;
 }
 
