@@ -212,26 +212,61 @@ async function loadDeposits() {
   }
 }
 
-async function approveDeposit(depositId) {
-  const notes = prompt("Enter verification notes (optional):", "Verified in bank statement");
-  if (notes === null) return;
+function approveDeposit(depositId) {
+  const idInput = document.getElementById("approvalDepositId");
+  const notesInput = document.getElementById("approvalNotesInput");
+  const totpInput = document.getElementById("approvalTotpInput");
+  if (!idInput || !notesInput || !totpInput) {
+    alert("Deposit approval form is unavailable. Please refresh the admin page.");
+    return;
+  }
+
+  idInput.value = String(depositId);
+  notesInput.value = "Verified in bank statement";
+  totpInput.value = "";
+  openModal("depositApprovalModal");
+  setTimeout(() => totpInput.focus(), 100);
+}
+
+async function confirmApproveDeposit() {
+  const depositId = Number(document.getElementById("approvalDepositId")?.value);
+  const notes = document.getElementById("approvalNotesInput")?.value?.trim() || "";
+  const totpRaw = document.getElementById("approvalTotpInput")?.value?.trim() || "";
+
+  if (!Number.isInteger(depositId) || depositId <= 0) {
+    alert("Invalid deposit ID.");
+    return;
+  }
+
+  if (!/^\\d{6}$/.test(totpRaw)) {
+    alert("Enter a valid 6-digit Admin 2FA code from your authenticator app.");
+    document.getElementById("approvalTotpInput")?.focus();
+    return;
+  }
 
   try {
     const res = await fetch("/api/admin/deposits/approve", {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ depositId, adminNotes: notes })
+      body: JSON.stringify({
+        depositId,
+        adminNotes: notes,
+        totpCode: Number(totpRaw)
+      })
     });
+
     const data = await res.json();
     if (data.success) {
       alert("Deposit approved! The payment was manually verified and the user wallet has been credited.");
+      closeModal("depositApprovalModal");
       loadDeposits();
       loadDashboard();
     } else {
-      alert("Approval error: " + data.message);
+      alert("Approval error: " + (data.message || "Admin 2FA verification failed."));
     }
   } catch (e) {
-    alert("Error approving deposit");
+    console.error("Deposit approval error", e);
+    alert("Error approving deposit. Please check the admin 2FA code and try again.");
   }
 }
 
