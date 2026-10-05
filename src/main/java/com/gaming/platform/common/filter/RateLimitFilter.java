@@ -30,9 +30,9 @@ public class RateLimitFilter extends OncePerRequestFilter {
     }
 
     private Bucket createNewBucket() {
-        // Allow burst of 60 requests per minute per IP/client
-        Refill refill = Refill.greedy(60, Duration.ofMinutes(1));
-        Bandwidth limit = Bandwidth.classic(60, refill);
+        // Allow enough headroom for the 1-second game-state fallback polling plus normal API traffic per IP/client
+        Refill refill = Refill.greedy(300, Duration.ofMinutes(1));
+        Bandwidth limit = Bandwidth.classic(300, refill);
         return Bucket.builder()
                 .addLimit(limit)
                 .build();
