@@ -64,6 +64,7 @@ public class AviatorEngine {
     private final AtomicReference<BigDecimal> targetCrashMultiplier = new AtomicReference<>(BigDecimal.valueOf(1.00));
     private final AtomicInteger flightTick = new AtomicInteger(0);
     private final AtomicBoolean isTransitioning = new AtomicBoolean(false);
+    private volatile Instant nextRoundAt;
 
     private final Deque<BigDecimal> recentCrashHistory = new ConcurrentLinkedDeque<>(
             List.of(BigDecimal.valueOf(2.45), BigDecimal.valueOf(1.18), BigDecimal.valueOf(5.82), BigDecimal.valueOf(1.03), BigDecimal.valueOf(14.20))
@@ -114,6 +115,7 @@ public class AviatorEngine {
         flightTick.set(0);
         currentStatus.set("BETTING");
         isTransitioning.set(false);
+        nextRoundAt = null;
 
         log.info("Started new Aviator round {} | Hash: {} | Crash: {}x", roundUuid, serverSeedHash, crashPoint);
         broadcastState();
@@ -130,6 +132,17 @@ public class AviatorEngine {
             handleBettingTick();
         } else if ("FLYING".equals(status)) {
             handleFlightTick();
+        } else if ("CRASHED".equals(status)) {
+            Instant restartAt = nextRoundAt;
+            if (restartAt != null && !Instant.now().isBefore(restartAt)) {
+                try {
+                    startNewRound();
+                } catch (Exception e) {
+                    log.error("Failed to start next Aviator round", e);
+                }
+            } else {
+                broadcastState();
+            }
         }
     }
 
@@ -237,13 +250,8 @@ public class AviatorEngine {
         log.info("Aviator CRASHED at {}x!", crashPoint);
         broadcastState();
 
-        // Wait 4 seconds and auto-start next round
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                startNewRound();
-            }
-        }, 4000);
+        // Let the main game scheduler own the transition to the next round.
+        nextRoundAt = Instant.now().plusSeconds(4);
     }
 
     /**
