@@ -9,13 +9,11 @@ import com.gaming.platform.module.user.entity.User;
 import com.gaming.platform.module.user.entity.UserLimits;
 import com.gaming.platform.module.user.repository.UserLimitsRepository;
 import com.gaming.platform.module.user.repository.UserRepository;
-import com.gaming.platform.module.wallet.entity.Transaction;
 import com.gaming.platform.module.wallet.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +31,6 @@ public class AmlService {
     private final FraudFlagRepository fraudFlagRepository;
     private final UserLimitsRepository userLimitsRepository;
     private final UserRepository userRepository;
-    private final TransactionRepository transactionRepository;
 
     @Value("${rmg.compliance.aml.single-transaction-alert-threshold:50000.00}")
     private BigDecimal singleTransactionThreshold;
@@ -41,8 +38,6 @@ public class AmlService {
     @Value("${rmg.compliance.aml.daily-cumulative-deposit-threshold:100000.00}")
     private BigDecimal dailyCumulativeDepositThreshold;
 
-    @Value("${rmg.compliance.aml.wagering-turnover-requirement-multiplier:1.0}")
-    private double wageringRequirementMultiplier;
 
     @Transactional
     public void inspectDepositAml(Long userId, BigDecimal amount) {
@@ -86,36 +81,11 @@ public class AmlService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("User not found"));
 
-
+        // Withdrawal is no longer blocked by deposit-to-wager turnover.
+        // Keep the frozen-account safeguard and AML monitoring alerts, but do
+        // not require the user to wager any percentage of their deposits.
         if (user.isFrozen()) {
             throw new BusinessException("Withdrawal rejected: Account is frozen due to active compliance/fraud investigation.");
-        }
-
-        // Check Anti-Money Laundering Wagering Turnover Requirement
-        // Real-money gaming regulations strictly prohibit using gaming wallets as un-played clearing accounts.
-        List<Transaction> recentTransactions = transactionRepository.findByUserIdOrderByCreatedAtDesc(userId, PageRequest.of(0, 500)).getContent();
-
-        BigDecimal totalDeposited = recentTransactions.stream()
-                .filter(t -> t.getTransactionType() == Transaction.TransactionType.DEPOSIT)
-                .map(Transaction::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal totalWagered = recentTransactions.stream()
-                .filter(t -> t.getTransactionType() == Transaction.TransactionType.BET_PLACED)
-                .map(Transaction::getTotalAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal requiredWager = totalDeposited.multiply(BigDecimal.valueOf(wageringRequirementMultiplier));
-
-        if (totalWagered.compareTo(requiredWager) < 0) {
-            String msg = String.format("AML Compliance Check Failed: Required turnover of 100%% of deposits (₹%s) not met. Total wagered: ₹%s.",
-                    requiredWager, totalWagered);
-            log.warn("User {} failed AML turnover check: {}", userId, msg);
-
-            recordFraudFlag(user, "NO_PLAY_WITHDRAWAL", FraudFlag.Severity.HIGH,
-                    "User attempted withdrawal of ₹" + withdrawalAmount + " without satisfying minimum wagering turnover requirement.");
-
-            throw new BusinessException(msg);
         }
 
         if (withdrawalAmount.compareTo(singleTransactionThreshold) >= 0) {
