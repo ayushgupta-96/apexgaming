@@ -7,6 +7,8 @@ let activeAviatorBet = null;
 let currentColourState = null;
 let selectedColourTarget = { type: null, value: null };
 let currentLudoMatch = null;
+let ludoStatePoll = null;
+let wsReconnectTimer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   if (token) onLoginSuccess();
@@ -19,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   connectWebSocket();
+  fetchInitialGameStates();
   initAviatorCanvas();
   setupAviatorControls();
   setupMobileNavigation();
@@ -350,9 +353,56 @@ async function requestWithdrawal() {
 
 function connectWebSocket() {
   if (typeof SockJS === "undefined" || typeof Stomp === "undefined") return;
-  const socket = new SockJS("/ws"); stompClient = Stomp.over(socket); stompClient.debug = null;
-  stompClient.connect({}, () => { stompClient.subscribe("/topic/games/aviator", msg => handleAviatorTick(JSON.parse(msg.body))); stompClient.subscribe("/topic/games/colour", msg => handleColourTick(JSON.parse(msg.body))); }, err => { console.warn("WebSocket disconnected", err); });
+  if (stompClient && stompClient.connected) return;
+
+  const socket = new SockJS("/ws");
+  stompClient = Stomp.over(socket);
+  stompClient.debug = null;
+
+  stompClient.connect({}, () => {
+    if (wsReconnectTimer) {
+      clearTimeout(wsReconnectTimer);
+      wsReconnectTimer = null;
+    }
+    stompClient.subscribe("/topic/games/aviator", msg => {
+      try { handleAviatorTick(JSON.parse(msg.body)); } catch (e) { console.warn("Invalid Aviator state", e); }
+    });
+    stompClient.subscribe("/topic/games/colour", msg => {
+      try { handleColourTick(JSON.parse(msg.body)); } catch (e) { console.warn("Invalid Colour state", e); }
+    });
+    fetchInitialGameStates();
+  }, err => {
+    console.warn("WebSocket disconnected", err);
+    if (!wsReconnectTimer) {
+      wsReconnectTimer = setTimeout(() => {
+        wsReconnectTimer = null;
+        connectWebSocket();
+      }, 2500);
+    }
+  });
 }
+
+async function fetchInitialGameStates() {
+  try {
+    const [aviatorRes, colourRes] = await Promise.all([
+      fetch("/api/games/aviator/state"),
+      fetch("/api/games/colour/state")
+    ]);
+
+    if (aviatorRes.ok) {
+      const data = await aviatorRes.json().catch(() => null);
+      if (data?.success && data.data) handleAviatorTick(data.data);
+    }
+
+    if (colourRes.ok) {
+      const data = await colourRes.json().catch(() => null);
+      if (data?.success && data.data) handleColourTick(data.data);
+    }
+  } catch (e) {
+    console.warn("Initial game state unavailable", e);
+  }
+}
+
 
 let canvas, ctx;
 
@@ -400,7 +450,7 @@ if(cashoutAmount){cashoutAmount.textContent=Number(amt).toFixed(2);}
 fetchWallet();
 loadBetHistory("AVIATOR");
 }else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to place bet");}}
-async function cashoutAviator(){if(!activeAviatorBet)return;try{const res=await fetch("/api/games/aviator/cashout",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({betUuid:activeAviatorBet.betUuid})});const data=await safeJsonResponse(res);if(data.success){
+async function cashoutAviator(){if(!activeAviatorBet)return;if(!token){activeAviatorBet=null;return;}try{const res=await fetch("/api/games/aviator/cashout",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({betUuid:activeAviatorBet.betUuid})});const data=await safeJsonResponse(res);if(data.success){
 alert("Cashed out successfully!");
 activeAviatorBet=null;
 const cashout=document.getElementById("btnAviatorCashout");
@@ -411,11 +461,44 @@ fetchWallet();
 }else alert("Cashout error: "+(data.message||"Unknown error"));}catch(e){alert("Cashout failed");}}
 function openColourBetModal(type,val){if(!token){openModal("loginModal");return;}selectedColourTarget={type,value:val};document.getElementById("modalBetTarget").textContent=val;document.getElementById("modalBetMultiplier").textContent=type==="NUMBER"?"9.0x":(val==="VIOLET"?"4.5x":"2.0x");openModal("colourBetModal");}
 async function confirmColourBet(){const amt=document.getElementById("colourModalAmount")?.value;try{const res=await fetch("/api/games/colour/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentColourState.roundUuid,targetType:selectedColourTarget.type,targetValue:selectedColourTarget.value,amount:amt})});const data=await safeJsonResponse(res);if(data.success){alert("Bet placed!");closeModal("colourBetModal");fetchWallet();loadBetHistory("COLOUR_PREDICTION");}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to submit bet");}}
-async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await safeJsonResponse(res);if(data.success){currentLudoMatch=data.data;document.getElementById("ludoLobbySection").style.display="none";document.getElementById("ludoGameSection").style.display="block";drawLudoBoard();fetchWallet();}else alert("Ludo room error: "+(data.message||"Unknown error"));}catch(e){alert("Error creating match");}}
+async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await safeJsonResponse(res);if(data.success){
+  currentLudoMatch=data.data;
+  document.getElementById("ludoLobbySection").style.display="none";
+  document.getElementById("ludoGameSection").style.display="block";
+  updateLudoGameState(data.data);
+  fetchWallet();
+  clearInterval(ludoStatePoll);
+  ludoStatePoll=setInterval(async()=>{
+    if(!currentLudoMatch?.matchUuid) return;
+    try{
+      const stateRes=await fetch("/api/games/ludo/rooms/"+encodeURIComponent(currentLudoMatch.matchUuid)+"/state",{headers:{"Authorization":"Bearer "+token}});
+      const stateData=await safeJsonResponse(stateRes);
+      if(stateData.success) updateLudoGameState(stateData.data);
+    }catch(e){console.warn("Ludo state poll failed",e);}
+  },2000);
+}else alert("Ludo room error: "+(data.message||"Unknown error"));}catch(e){alert("Error creating match");}}
 async function rollLudoDice(){if(!currentLudoMatch)return;try{const res=await fetch("/api/games/ludo/rooms/"+currentLudoMatch.matchUuid+"/roll",{method:"POST",headers:{"Authorization":"Bearer "+token}});const data=await safeJsonResponse(res);if(data.success){alert("You rolled a "+data.data.diceRoll+"!");renderPawnButtons(data.data.movableTokenIndices);}else alert("Roll error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to roll dice");}}
 function renderPawnButtons(movable){const container=document.getElementById("ludoTokenButtons");if(!container)return;container.innerHTML="";(movable||[]).forEach(idx=>{const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent="Move Pawn #"+(idx+1);btn.onclick=()=>moveLudoPawn(idx);container.appendChild(btn);});}
 async function moveLudoPawn(tokenIndex){if(!currentLudoMatch)return;try{const res=await fetch("/api/games/ludo/rooms/move",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({matchUuid:currentLudoMatch.matchUuid,tokenIndex})});const data=await safeJsonResponse(res);if(data.success){const box=document.getElementById("ludoTokenButtons");if(box)box.innerHTML="";updateLudoGameState(data.data);}}catch(e){alert("Error moving pawn");}}
-function updateLudoGameState(state){const turn=document.getElementById("txtLudoTurnColor"),pot=document.getElementById("txtLudoPot");if(turn)turn.textContent=state.currentTurnColor;if(pot)pot.textContent=Number(state.totalPot).toFixed(2);drawLudoBoard(state.tokenPositions);if(state.status==="COMPLETED"){alert("Match finished!");fetchWallet();}}
+function updateLudoGameState(state){
+  if(!state) return;
+  currentLudoMatch = { ...(currentLudoMatch || {}), ...state };
+  const turn=document.getElementById("txtLudoTurnColor");
+  const pot=document.getElementById("txtLudoPot");
+  const status=document.getElementById("ludoMatchStatusBadge");
+  const roll=document.getElementById("btnLudoRoll");
+  if(turn) turn.textContent=state.currentTurnColor || "-";
+  if(pot) pot.textContent=Number(state.totalPot || 0).toFixed(2);
+  if(status) status.textContent=String(state.status || "Lobby").replace("_"," ");
+  if(roll) roll.disabled=state.status!=="IN_PROGRESS" || Number(state.currentTurnUserId)!==Number(currentUserId);
+  drawLudoBoard(state.tokenPositions);
+  if(state.status==="COMPLETED"){
+    if(roll) roll.disabled=true;
+    fetchWallet();
+    clearInterval(ludoStatePoll);
+    ludoStatePoll=null;
+  }
+}
 function drawLudoBoard(){const canvas=document.getElementById("ludoCanvas");if(!canvas)return;const c=canvas.getContext("2d"),s=canvas.width;c.fillStyle="#1e293b";c.fillRect(0,0,s,s);c.fillStyle="#ef4444";c.fillRect(0,0,s*.4,s*.4);c.fillStyle="#10b981";c.fillRect(s*.6,0,s*.4,s*.4);c.fillStyle="#eab308";c.fillRect(s*.6,s*.6,s*.4,s*.4);c.fillStyle="#3b82f6";c.fillRect(0,s*.6,s*.4,s*.4);c.fillStyle="#f8fafc";c.beginPath();c.arc(s/2,s/2,s*.1,0,Math.PI*2);c.fill();}
 async function updateLimits(){if(!token){openModal("loginModal");return;}const dep=document.getElementById("limitDepositInput")?.value,loss=document.getElementById("limitLossInput")?.value;try{const res=await fetch("/api/users/limits",{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({dailyDepositLimit:dep,dailyLossLimit:loss})});const data=await safeJsonResponse(res);if(data.success)alert("Responsible gaming limits updated!");else alert("Unable to update limits");}catch(e){alert("Error updating limits");}}
 async function requestSelfExclusion(){if(!token){openModal("loginModal");return;}if(!confirm("Are you sure? You will be blocked from depositing and placing bets for 24 hours."))return;try{const res=await fetch("/api/users/self-exclude",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({exclusionType:"COOL_OFF",durationHours:24,reason:"User break"})});const data=await safeJsonResponse(res);if(data.success){alert("Account is now in 24-hour cool-off period. Logging out.");logout();}}catch(e){alert("Self-exclusion error");}}
