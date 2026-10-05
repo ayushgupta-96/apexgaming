@@ -9,6 +9,7 @@ let selectedColourTarget = { type: null, value: null };
 let currentLudoMatch = null;
 let ludoStatePoll = null;
 let wsReconnectTimer = null;
+let gameStatePollTimer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   if (token) onLoginSuccess();
@@ -22,6 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   connectWebSocket();
   fetchInitialGameStates();
+  startGameStatePolling();
   initAviatorCanvas();
   setupAviatorControls();
   setupMobileNavigation();
@@ -44,6 +46,14 @@ function switchTab(tabId) {
   }
   if (tabId === "ludo" && currentLudoMatch) drawLudoBoard();
 }
+function goHome() {
+  if (typeof window.switchTab === "function") {
+    window.switchTab("home");
+  } else {
+    window.location.href = "/";
+  }
+}
+
 
 function openModal(id) { const m = document.getElementById(id); if (m) m.classList.add("active"); }
 function closeModal(id) { const m = document.getElementById(id); if (m) m.classList.remove("active"); }
@@ -402,6 +412,11 @@ async function fetchInitialGameStates() {
     console.warn("Initial game state unavailable", e);
   }
 }
+function startGameStatePolling() {
+  if (gameStatePollTimer) return;
+  gameStatePollTimer = setInterval(fetchInitialGameStates, 1000);
+}
+
 
 
 let canvas, ctx;
