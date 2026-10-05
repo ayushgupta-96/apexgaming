@@ -77,17 +77,17 @@ public class AdminController {
 
     @GetMapping("/withdrawals")
     @Operation(summary = "Get withdrawal queue awaiting manual transfer")
-    public ResponseEntity<ApiResponse<Page<WithdrawalRequest>>> getWithdrawals(
+    public ResponseEntity<ApiResponse<Page<AdminWithdrawalResponse>>> getWithdrawals(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
-        Page<WithdrawalRequest> list = adminService.getWithdrawalQueue(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Page<AdminWithdrawalResponse> list = adminService.getWithdrawalQueue(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
         return ResponseEntity.ok(ApiResponse.ok(list));
     }
 
     @PostMapping("/withdrawals/approve")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'FINANCE')")
     @Operation(summary = "Mark withdrawal paid with UTR and debit locked funds via ledger")
-    public ResponseEntity<ApiResponse<WithdrawalRequest>> approveWithdrawal(@Valid @RequestBody ApproveWithdrawalRequest request) {
+    public ResponseEntity<ApiResponse<AdminWithdrawalResponse>> approveWithdrawal(@Valid @RequestBody ApproveWithdrawalRequest request) {
         WithdrawalRequest paid = adminService.approveWithdrawal(request);
         return ResponseEntity.ok(ApiResponse.ok("Withdrawal settled and marked as paid", paid));
     }
@@ -95,7 +95,7 @@ public class AdminController {
     @PostMapping("/withdrawals/reject")
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'FINANCE')")
     @Operation(summary = "Reject withdrawal and refund locked funds back to player winnings balance")
-    public ResponseEntity<ApiResponse<WithdrawalRequest>> rejectWithdrawal(@Valid @RequestBody RejectWithdrawalRequest request) {
+    public ResponseEntity<ApiResponse<AdminWithdrawalResponse>> rejectWithdrawal(@Valid @RequestBody RejectWithdrawalRequest request) {
         WithdrawalRequest rejected = adminService.rejectWithdrawal(request);
         return ResponseEntity.ok(ApiResponse.ok("Withdrawal rejected and funds refunded", rejected));
     }
