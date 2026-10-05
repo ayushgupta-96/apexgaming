@@ -11,8 +11,6 @@ import com.gaming.platform.module.user.entity.User;
 import com.gaming.platform.module.user.entity.UserLimits;
 import com.gaming.platform.module.user.repository.UserLimitsRepository;
 import com.gaming.platform.module.user.repository.UserRepository;
-import com.gaming.platform.module.wallet.entity.Transaction;
-import com.gaming.platform.module.wallet.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +23,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,8 +40,6 @@ class AmlServiceTest {
     private UserLimitsRepository userLimitsRepository;
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private TransactionRepository transactionRepository;
 
     @InjectMocks
     private AmlService amlService;
@@ -56,7 +51,6 @@ class AmlServiceTest {
     void setUp() {
         ReflectionTestUtils.setField(amlService, "singleTransactionThreshold", BigDecimal.valueOf(50000.00));
         ReflectionTestUtils.setField(amlService, "dailyCumulativeDepositThreshold", BigDecimal.valueOf(100000.00));
-        ReflectionTestUtils.setField(amlService, "wageringRequirementMultiplier", 1.0);
 
         verifiedUser = User.builder()
                 .id(101L)
@@ -105,27 +99,14 @@ class AmlServiceTest {
     }
 
     @Test
-    @DisplayName("AML Wagering Check: Withdrawal fails if 100% deposit turnover requirement is not met")
-    void testWithdrawal_FailsWageringTurnoverRequirement() {
-        // User deposited ₹1,000 but only placed bets totaling ₹200
-        Transaction depTx = Transaction.builder()
-                .transactionType(Transaction.TransactionType.DEPOSIT)
-                .totalAmount(BigDecimal.valueOf(1000.00))
-                .build();
-        Transaction betTx = Transaction.builder()
-                .transactionType(Transaction.TransactionType.BET_PLACED)
-                .totalAmount(BigDecimal.valueOf(200.00))
-                .build();
-
+    @DisplayName("AML Withdrawal Check: does not require deposit turnover")
+    void testWithdrawal_AllowsWithdrawalWithoutWageringTurnover() {
         when(userRepository.findById(101L)).thenReturn(Optional.of(verifiedUser));
-        when(transactionRepository.findByUserIdOrderByCreatedAtDesc(eq(101L), any()))
-                .thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(depTx, betTx)));
 
-        assertThrows(BusinessException.class, () ->
+        assertDoesNotThrow(() ->
                 amlService.validateWithdrawalCompliance(101L, BigDecimal.valueOf(500.00))
         );
 
-        // Verify fraud flag was recorded for no-play withdrawal
-        verify(fraudFlagRepository).save(any(FraudFlag.class));
+        verify(fraudFlagRepository, never()).save(any(FraudFlag.class));
     }
 }
