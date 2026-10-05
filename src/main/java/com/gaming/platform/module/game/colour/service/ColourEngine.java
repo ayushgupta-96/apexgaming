@@ -54,6 +54,7 @@ public class ColourEngine {
     private final AtomicReference<String> currentStatus = new AtomicReference<>("BETTING");
     private final AtomicInteger secondsRemaining = new AtomicInteger(60);
     private final AtomicBoolean isResolving = new AtomicBoolean(false);
+    private volatile Instant nextRoundAt;
 
     private final Deque<ColourRoundStateDto.ResultItem> recentHistory = new ConcurrentLinkedDeque<>(List.of(
             new ColourRoundStateDto.ResultItem("CP-PREV-1", 7, "GREEN"),
@@ -102,6 +103,7 @@ public class ColourEngine {
         currentStatus.set("BETTING");
         secondsRemaining.set(60);
         isResolving.set(false);
+        nextRoundAt = null;
 
         log.info("Started new Colour Prediction round {} | Hash: {}", roundUuid, serverSeedHash);
         broadcastState();
@@ -112,13 +114,35 @@ public class ColourEngine {
      */
     @Scheduled(fixedRate = 1000)
     public void clockTick() {
+        String status = currentStatus.get();
+
+        if ("RESULT".equals(status)) {
+            Instant restartAt = nextRoundAt;
+            if (restartAt != null && !Instant.now().isBefore(restartAt)) {
+                try {
+                    startNewRound();
+                } catch (Exception e) {
+                    log.error("Failed to start next Colour Prediction round", e);
+                }
+            }
+            broadcastState();
+            return;
+        }
+
         int rem = secondsRemaining.decrementAndGet();
 
         if (rem <= 10 && rem > 0 && !"LOCKED".equals(currentStatus.get())) {
             currentStatus.set("LOCKED");
             log.info("Colour Prediction round {} is now LOCKED for betting", currentRound.get().getRoundUuid());
         } else if (rem <= 0) {
-            resolveRound();
+            try {
+                resolveRound();
+            } catch (Exception e) {
+                log.error("Colour Prediction round resolution failed. Recovering with a fresh round.", e);
+                isResolving.set(false);
+                nextRoundAt = Instant.now().plusSeconds(2);
+                currentStatus.set("RESULT");
+            }
         }
 
         broadcastState();
@@ -191,13 +215,9 @@ public class ColourEngine {
                 round.getRoundUuid(), winningNumber, winningColor, totalPayouts);
         broadcastState();
 
-        // 5 seconds display period before starting next 60s cycle
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                startNewRound();
-            }
-        }, 5000);
+        // Keep the RESULT state in the same scheduler instead of spawning a Timer thread.
+        // This guarantees the next round is started even when a client misses WebSocket events.
+        nextRoundAt = Instant.now().plusSeconds(5);
     }
 
     private BigDecimal calculatePayoutMultiplier(ColourBet.TargetType type, String targetVal, int winNum, String winCol) {
