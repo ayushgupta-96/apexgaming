@@ -165,12 +165,47 @@ public class AdminService {
     }
 
     @Transactional(readOnly = true)
-    public Page<WithdrawalRequest> getWithdrawalQueue(Pageable pageable) {
-        return withdrawalRepository.findAll(pageable);
+    public Page<AdminWithdrawalResponse> getWithdrawalQueue(Pageable pageable) {
+        // Match the deposit queue: only requests that still need an admin decision.
+        List<WithdrawalRequest.WithdrawalStatus> actionableStatuses = List.of(
+                WithdrawalRequest.WithdrawalStatus.PENDING_VERIFICATION,
+                WithdrawalRequest.WithdrawalStatus.UNDER_REVIEW
+        );
+
+        return withdrawalRepository.findByStatusInOrderByCreatedAtDesc(actionableStatuses, pageable)
+                .map(this::toAdminWithdrawalResponse);
+    }
+
+    private AdminWithdrawalResponse toAdminWithdrawalResponse(WithdrawalRequest withdrawal) {
+        User user = withdrawal.getUser();
+        User processedBy = withdrawal.getProcessedBy();
+
+        return AdminWithdrawalResponse.builder()
+                .id(withdrawal.getId())
+                .referenceCode(withdrawal.getReferenceCode())
+                .userId(user.getId())
+                .username(user.getUsername())
+                .phoneNumber(user.getPhoneNumber())
+                .email(user.getEmail())
+                .amount(withdrawal.getAmount())
+                .status(withdrawal.getStatus())
+                .destinationType(withdrawal.getDestinationType())
+                .accountHolderName(withdrawal.getAccountHolderName())
+                .accountNumberOrVpa(withdrawal.getAccountNumberOrVpa())
+                .ifscCode(withdrawal.getIfscCode())
+                .bankName(withdrawal.getBankName())
+                .payoutUtr(withdrawal.getPayoutUtr())
+                .proofImageUrl(withdrawal.getProofImageUrl())
+                .rejectionReason(withdrawal.getRejectionReason())
+                .processedBy(processedBy != null ? processedBy.getUsername() : null)
+                .processedAt(withdrawal.getProcessedAt())
+                .createdAt(withdrawal.getCreatedAt())
+                .updatedAt(withdrawal.getUpdatedAt())
+                .build();
     }
 
     @Transactional
-    public WithdrawalRequest approveWithdrawal(ApproveWithdrawalRequest request) {
+    public AdminWithdrawalResponse approveWithdrawal(ApproveWithdrawalRequest request) {
         Long adminId = SecurityUtils.getCurrentUserId();
         User admin = userRepository.findById(adminId).orElseThrow();
 
@@ -201,11 +236,11 @@ public class AdminService {
         whatsAppNotificationService.sendWithdrawalPaidNotification(
                 withdrawal.getUser().getPhoneNumber(), withdrawal.getReferenceCode(), withdrawal.getAmount(), request.getPayoutUtr());
 
-        return withdrawal;
+        return toAdminWithdrawalResponse(withdrawal);
     }
 
     @Transactional
-    public WithdrawalRequest rejectWithdrawal(RejectWithdrawalRequest request) {
+    public AdminWithdrawalResponse rejectWithdrawal(RejectWithdrawalRequest request) {
         Long adminId = SecurityUtils.getCurrentUserId();
         User admin = userRepository.findById(adminId).orElseThrow();
 
@@ -233,7 +268,7 @@ public class AdminService {
         whatsAppNotificationService.sendWithdrawalRejectionNotification(
                 withdrawal.getUser().getPhoneNumber(), withdrawal.getReferenceCode(), request.getRejectionReason());
 
-        return withdrawal;
+        return toAdminWithdrawalResponse(withdrawal);
     }
 
     @Transactional
