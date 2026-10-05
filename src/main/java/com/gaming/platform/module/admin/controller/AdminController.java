@@ -88,7 +88,7 @@ public class AdminController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'FINANCE')")
     @Operation(summary = "Mark withdrawal paid with UTR and debit locked funds via ledger")
     public ResponseEntity<ApiResponse<AdminWithdrawalResponse>> approveWithdrawal(@Valid @RequestBody ApproveWithdrawalRequest request) {
-        WithdrawalRequest paid = adminService.approveWithdrawal(request);
+        AdminWithdrawalResponse paid = adminService.approveWithdrawal(request);
         return ResponseEntity.ok(ApiResponse.ok("Withdrawal settled and marked as paid", paid));
     }
 
@@ -96,7 +96,7 @@ public class AdminController {
     @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN', 'FINANCE')")
     @Operation(summary = "Reject withdrawal and refund locked funds back to player winnings balance")
     public ResponseEntity<ApiResponse<AdminWithdrawalResponse>> rejectWithdrawal(@Valid @RequestBody RejectWithdrawalRequest request) {
-        WithdrawalRequest rejected = adminService.rejectWithdrawal(request);
+        AdminWithdrawalResponse rejected = adminService.rejectWithdrawal(request);
         return ResponseEntity.ok(ApiResponse.ok("Withdrawal rejected and funds refunded", rejected));
     }
 
