@@ -434,11 +434,28 @@ function resizeCanvas() {
 }
 
 function handleAviatorTick(state) {
+  if (!state) return;
+
+  const previousRound = currentAviatorState?.roundUuid;
   currentAviatorState = state;
+
+  // A crashed round can no longer be cashed out. Clear the stale button
+  // immediately, including when the browser reconnects to a new round.
+  if (state.status === "CRASHED" || (previousRound && previousRound !== state.roundUuid)) {
+    activeAviatorBet = null;
+    const cashout = document.getElementById("btnAviatorCashout");
+    const notice = document.getElementById("aviatorNoBetNotice");
+    if (cashout) cashout.style.display = "none";
+    if (notice) notice.style.display = "block";
+  }
+
   if (window.ApexGameUI && typeof window.ApexGameUI.renderAviator === "function") {
     window.ApexGameUI.renderAviator(state);
   }
-  if (currentAviatorState?.status === "CRASHED") loadBetHistory("AVIATOR");
+
+  if (state.status === "CRASHED") {
+    loadBetHistory("AVIATOR");
+  }
 }
 
 function handleColourTick(state) {
