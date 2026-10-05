@@ -59,6 +59,7 @@ public class AviatorEngine {
     private final AtomicReference<AviatorRound> currentAviatorRound = new AtomicReference<>();
     private final AtomicReference<String> currentStatus = new AtomicReference<>("WAITING");
     private final AtomicInteger countdownSeconds = new AtomicInteger(8);
+    private final AtomicInteger bettingTick = new AtomicInteger(0);
     private final AtomicReference<BigDecimal> currentMultiplier = new AtomicReference<>(BigDecimal.valueOf(1.00));
     private final AtomicReference<BigDecimal> targetCrashMultiplier = new AtomicReference<>(BigDecimal.valueOf(1.00));
     private final AtomicInteger flightTick = new AtomicInteger(0);
@@ -109,6 +110,7 @@ public class AviatorEngine {
         targetCrashMultiplier.set(crashPoint);
         currentMultiplier.set(BigDecimal.valueOf(1.00));
         countdownSeconds.set(betPhaseDuration);
+        bettingTick.set(0);
         flightTick.set(0);
         currentStatus.set("BETTING");
         isTransitioning.set(false);
@@ -132,6 +134,14 @@ public class AviatorEngine {
     }
 
     private void handleBettingTick() {
+        // gameLoop runs every 200ms so flight animation stays smooth. The betting
+        // countdown must still advance once per real second, not five times faster.
+        int tick = bettingTick.incrementAndGet();
+        if (tick % 5 != 0) {
+            broadcastState();
+            return;
+        }
+
         int remaining = countdownSeconds.decrementAndGet();
         if (remaining <= 0) {
             currentStatus.set("FLYING");
