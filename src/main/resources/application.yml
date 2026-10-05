@@ -71,7 +71,6 @@ rmg:
       single-transaction-alert-threshold: 50000.00
       daily-deposit-limit-count: 10
       daily-cumulative-deposit-threshold: 100000.00
-      wagering-turnover-requirement-multiplier: 1.0 # 100% turnover before withdrawal
     responsible-gaming:
       default-daily-deposit-limit: 25000.00
       default-daily-loss-limit: 15000.00
