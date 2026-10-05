@@ -133,12 +133,21 @@ public class AviatorEngine {
         } else if ("FLYING".equals(status)) {
             handleFlightTick();
         } else if ("CRASHED".equals(status)) {
+            // Recovery guard: even if crash settlement/broadcast failed before
+            // nextRoundAt was assigned, never leave the game permanently frozen.
             Instant restartAt = nextRoundAt;
-            if (restartAt != null && !Instant.now().isBefore(restartAt)) {
+            if (restartAt == null) {
+                nextRoundAt = Instant.now().plusSeconds(2);
+                restartAt = nextRoundAt;
+                log.warn("Aviator recovery scheduled because CRASHED round had no restart time");
+            }
+
+            if (!Instant.now().isBefore(restartAt)) {
                 try {
                     startNewRound();
                 } catch (Exception e) {
-                    log.error("Failed to start next Aviator round", e);
+                    nextRoundAt = Instant.now().plusSeconds(2);
+                    log.error("Failed to start next Aviator round. Retrying in 2 seconds.", e);
                 }
             } else {
                 broadcastState();
@@ -220,38 +229,52 @@ public class AviatorEngine {
         currentStatus.set("CRASHED");
         currentMultiplier.set(crashPoint);
 
-        GameRound round = currentRound.get();
-        AviatorRound avRound = currentAviatorRound.get();
-
-        if (round != null && avRound != null) {
-            round.setStatus(GameRound.RoundStatus.COMPLETED);
-            round.setEndedAt(Instant.now());
-            roundRepository.save(round);
-
-            avRound.setStatus(AviatorRound.AviatorStatus.CRASHED);
-            avRound.setCrashedAt(Instant.now());
-            aviatorRoundRepository.save(avRound);
-
-            // Mark any remaining uncached bets as LOST
-            List<AviatorBet> lostBets = aviatorBetRepository.findActiveBetsInRound(round.getId());
-            for (AviatorBet lost : lostBets) {
-                lost.getBet().setStatus(Bet.BetStatus.LOST);
-                lost.getBet().setSettledAt(Instant.now());
-                betRepository.save(lost.getBet());
-            }
-
-            // Push to history
-            recentCrashHistory.addFirst(crashPoint);
-            while (recentCrashHistory.size() > 15) {
-                recentCrashHistory.removeLast();
-            }
-        }
-
-        log.info("Aviator CRASHED at {}x!", crashPoint);
-        broadcastState();
-
-        // Let the main game scheduler own the transition to the next round.
+        // Schedule recovery BEFORE any database work or WebSocket broadcast.
+        // If settlement or broadcasting throws, the scheduler can still move
+        // the game to the next round instead of freezing on CRASHED.
         nextRoundAt = Instant.now().plusSeconds(4);
+
+        try {
+            GameRound round = currentRound.get();
+            AviatorRound avRound = currentAviatorRound.get();
+
+            if (round != null && avRound != null) {
+                round.setStatus(GameRound.RoundStatus.COMPLETED);
+                round.setEndedAt(Instant.now());
+                roundRepository.save(round);
+
+                avRound.setStatus(AviatorRound.AviatorStatus.CRASHED);
+                avRound.setCrashedAt(Instant.now());
+                aviatorRoundRepository.save(avRound);
+
+                // Mark any remaining uncached bets as LOST.
+                List<AviatorBet> lostBets = aviatorBetRepository.findActiveBetsInRound(round.getId());
+                for (AviatorBet lost : lostBets) {
+                    lost.getBet().setStatus(Bet.BetStatus.LOST);
+                    lost.getBet().setSettledAt(Instant.now());
+                    betRepository.save(lost.getBet());
+                }
+
+                recentCrashHistory.addFirst(crashPoint);
+                while (recentCrashHistory.size() > 15) {
+                    recentCrashHistory.removeLast();
+                }
+            }
+
+            log.info("Aviator CRASHED at {}x!", crashPoint);
+
+            try {
+                broadcastState();
+            } catch (Exception broadcastError) {
+                // A WebSocket/client error must never stop the game scheduler.
+                log.warn("Aviator crash broadcast failed; next round recovery remains scheduled", broadcastError);
+            }
+        } catch (Exception settlementError) {
+            // Keep the round lifecycle alive even if settlement has an unexpected
+            // DB/ledger error. The exception is logged for diagnosis, but CRASHED
+            // must transition to a fresh round rather than freezing forever.
+            log.error("Aviator crash settlement failed at {}x; recovering to next round", crashPoint, settlementError);
+        }
     }
 
     /**
