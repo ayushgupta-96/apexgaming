@@ -27,6 +27,7 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -51,7 +52,7 @@ public class LudoEngine {
     private double commissionRate;
 
     // Cache active match rolls: matchUuid -> last roll
-    private final Map<String, Integer> lastRolls = new HashMap<>();
+    private final Map<String, Integer> lastRolls = new ConcurrentHashMap<>();
 
     @Transactional
     public LudoMatch createMatch(Long userId, CreateLudoMatchRequest request) {
@@ -214,8 +215,16 @@ public class LudoEngine {
         LudoMatch match = matchRepository.findByMatchUuid(request.getMatchUuid())
                 .orElseThrow(() -> new BusinessException("Match not found"));
 
+        if (match.getStatus() != LudoMatch.MatchStatus.IN_PROGRESS || match.getCurrentTurnUser() == null) {
+            throw new BusinessException("Match is not in progress");
+        }
+
         if (!match.getCurrentTurnUser().getId().equals(userId)) {
             throw new BusinessException("Not your turn");
+        }
+
+        if (request.getTokenIndex() == null || request.getTokenIndex() < 0 || request.getTokenIndex() > 3) {
+            throw new BusinessException("Invalid token selection");
         }
 
         Integer lastRoll = lastRolls.get(request.getMatchUuid());
