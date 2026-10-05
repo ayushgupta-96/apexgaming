@@ -14,5 +14,6 @@ public interface WithdrawalRequestRepository extends JpaRepository<WithdrawalReq
     Optional<WithdrawalRequest> findByReferenceCode(String referenceCode);
     List<WithdrawalRequest> findByUserIdOrderByCreatedAtDesc(Long userId);
     Page<WithdrawalRequest> findByStatusOrderByCreatedAtAsc(WithdrawalRequest.WithdrawalStatus status, Pageable pageable);
+    Page<WithdrawalRequest> findByStatusInOrderByCreatedAtDesc(List<WithdrawalRequest.WithdrawalStatus> statuses, Pageable pageable);
     long countByStatus(WithdrawalRequest.WithdrawalStatus status);
 }
