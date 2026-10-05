@@ -302,43 +302,82 @@ async function rejectDeposit(depositId) {
 // Withdrawal Approvals Queue
 // ----------------------------------------------------
 async function loadWithdrawals() {
+  const tbody = document.getElementById("withdrawalsTableBody");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="7" class="admin-empty">Loading withdrawal requests…</td></tr>`;
+
   try {
-    const res = await fetch("/api/admin/withdrawals?page=0&size=50", { headers: getAuthHeaders() });
-    const data = await res.json();
-    if (data.success) {
-      const tbody = document.getElementById("withdrawalsTableBody");
-      tbody.innerHTML = "";
+    const res = await fetch("/api/admin/withdrawals?page=0&size=50", {
+      headers: getAuthHeaders(),
+      cache: "no-store"
+    });
 
-      data.data.content.forEach(wdr => {
-        const tr = document.createElement("tr");
-        const statusBadge = wdr.status === "PAID" ? "badge-approved" : (wdr.status === "REJECTED" ? "badge-rejected" : "badge-pending");
-
-        tr.innerHTML = `
-          <td><b style="color: var(--accent-gold);">${escapeHtml(wdr.referenceCode)}</b></td>
-          <td>${wdr.user.phoneNumber} (${wdr.accountHolderName})</td>
-          <td><b>₹${Number(wdr.amount).toFixed(2)}</b></td>
-          <td>${escapeHtml(wdr.destinationType)}</td>
-          <td><code>${escapeHtml(wdr.accountNumberOrVpa)}</code></td>
-          <td><span class="badge ${statusBadge}">${escapeHtml(wdr.status)}</span></td>
-          <td>
-            ${wdr.status !== 'PAID' && wdr.status !== 'REJECTED' ? `
-              <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="openPayoutModal(${wdr.id})">Mark Paid</button>
-              <button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="rejectWithdrawal(${wdr.id})">Reject</button>
-            ` : (wdr.status === 'PAID' ? `<span style="color: var(--accent-emerald);">UTR: ${escapeHtml(wdr.payoutUtr)}</span>` : 'Refunded')}
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (_) {
+      data = null;
     }
+
+    if (!res.ok) {
+      throw new Error(data?.message || `HTTP ${res.status}`);
+    }
+
+    if (!data?.success) {
+      throw new Error(data?.message || "Withdrawal queue request failed");
+    }
+
+    const page = data.data;
+    const withdrawals = Array.isArray(page?.content) ? page.content : [];
+
+    tbody.innerHTML = "";
+
+    if (!withdrawals.length) {
+      tbody.innerHTML = `<tr><td colspan="7" class="admin-empty">No pending or under-review withdrawal requests.</td></tr>`;
+      return;
+    }
+
+    withdrawals.forEach(wdr => {
+      const tr = document.createElement("tr");
+      const statusBadge = wdr.status === "UNDER_REVIEW" ? "badge-verified" : "badge-pending";
+
+      tr.innerHTML = `
+        <td><b style="color: var(--accent-gold);">${escapeHtml(wdr.referenceCode)}</b></td>
+        <td>
+          <div><b>${escapeHtml(wdr.username || "-")}</b></div>
+          <div style="font-size:0.8rem;color:#81978e;">${escapeHtml(wdr.phoneNumber || "-")}</div>
+        </td>
+        <td><b>₹${Number(wdr.amount || 0).toFixed(2)}</b></td>
+        <td>
+          <div>${escapeHtml(wdr.destinationType || "-")}</div>
+          ${wdr.bankName ? `<div style="font-size:0.75rem;color:#81978e;">${escapeHtml(wdr.bankName)}</div>` : ""}
+        </td>
+        <td>
+          <div><code>${escapeHtml(wdr.accountNumberOrVpa || "-")}</code></div>
+          ${wdr.accountHolderName ? `<div style="font-size:0.75rem;color:#81978e;">${escapeHtml(wdr.accountHolderName)}</div>` : ""}
+          ${wdr.ifscCode ? `<div style="font-size:0.75rem;color:#81978e;">IFSC: ${escapeHtml(wdr.ifscCode)}</div>` : ""}
+        </td>
+        <td><span class="admin-badge ${statusBadge}">${escapeHtml(wdr.status)}</span></td>
+        <td>
+          <button class="btn btn-success" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="openPayoutModal(${Number(wdr.id)})">Approve / Pay</button>
+          <button class="btn btn-danger" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="rejectWithdrawal(${Number(wdr.id)})">Reject</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
   } catch (e) {
-    console.error("Withdrawals load error", e);
+    console.error("Withdrawals load error:", e);
+    tbody.innerHTML = `<tr><td colspan="7" class="admin-empty" style="color:#f87171;">Could not load withdrawals: ${escapeHtml(e.message || "Server error")}</td></tr>`;
   }
 }
 
 function openPayoutModal(id) {
   document.getElementById("payoutWithdrawalId").value = id;
   document.getElementById("payoutUtrInput").value = "";
+  document.getElementById("payoutTotpInput").value = "";
   openModal("payoutModal");
+  setTimeout(() => document.getElementById("payoutUtrInput")?.focus(), 100);
 }
 
 async function confirmApproveWithdrawal() {
@@ -355,11 +394,11 @@ async function confirmApproveWithdrawal() {
     const res = await fetch("/api/admin/withdrawals/approve", {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ withdrawalId: wdrId, payoutUtr: utr, totpCode: totp })
+      body: JSON.stringify({ withdrawalId: Number(wdrId), payoutUtr: utr.trim(), totpCode: totp ? Number(String(totp).replace(/[^0-9]/g, "").slice(0, 6)) : null })
     });
     const data = await res.json();
     if (data.success) {
-      alert("Withdrawal marked as PAID! Locked funds debited via ledger and user notified.");
+      alert("Withdrawal approved and marked as PAID. Locked funds settled and user notified.");
       closeModal("payoutModal");
       loadWithdrawals();
       loadDashboard();
