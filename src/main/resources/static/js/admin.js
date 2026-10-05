@@ -231,16 +231,21 @@ function approveDeposit(depositId) {
 async function confirmApproveDeposit() {
   const depositId = Number(document.getElementById("approvalDepositId")?.value);
   const notes = document.getElementById("approvalNotesInput")?.value?.trim() || "";
-  const totpRaw = document.getElementById("approvalTotpInput")?.value?.trim() || "";
+  // Normalize the authenticator value before validation. Some browsers/autofill
+  // can include invisible whitespace or formatting characters when a code is pasted.
+  const totpInput = document.getElementById("approvalTotpInput");
+  const totpRaw = (totpInput?.value || "").replace(/[^0-9]/g, "").slice(0, 6);
+
+  if (totpInput) totpInput.value = totpRaw;
 
   if (!Number.isInteger(depositId) || depositId <= 0) {
     alert("Invalid deposit ID.");
     return;
   }
 
-  if (!/^\d{6}$/.test(totpRaw)) {
+  if (totpRaw.length !== 6) {
     alert("Enter a valid 6-digit Admin 2FA code from your authenticator app.");
-    document.getElementById("approvalTotpInput")?.focus();
+    totpInput?.focus();
     return;
   }
 
