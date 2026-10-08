@@ -3,6 +3,7 @@ package com.gaming.platform.module.game.aviator.service;
 import com.gaming.platform.common.exception.BusinessException;
 import com.gaming.platform.common.util.ProvablyFairUtil;
 import com.gaming.platform.module.game.aviator.dto.AviatorBetRequest;
+import com.gaming.platform.module.game.aviator.dto.AviatorBetResponse;
 import com.gaming.platform.module.game.aviator.dto.AviatorStateDto;
 import com.gaming.platform.module.game.aviator.entity.AviatorBet;
 import com.gaming.platform.module.game.aviator.entity.AviatorRound;
@@ -25,6 +26,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,6 +50,7 @@ public class AviatorEngine {
     private final UserRepository userRepository;
     private final LedgerService ledgerService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final PlatformTransactionManager transactionManager;
 
     @Value("${rmg.games.aviator.house-edge:0.03}")
     private double houseEdge;
@@ -205,19 +208,24 @@ public class AviatorEngine {
         }
     }
 
-    @Transactional
     public void checkAutoCashouts(BigDecimal currentMult) {
-        GameRound round = currentRound.get();
-        if (round == null) return;
+        org.springframework.transaction.support.TransactionTemplate tx =
+                new org.springframework.transaction.support.TransactionTemplate(transactionManager);
 
-        List<AviatorBet> activeBets = aviatorBetRepository.findActiveBetsInRound(round.getId());
-        for (AviatorBet avBet : activeBets) {
-            if (avBet.getAutoCashoutMultiplier() != null &&
-                currentMult.compareTo(avBet.getAutoCashoutMultiplier()) >= 0 &&
-                !avBet.isCashedOut()) {
-                executeCashout(avBet, avBet.getAutoCashoutMultiplier());
+        tx.executeWithoutResult(status -> {
+            GameRound round = currentRound.get();
+            if (round == null) return;
+
+            List<AviatorBet> activeBets = aviatorBetRepository.findActiveBetsInRound(round.getId());
+            for (AviatorBet avBet : activeBets) {
+                BigDecimal autoTarget = avBet.getAutoCashoutMultiplier();
+                if (autoTarget != null &&
+                        currentMult.compareTo(autoTarget) >= 0 &&
+                        !avBet.isCashedOut()) {
+                    executeCashout(avBet, autoTarget);
+                }
             }
-        }
+        });
     }
 
     @Transactional
@@ -281,7 +289,7 @@ public class AviatorEngine {
      * Places bet during BETTING status.
      */
     @Transactional
-    public AviatorBet placeBet(Long userId, AviatorBetRequest request) {
+    public AviatorBetResponse placeBet(Long userId, AviatorBetRequest request) {
         if (!"BETTING".equals(currentStatus.get())) {
             throw new BusinessException("Betting is locked for current round. Please wait for next round.");
         }
@@ -320,14 +328,14 @@ public class AviatorEngine {
         round.setTotalBetAmount(round.getTotalBetAmount().add(request.getAmount()));
         roundRepository.save(round);
 
-        return avBet;
+        return AviatorBetResponse.from(avBet);
     }
 
     /**
      * Manual cashout during flight.
      */
     @Transactional
-    public AviatorBet manualCashout(Long userId, String betUuid) {
+    public AviatorBetResponse manualCashout(Long userId, String betUuid) {
         if (!"FLYING".equals(currentStatus.get())) {
             throw new BusinessException("Cannot cash out: Plane is not in flight");
         }
@@ -347,10 +355,14 @@ public class AviatorEngine {
         }
 
         BigDecimal cashoutMult = currentMultiplier.get();
-        return executeCashout(avBet, cashoutMult);
+        return AviatorBetResponse.from(executeCashout(avBet, cashoutMult));
     }
 
-    private AviatorBet executeCashout(AviatorBet avBet, BigDecimal multiplier) {
+    private synchronized AviatorBet executeCashout(AviatorBet avBet, BigDecimal multiplier) {
+        if (avBet.isCashedOut() || avBet.getBet().getStatus() != Bet.BetStatus.PLACED) {
+            return avBet;
+        }
+
         avBet.setCashedOut(true);
         avBet.setCashedOutMultiplier(multiplier);
         avBet.setCashedOutAt(Instant.now());
