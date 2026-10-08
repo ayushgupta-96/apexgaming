@@ -560,3 +560,111 @@
     transform:translate(-50%,-50%) rotate(0deg);
   }
 }
+
+
+/* Aviator round results */
+#tab-aviator .apx-round-results{
+  margin-top:12px;
+  padding:13px;
+  border:1px solid rgba(240,207,104,.12);
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 90% 0%,rgba(240,207,104,.09),transparent 34%),
+    linear-gradient(180deg,#111914,#080d0b);
+  box-shadow:0 14px 34px rgba(0,0,0,.22);
+}
+#tab-aviator .apx-round-results-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+#tab-aviator .apx-round-results-head strong{
+  color:#f1ead2;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+#tab-aviator .apx-round-results-head span{
+  color:#69766f;
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+#tab-aviator #aviatorRoundResults{
+  display:flex;
+  gap:8px;
+  overflow-x:auto;
+  padding:2px 1px 4px;
+  scrollbar-width:none;
+}
+#tab-aviator #aviatorRoundResults::-webkit-scrollbar{display:none}
+.apx-aviator-result-card{
+  position:relative;
+  min-width:76px;
+  height:64px;
+  padding:8px 7px;
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  border-radius:15px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(160deg,#111a15,#090e0c);
+  box-shadow:inset 0 1px rgba(255,255,255,.04),0 7px 18px rgba(0,0,0,.2);
+}
+.apx-aviator-result-card strong{
+  font-size:17px;
+  font-weight:950;
+  font-variant-numeric:tabular-nums;
+}
+.apx-aviator-result-card small{
+  margin-top:2px;
+  font-size:7px;
+  letter-spacing:.14em;
+  font-weight:900;
+  color:#68766e;
+}
+.apx-aviator-result-card .apx-aviator-result-index{
+  position:absolute;
+  top:5px;
+  left:7px;
+  color:#4f5e57;
+  font-size:7px;
+  font-weight:800;
+}
+.apx-aviator-result-card.low{
+  border-color:rgba(255,74,99,.22);
+  background:linear-gradient(160deg,rgba(255,68,92,.10),#0a0f0d);
+}
+.apx-aviator-result-card.low strong{color:#ff667a}
+.apx-aviator-result-card.normal{
+  border-color:rgba(240,207,104,.20);
+  background:linear-gradient(160deg,rgba(240,207,104,.08),#0a0f0d);
+}
+.apx-aviator-result-card.normal strong{color:#f1d46c}
+.apx-aviator-result-card.hot{
+  border-color:rgba(57,221,157,.28);
+  background:linear-gradient(160deg,rgba(25,190,126,.12),#0a0f0d);
+}
+.apx-aviator-result-card.hot strong{
+  color:#49e2a8;
+  text-shadow:0 0 16px rgba(57,221,157,.18);
+}
+
+/* Final bet result amounts: red loss/stake, green cashout */
+.apx-bet-history-row.lost .apx-bet-history-result strong,
+.apx-bet-history-row.placed .apx-bet-history-result strong{color:#ff6679}
+.apx-bet-history-row.won .apx-bet-history-result strong{
+  color:#41dda0;
+  text-shadow:0 0 12px rgba(65,221,160,.16);
+}
+.apx-bet-history-row.won{
+  border-color:rgba(65,221,160,.16);
+}
+.apx-bet-history-row.lost,
+.apx-bet-history-row.placed{
+  border-color:rgba(255,102,121,.12);
+}
