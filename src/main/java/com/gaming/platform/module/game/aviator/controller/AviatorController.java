@@ -7,7 +7,6 @@ import com.gaming.platform.module.game.aviator.dto.AviatorBetRequest;
 import com.gaming.platform.module.game.aviator.dto.AviatorBetResponse;
 import com.gaming.platform.module.game.aviator.dto.AviatorCashoutRequest;
 import com.gaming.platform.module.game.aviator.dto.AviatorStateDto;
-import com.gaming.platform.module.game.aviator.entity.AviatorBet;
 import com.gaming.platform.module.game.aviator.service.AviatorEngine;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +36,7 @@ public class AviatorController {
     @Operation(summary = "Place a bet for the current betting round")
     public ResponseEntity<ApiResponse<AviatorBetResponse>> placeBet(@Valid @RequestBody AviatorBetRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
-        AviatorBet bet = aviatorEngine.placeBet(userId, request);
+        AviatorBetResponse bet = aviatorEngine.placeBet(userId, request);
         return ResponseEntity.ok(ApiResponse.ok("Bet placed successfully", bet));
     }
 
@@ -45,7 +44,7 @@ public class AviatorController {
     @Operation(summary = "Manually cash out during active flight")
     public ResponseEntity<ApiResponse<AviatorBetResponse>> cashout(@Valid @RequestBody AviatorCashoutRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
-        AviatorBet bet = aviatorEngine.manualCashout(userId, request.getBetUuid());
+        AviatorBetResponse bet = aviatorEngine.manualCashout(userId, request.getBetUuid());
         return ResponseEntity.ok(ApiResponse.ok("Cashout successful", bet));
     }
 
