@@ -144,6 +144,18 @@
       status.textContent=a.phase==="BETTING"?"NEXT ROUND STARTS SOON":a.phase==="FLYING"?"PLANE IN FLIGHT":"ROUND CRASHED";
     }
     if(live) live.classList.toggle("off",a.phase==="CRASHED");
+    const results=el("aviatorRoundResults");
+    if(results){
+      results.replaceChildren();
+      (state.recentHistory||[]).slice(0,12).forEach((value,index)=>{
+        const chip=document.createElement("div");
+        const multiplier=Number(value)||0;
+        chip.className="apx-aviator-result-card "+(multiplier>=5?"hot":multiplier<2?"low":"normal");
+        chip.innerHTML=`<span class="apx-aviator-result-index">#${index+1}</span><strong>${multiplier.toFixed(2)}x</strong><small>${multiplier<2?"LOW":multiplier>=5?"HIGH":"NORMAL"}</small>`;
+        results.appendChild(chip);
+      });
+    }
+
     const ribbon=el("aviatorHistoryRibbon");
     if(ribbon) renderPills(ribbon,state.recentHistory||[]);
   }
