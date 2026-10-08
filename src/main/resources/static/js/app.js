@@ -10,6 +10,7 @@ let currentLudoMatch = null;
 let ludoStatePoll = null;
 let wsReconnectTimer = null;
 let gameStatePollTimer = null;
+let aviatorBetStatusPollTimer = null;
 
 document.addEventListener("DOMContentLoaded", () => {
   if (token) onLoginSuccess();
@@ -292,12 +293,16 @@ function renderBetHistory(container, rows) {
     const amount = document.createElement("strong");
     const payout = Number(item.payoutAmount || 0);
     const stake = Number(item.amount || 0);
-    amount.textContent = item.status === "WON" ? "+₹" + payout.toFixed(2) : "₹" + stake.toFixed(2);
+    if (item.status === "WON") {
+      amount.textContent = "+₹" + payout.toFixed(2);
+    } else {
+      amount.textContent = "-₹" + stake.toFixed(2);
+    }
 
     const meta = document.createElement("small");
     meta.textContent = item.status === "WON"
-      ? "Payout"
-      : item.status === "LOST" ? "Lost" : "Stake";
+      ? "CASHED OUT"
+      : item.status === "LOST" ? "LOST" : "BET PLACED";
 
     right.append(status, amount, meta);
     row.append(main, right);
@@ -321,7 +326,15 @@ async function loadBetHistory(gameType) {
     });
     const data = await safeJsonResponse(res);
     if (data.success) {
-      renderBetHistory(container, data.data);
+      const rows = Array.isArray(data.data) ? data.data : [];
+      renderBetHistory(container, rows);
+
+      if (gameType === "AVIATOR" && activeAviatorBet) {
+        const current = rows.find(item => item.betUuid === activeAviatorBet.betUuid);
+        if (current && (current.status === "WON" || current.status === "LOST" || current.status === "CANCELLED" || current.status === "REFUNDED")) {
+          clearActiveAviatorBet();
+        }
+      }
     } else {
       renderBetHistory(container, []);
     }
@@ -472,7 +485,7 @@ function handleColourTick(state) {
 }
 
 async function placeAviatorBet(){if(!token){openModal("loginModal");return;}if(!currentAviatorState)return;const amt=document.getElementById("aviatorBetAmount")?.value,auto=document.getElementById("aviatorAutoCashout")?.value||null;try{const res=await fetch("/api/games/aviator/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentAviatorState.roundUuid,amount:amt,autoCashoutMultiplier:auto})});const data=await safeJsonResponse(res);if(data.success){
-activeAviatorBet={betUuid:data.data.bet.betUuid,amount:Number(amt)};
+activeAviatorBet={betUuid:data.data.betUuid,amount:Number(amt),autoCashoutMultiplier:auto?Number(auto):null};
 const cashout=document.getElementById("btnAviatorCashout");
 const notice=document.getElementById("aviatorNoBetNotice");
 const cashoutAmount=document.getElementById("cashoutAmountDisplay");
@@ -481,16 +494,48 @@ if(notice){notice.style.display="none";}
 if(cashoutAmount){cashoutAmount.textContent=Number(amt).toFixed(2);}
 fetchWallet();
 loadBetHistory("AVIATOR");
+startAviatorBetStatusPolling();
 }else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to place bet");}}
-async function cashoutAviator(){if(!activeAviatorBet)return;if(!token){activeAviatorBet=null;return;}try{const res=await fetch("/api/games/aviator/cashout",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({betUuid:activeAviatorBet.betUuid})});const data=await safeJsonResponse(res);if(data.success){
-alert("Cashed out successfully!");
-activeAviatorBet=null;
-const cashout=document.getElementById("btnAviatorCashout");
-const notice=document.getElementById("aviatorNoBetNotice");
-if(cashout){cashout.style.display="none";}
-if(notice){notice.style.display="block";}
-fetchWallet();
-}else alert("Cashout error: "+(data.message||"Unknown error"));}catch(e){alert("Cashout failed");}}
+async function cashoutAviator(){
+  if(!activeAviatorBet)return;
+  if(!token){clearActiveAviatorBet();return;}
+  try{
+    const res=await fetch("/api/games/aviator/cashout",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body:JSON.stringify({betUuid:activeAviatorBet.betUuid})
+    });
+    const data=await safeJsonResponse(res);
+    if(data.success){
+      clearActiveAviatorBet();
+      fetchWallet();
+      loadBetHistory("AVIATOR");
+      alert("Cashed out successfully!");
+    }else{
+      alert("Cashout error: "+(data.message||"Unknown error"));
+    }
+  }catch(e){
+    console.error("Cashout error",e);
+    alert("Cashout failed. Please try again.");
+  }
+}
+
+function clearActiveAviatorBet(){
+  activeAviatorBet=null;
+  if(aviatorBetStatusPollTimer){
+    clearInterval(aviatorBetStatusPollTimer);
+    aviatorBetStatusPollTimer=null;
+  }
+  const cashout=document.getElementById("btnAviatorCashout");
+  const notice=document.getElementById("aviatorNoBetNotice");
+  if(cashout) cashout.style.display="none";
+  if(notice) notice.style.display="block";
+}
+
+function startAviatorBetStatusPolling(){
+  if(aviatorBetStatusPollTimer) clearInterval(aviatorBetStatusPollTimer);
+  aviatorBetStatusPollTimer=setInterval(()=>loadBetHistory("AVIATOR"),1000);
+}
 function openColourBetModal(type,val){if(!token){openModal("loginModal");return;}selectedColourTarget={type,value:val};document.getElementById("modalBetTarget").textContent=val;document.getElementById("modalBetMultiplier").textContent=type==="NUMBER"?"9.0x":(val==="VIOLET"?"4.5x":"2.0x");openModal("colourBetModal");}
 async function confirmColourBet(){const amt=document.getElementById("colourModalAmount")?.value;try{const res=await fetch("/api/games/colour/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentColourState.roundUuid,targetType:selectedColourTarget.type,targetValue:selectedColourTarget.value,amount:amt})});const data=await safeJsonResponse(res);if(data.success){alert("Bet placed!");closeModal("colourBetModal");fetchWallet();loadBetHistory("COLOUR_PREDICTION");}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to submit bet");}}
 async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await safeJsonResponse(res);if(data.success){
