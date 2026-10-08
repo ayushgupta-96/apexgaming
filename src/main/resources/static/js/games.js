@@ -150,8 +150,14 @@
       (state.recentHistory||[]).slice(0,12).forEach((value,index)=>{
         const chip=document.createElement("div");
         const multiplier=Number(value)||0;
+        const level=multiplier<2?"LOW":multiplier>=5?"HIGH":"NORMAL";
         chip.className="apx-aviator-result-card "+(multiplier>=5?"hot":multiplier<2?"low":"normal");
-        chip.innerHTML=`<span class="apx-aviator-result-index">#${index+1}</span><strong>${multiplier.toFixed(2)}x</strong><small>${multiplier<2?"LOW":multiplier>=5?"HIGH":"NORMAL"}</small>`;
+        chip.innerHTML=`<span class="apx-aviator-result-index">#${index+1}</span><strong>${multiplier.toFixed(2)}x</strong><small>${level}</small>`;
+        // Keep the result color explicit on the element as well as in CSS,
+        // so cached/overridden styles cannot make all results look identical.
+        chip.style.borderColor=multiplier<2?"rgba(255,74,99,.65)":multiplier>=5?"rgba(57,221,157,.65)":"rgba(240,207,104,.65)";
+        chip.style.background=multiplier<2?"linear-gradient(160deg,rgba(255,68,92,.22),#0a0f0d)":multiplier>=5?"linear-gradient(160deg,rgba(25,190,126,.22),#0a0f0d)":"linear-gradient(160deg,rgba(240,207,104,.16),#0a0f0d)";
+        chip.querySelector("strong").style.color=multiplier<2?"#ff667a":multiplier>=5?"#49e2a8":"#f1d46c";
         results.appendChild(chip);
       });
     }
