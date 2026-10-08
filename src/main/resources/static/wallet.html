@@ -394,6 +394,18 @@
   </div>
 </div>
 
+<div id="withdrawalHistoryModal" class="wallet-history-modal" role="dialog" aria-modal="true" aria-labelledby="withdrawalHistoryTitle" hidden>
+  <div class="wallet-history-sheet">
+    <button class="wallet-history-close" type="button" onclick="closeWithdrawalHistory()" aria-label="Close">×</button>
+    <div class="wallet-history-kicker">TRANSACTIONS</div>
+    <h2 id="withdrawalHistoryTitle">Withdrawal History</h2>
+    <p class="wallet-history-subtitle">Your withdrawal requests and payout status.</p>
+    <div id="withdrawalHistoryList" class="wallet-history-list">
+      <div class="wallet-history-empty">Loading withdrawal history…</div>
+    </div>
+  </div>
+</div>
+
 <nav class="bottom-nav" aria-label="Mobile bottom navigation">
     <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
     <a class="bottom-nav-btn" href="/#games" data-tab="games" aria-label="Games"><span>✦</span><small>Games</small></a>
@@ -402,7 +414,7 @@
     <a class="bottom-nav-btn active" href="/wallet.html" data-tab="wallet" aria-label="Wallet"><span>◈</span><small>Wallet</small></a>
   </nav>
 
-  <script src="/js/app.js"></script>
+  <script src="/js/app.js?v=20261008-1"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       if (!localStorage.getItem('rmg_token')) {
