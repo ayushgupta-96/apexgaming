@@ -4,6 +4,7 @@ import com.gaming.platform.common.response.ApiResponse;
 import com.gaming.platform.common.security.SecurityUtils;
 import com.gaming.platform.common.util.ProvablyFairUtil;
 import com.gaming.platform.module.game.aviator.dto.AviatorBetRequest;
+import com.gaming.platform.module.game.aviator.dto.AviatorBetResponse;
 import com.gaming.platform.module.game.aviator.dto.AviatorCashoutRequest;
 import com.gaming.platform.module.game.aviator.dto.AviatorStateDto;
 import com.gaming.platform.module.game.aviator.entity.AviatorBet;
@@ -34,7 +35,7 @@ public class AviatorController {
 
     @PostMapping("/bet")
     @Operation(summary = "Place a bet for the current betting round")
-    public ResponseEntity<ApiResponse<AviatorBet>> placeBet(@Valid @RequestBody AviatorBetRequest request) {
+    public ResponseEntity<ApiResponse<AviatorBetResponse>> placeBet(@Valid @RequestBody AviatorBetRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         AviatorBet bet = aviatorEngine.placeBet(userId, request);
         return ResponseEntity.ok(ApiResponse.ok("Bet placed successfully", bet));
@@ -42,7 +43,7 @@ public class AviatorController {
 
     @PostMapping("/cashout")
     @Operation(summary = "Manually cash out during active flight")
-    public ResponseEntity<ApiResponse<AviatorBet>> cashout(@Valid @RequestBody AviatorCashoutRequest request) {
+    public ResponseEntity<ApiResponse<AviatorBetResponse>> cashout(@Valid @RequestBody AviatorCashoutRequest request) {
         Long userId = SecurityUtils.getCurrentUserId();
         AviatorBet bet = aviatorEngine.manualCashout(userId, request.getBetUuid());
         return ResponseEntity.ok(ApiResponse.ok("Cashout successful", bet));
