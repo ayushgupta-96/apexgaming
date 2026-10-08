@@ -455,7 +455,7 @@ function handleAviatorTick(state) {
   // A crashed round can no longer be cashed out. Clear the stale button
   // immediately, including when the browser reconnects to a new round.
   if (state.status === "CRASHED" || (previousRound && previousRound !== state.roundUuid)) {
-    activeAviatorBet = null;
+    clearActiveAviatorBet();
     const cashout = document.getElementById("btnAviatorCashout");
     const notice = document.getElementById("aviatorNoBetNotice");
     if (cashout) cashout.style.display = "none";
