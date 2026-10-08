@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -88,7 +90,20 @@ public class WhatsAppNotificationService {
         messageRepository.save(message);
         ticketRepository.save(ticket);
 
-        // Push real-time update to Admin UI and player topic via STOMP WebSocket
-        messagingTemplate.convertAndSend("/topic/whatsapp/tickets", ticket);
+        // Push safe scalar fields only. Do not serialize the JPA entity itself;
+        // its LAZY user/assignedAdmin relations can be Hibernate proxies and
+        // cause MessageConversionException during STOMP JSON serialization.
+        Map<String, Object> ticketEvent = new LinkedHashMap<>();
+        ticketEvent.put("id", ticket.getId());
+        ticketEvent.put("ticketNumber", ticket.getTicketNumber());
+        ticketEvent.put("senderPhone", ticket.getSenderPhone());
+        ticketEvent.put("relatedReferenceCode", ticket.getRelatedReferenceCode());
+        ticketEvent.put("ticketType", ticket.getTicketType());
+        ticketEvent.put("status", ticket.getStatus());
+        ticketEvent.put("lastMessageAt", ticket.getLastMessageAt());
+        ticketEvent.put("createdAt", ticket.getCreatedAt());
+        ticketEvent.put("updatedAt", ticket.getUpdatedAt());
+
+        messagingTemplate.convertAndSend("/topic/whatsapp/tickets", ticketEvent);
     }
 }
