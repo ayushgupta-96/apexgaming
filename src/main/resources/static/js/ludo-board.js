@@ -28,7 +28,7 @@
       if(pos===-1){[x,y]=BASE[color]?.[i]||[7,7];}
       else if(pos===999){x=7;y=7;}
       else if(pos>=100){[x,y]=HOME[color]?.[Math.min(5,Math.max(0,pos-100))]||[7,7];}
-      else {let trackIndex=(Number(pos)-START[color]+52)%52;[x,y]=TRACK[trackIndex]||TRACK[0];}
+      else {let trackIndex=Number(pos);[x,y]=TRACK[trackIndex]||TRACK[0];}
       ctx.beginPath();ctx.arc((x+.5)*size,(y+.5)*size,size*.25,0,Math.PI*2);ctx.fillStyle=COLORS[color]||"#fff";ctx.fill();ctx.lineWidth=2;ctx.strokeStyle="#fff";ctx.stroke();
       ctx.fillStyle="#07170f";ctx.font="bold "+(size*.23)+"px sans-serif";ctx.fillText(String(i+1),(x+.5)*size,(y+.5)*size);
     }));

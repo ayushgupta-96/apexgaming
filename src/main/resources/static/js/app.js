@@ -554,26 +554,70 @@ async function createLudoMatch(){if(!token){openModal("loginModal");return;}cons
     }catch(e){console.warn("Ludo state poll failed",e);}
   },2000);
 }else alert("Ludo room error: "+(data.message||"Unknown error"));}catch(e){alert("Error creating match");}}
-async function rollLudoDice(){if(!currentLudoMatch)return;try{const res=await fetch("/api/games/ludo/rooms/"+currentLudoMatch.matchUuid+"/roll",{method:"POST",headers:{"Authorization":"Bearer "+token}});const data=await safeJsonResponse(res);if(data.success){alert("You rolled a "+data.data.diceRoll+"!");renderPawnButtons(data.data.movableTokenIndices);}else alert("Roll error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to roll dice");}}
+async function rollLudoDice(){
+  if(!currentLudoMatch||!token)return;
+  const button=document.getElementById("btnLudoRoll");
+  if(button)button.disabled=true;
+  try{
+    const res=await fetch("/api/games/ludo/rooms/"+encodeURIComponent(currentLudoMatch.matchUuid)+"/roll",{method:"POST",headers:{"Authorization":"Bearer "+token}});
+    const data=await safeJsonResponse(res);
+    if(data.success){
+      const dice=document.getElementById("ludoDiceValue");
+      if(dice)dice.textContent=String(data.data.diceRoll);
+      renderPawnButtons(data.data.movableTokenIndices);
+      if(data.data.turnPassed){
+        const label=document.getElementById("ludoBoardTurnLabel");
+        if(label)label.textContent="NO VALID MOVE · TURN PASSED";
+      }else if(!data.data.movableTokenIndices?.length){
+        const box=document.getElementById("ludoTokenButtons");
+        if(box)box.textContent="No movable token. Roll a six to bring a token out.";
+      }
+    }else alert("Roll error: "+(data.message||"Unknown error"));
+  }catch(e){console.error("Ludo roll failed",e);alert("Failed to roll dice");}
+  finally{if(button&&currentLudoMatch?.status==="IN_PROGRESS"&&Number(currentLudoMatch.currentTurnUserId)===Number(currentUserId))button.disabled=false;}
+}
 function renderPawnButtons(movable){const container=document.getElementById("ludoTokenButtons");if(!container)return;container.innerHTML="";(movable||[]).forEach(idx=>{const btn=document.createElement("button");btn.className="btn btn-primary";btn.textContent="Move Pawn #"+(idx+1);btn.onclick=()=>moveLudoPawn(idx);container.appendChild(btn);});}
 async function moveLudoPawn(tokenIndex){if(!currentLudoMatch)return;try{const res=await fetch("/api/games/ludo/rooms/move",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({matchUuid:currentLudoMatch.matchUuid,tokenIndex})});const data=await safeJsonResponse(res);if(data.success){const box=document.getElementById("ludoTokenButtons");if(box)box.innerHTML="";updateLudoGameState(data.data);}}catch(e){alert("Error moving pawn");}}
 function updateLudoGameState(state){
-  if(!state) return;
-  currentLudoMatch = { ...(currentLudoMatch || {}), ...state };
-  const matchId=document.getElementById("txtLudoMatchUuid");\n  const turn=document.getElementById("txtLudoTurnColor");
+  if(!state)return;
+  currentLudoMatch={...(currentLudoMatch||{}),...state};
+  const matchId=document.getElementById("txtLudoMatchUuid");
+  const turn=document.getElementById("txtLudoTurnColor");
   const pot=document.getElementById("txtLudoPot");
   const status=document.getElementById("ludoMatchStatusBadge");
-  const roll=document.getElementById("btnLudoRoll");
-  if(matchId) matchId.textContent=state.matchUuid || "-";\n  if(turn) turn.textContent=state.currentTurnColor || "WAITING";\n  const turnLabel=document.getElementById("ludoBoardTurnLabel");\n  if(turnLabel) turnLabel.textContent=state.status==="WAITING"?"WAITING FOR OPPONENT":(state.currentTurnColor||"") + " TURN";\n  const players=document.getElementById("ludoPlayers");\n  if(players){players.replaceChildren();(state.players||[]).forEach(player=>{const card=document.createElement("div");card.className="pg-player-chip "+String(player.color||"").toLowerCase();const name=document.createElement("b");name.textContent=player.username||("Player "+(player.seatIndex+1));const meta=document.createElement("small");meta.textContent=player.color+" · "+(player.connected?"CONNECTED":"OFFLINE");card.append(name,meta);players.appendChild(card);});}\n  const dice=document.getElementById("ludoDiceValue");\n  if(dice&&state.lastDiceRoll!=null) dice.textContent=String(state.lastDiceRoll);
-  if(pot) pot.textContent=Number(state.totalPot || 0).toFixed(2);
-  if(status) status.textContent=String(state.status || "Lobby").replace("_"," ");
-  if(roll) roll.disabled=state.status!=="IN_PROGRESS" || Number(state.currentTurnUserId)!==Number(currentUserId);
+  const rollButton=document.getElementById("btnLudoRoll");
+  const turnLabel=document.getElementById("ludoBoardTurnLabel");
+  const players=document.getElementById("ludoPlayers");
+  const dice=document.getElementById("ludoDiceValue");
+  if(matchId)matchId.textContent=state.matchUuid||"-";
+  if(turn)turn.textContent=state.currentTurnColor||"WAITING";
+  if(pot)pot.textContent=Number(state.totalPot||0).toFixed(2);
+  if(status)status.textContent=String(state.status||"LOBBY").replace("_"," ");
+  if(turnLabel)turnLabel.textContent=state.status==="WAITING"?"WAITING FOR OPPONENT":(state.currentTurnColor||"")+" TURN";
+  if(dice&&state.lastDiceRoll!=null)dice.textContent=String(state.lastDiceRoll);
+  if(rollButton)rollButton.disabled=state.status!=="IN_PROGRESS"||Number(state.currentTurnUserId)!==Number(currentUserId);
+  if(players){
+    players.replaceChildren();
+    (state.players||[]).forEach(player=>{
+      const card=document.createElement("div");
+      card.className="pg-player-chip "+String(player.color||"").toLowerCase();
+      const name=document.createElement("b");
+      name.textContent=player.username||("Player "+(Number(player.seatIndex)+1));
+      const meta=document.createElement("small");
+      meta.textContent=String(player.color||"PLAYER")+" · "+(player.connected?"CONNECTED":"OFFLINE");
+      card.append(name,meta);players.appendChild(card);
+    });
+  }
   drawLudoBoard(state.tokenPositions);
   if(state.status==="COMPLETED"){
-    if(roll) roll.disabled=true;
-    fetchWallet();
-    clearInterval(ludoStatePoll);
-    ludoStatePoll=null;
+    if(rollButton)rollButton.disabled=true;
+    const winner=document.getElementById("ludoWinnerPanel");
+    const winnerText=document.getElementById("ludoWinnerText");
+    const payout=document.getElementById("ludoWinnerPayout");
+    if(winner)winner.hidden=false;
+    if(winnerText)winnerText.textContent=(state.winnerColor||"Player")+" wins";
+    if(payout)payout.textContent=state.winnerPayout!=null?"Payout ₹"+Number(state.winnerPayout).toFixed(2):"Match completed";
+    fetchWallet();clearInterval(ludoStatePoll);ludoStatePoll=null;
   }
 }
 function drawLudoBoard(tokenPositions){const canvas=document.getElementById("ludoCanvas");if(!canvas)return;const state={...(currentLudoMatch||{}),tokenPositions:tokenPositions||currentLudoMatch?.tokenPositions||{}};if(window.ApexLudoBoard&&typeof window.ApexLudoBoard.render==="function"){window.ApexLudoBoard.render(canvas,state,currentUserId);} }
