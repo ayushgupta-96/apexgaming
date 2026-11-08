@@ -233,7 +233,7 @@ async function fetchWallet() {
       if (walletWinnings) walletWinnings.textContent = Number(w.winningsBalance).toFixed(2);
       if (walletBonus) walletBonus.textContent = Number(w.bonusBalance).toFixed(2);
       if (walletTotal) walletTotal.textContent = Number(w.totalPlayableBalance ?? w.depositBalance ?? 0).toFixed(2);
-      if (walletThird) walletThird.textContent = Number(w.winningsBalance ?? 0).toFixed(2);
+      if (walletThird) walletThird.textContent = Number(w.totalWithdrawableBalance ?? w.winningsBalance ?? 0).toFixed(2);
       if (walletMainPercent) walletMainPercent.textContent = "100%";
       if (walletThirdPercent) walletThirdPercent.textContent = "0%";
       if (depositPageBalance) depositPageBalance.textContent = Number(w.totalPlayableBalance ?? w.depositBalance ?? 0).toFixed(2);
