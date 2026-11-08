@@ -343,3 +343,149 @@
   #tab-colour .pg-colour-history{order:1 !important;}
   #tab-colour .pg-responsible-note{order:7 !important;}
 }
+
+
+/* Classic Colour Prediction table layout matching the supplied reference.
+   The result wheel is intentionally removed from this screen. */
+#tab-colour.pg-game{
+  min-height:calc(100vh - 70px);
+  padding:0 0 calc(92px + env(safe-area-inset-bottom,0px));
+  color:#f4f7f5;
+  background:linear-gradient(180deg,#00170d 0%,#001109 55%,#000d08 100%);
+}
+#tab-colour .cp-classic-shell{
+  width:min(100%,520px);
+  padding:8px 12px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+#tab-colour .cp-topbar{margin:0;min-height:44px;grid-template-columns:42px 1fr auto;}
+#tab-colour .cp-topbar .pg-brand-mark{width:34px;height:34px;}
+#tab-colour .cp-topbar .pg-brand small{letter-spacing:.16em;}
+#tab-colour .cp-topbar .pg-wallet{padding:7px 10px;border:1px solid #13874b;background:#002817;border-radius:13px;}
+#tab-colour .cp-topbar .pg-wallet-label{display:none;}
+#tab-colour .cp-topbar .pg-wallet b{font-size:13px;color:#e9f5eb;}
+#tab-colour .cp-game-title{
+  padding:13px 14px 12px;
+  border:1px solid #07542d;
+  border-radius:16px;
+  background:linear-gradient(135deg,#003a20,#002315 70%);
+  box-shadow:inset 0 1px #ffffff0a;
+}
+#tab-colour .cp-title-line{display:flex;align-items:center;gap:9px;margin-bottom:13px;}
+#tab-colour .cp-game-icon{
+  width:25px;height:25px;display:grid;place-items:center;border-radius:50%;
+  color:#17dc7b;font-size:19px;
+  background:conic-gradient(#ed4b54 0 30%,#9d4bdd 30% 58%,#18bd75 58% 100%);
+  border:2px solid #b8e7c6;
+  box-shadow:0 0 12px #13b86b44;
+}
+#tab-colour .cp-title-line h1{margin:0;font-size:18px;line-height:1.2;color:#f5f8f5;font-weight:850;}
+#tab-colour .cp-period-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;padding-top:10px;border-top:1px solid #ffffff13;}
+#tab-colour .cp-period{display:flex;flex-direction:column;gap:5px;min-width:0;}
+#tab-colour .cp-period span,#tab-colour .cp-countdown>span{font-size:10px;color:#b6c9bc;}
+#tab-colour .cp-period strong{font-size:clamp(12px,3.6vw,16px);color:#fff;letter-spacing:.015em;overflow-wrap:anywhere;}
+#tab-colour .cp-countdown{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+#tab-colour .cp-countdown .apx-timer{
+  min-width:100px;padding:4px 8px;border:1px solid #16bd55;border-radius:9px;
+  background:#001b0d;color:#fff;font-size:17px;font-weight:900;text-align:center;
+  box-shadow:0 0 10px #00b94b22;
+}
+#tab-colour .cp-countdown .apx-timer-inner{white-space:nowrap;}
+#tab-colour .cp-prediction-panel{
+  padding:0;
+  border:0;
+  background:transparent;
+}
+#tab-colour .cp-colour-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+#tab-colour .cp-join-button{
+  min-width:0;min-height:48px;padding:7px 4px;border:1px solid #ffffff20;
+  border-radius:11px;color:#fff;font-size:clamp(11px,3.2vw,14px);font-weight:800;
+  box-shadow:inset 0 1px #ffffff25,0 3px 8px #0005;
+}
+#tab-colour .cp-join-button.cp-green{background:linear-gradient(155deg,#13d85c,#008b37);}
+#tab-colour .cp-join-button.cp-violet{background:linear-gradient(155deg,#c52cf0,#7800ad);}
+#tab-colour .cp-join-button.cp-red{background:linear-gradient(155deg,#ff4747,#d90000);}
+#tab-colour .cp-number-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:11px;}
+#tab-colour .cp-number-button{
+  min-height:43px;border:1px solid #087bb7;border-radius:9px;
+  background:linear-gradient(180deg,#087fbd,#00558c);
+  color:#fff;font-size:18px;font-weight:850;
+  box-shadow:inset 0 1px #ffffff25,0 3px 7px #0005;
+}
+#tab-colour .cp-results-panel,#tab-colour .cp-my-bets-panel{
+  padding:12px 12px 11px;border:1px solid #08703b;border-radius:15px;
+  background:linear-gradient(145deg,#002c19,#001b10);
+  box-shadow:inset 0 1px #ffffff0a,0 5px 14px #0004;
+}
+#tab-colour .cp-panel-heading{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+#tab-colour .cp-panel-heading h2{margin:0;color:#f1f5f1;font-size:14px;font-weight:850;}
+#tab-colour .cp-panel-heading>span{color:#c0d1c5;font-size:10px;}
+#tab-colour .cp-results-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px 1px 3px;}
+#tab-colour .cp-results-list::-webkit-scrollbar{display:none;}
+#tab-colour .cp-results-list .apx-round-chip{
+  flex:0 0 35px;width:35px;min-width:35px;height:35px;min-height:35px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:0;border-radius:50%;color:#fff;font-weight:900;
+  box-shadow:0 2px 6px #0006;
+}
+#tab-colour .cp-results-list .apx-round-chip strong{font-size:15px;line-height:1;}
+#tab-colour .cp-results-list .apx-round-chip span{display:none;}
+#tab-colour .cp-results-list .apx-round-chip.is-green{background:#08a94e;}
+#tab-colour .cp-results-list .apx-round-chip.is-red{background:#e51e2b;}
+#tab-colour .cp-results-list .apx-round-chip.is-violet{background:#951fc4;}
+#tab-colour .cp-results-list .apx-round-empty{color:#9eb7a7;font-size:11px;}
+#tab-colour .cp-my-bets-panel{padding-bottom:8px;}
+#tab-colour .cp-bet-table-head{
+  display:grid;grid-template-columns:1.35fr 1fr .85fr .65fr;gap:5px;
+  padding:0 2px 7px;border-bottom:1px solid #ffffff20;
+  color:#c4d4ca;font-size:9px;text-align:center;
+}
+#tab-colour .cp-bet-table-head span:first-child{text-align:left;}
+#tab-colour .cp-bet-list{max-height:260px;overflow-y:auto;}
+#tab-colour .cp-bet-list .apx-bet-history-row{
+  display:grid;grid-template-columns:1.35fr 1fr .85fr .65fr;gap:5px;
+  align-items:center;padding:9px 2px;border:0;border-bottom:1px solid #ffffff12;
+  border-radius:0;background:transparent;box-shadow:none;
+}
+#tab-colour .cp-bet-list .apx-bet-history-main,
+#tab-colour .cp-bet-list .apx-bet-history-result{display:contents;}
+#tab-colour .cp-bet-list .apx-bet-history-main>strong{display:none;}
+#tab-colour .cp-bet-list .apx-bet-history-main>span{
+  grid-column:2;grid-row:1;justify-self:center;
+  padding:4px 9px;border-radius:20px;background:#087d3b;color:#fff;
+  font-size:10px;font-weight:800;text-align:center;
+}
+#tab-colour .cp-bet-list .apx-bet-history-main>small{
+  grid-column:1;grid-row:1;color:#dbe8df;font-size:9px;text-align:left;overflow:hidden;text-overflow:ellipsis;
+}
+#tab-colour .cp-bet-list .apx-bet-status{
+  grid-column:4;grid-row:1;justify-self:center;width:17px;height:17px;
+  overflow:hidden;border-radius:50%;font-size:0;
+  background:#168b42;color:transparent;
+}
+#tab-colour .cp-bet-list .apx-bet-status:after{
+  content:"";display:block;width:5px;height:8px;margin:3px 5px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg);
+}
+#tab-colour .cp-bet-list .apx-bet-status:empty{display:none;}
+#tab-colour .cp-bet-list .apx-bet-history-result>strong{
+  grid-column:3;grid-row:1;color:#f5f8f5;font-size:10px;text-align:center;
+}
+#tab-colour .cp-bet-list .apx-bet-history-result>small{display:none;}
+#tab-colour .cp-bet-list .apx-bet-status{background:#168b42;}
+#tab-colour .cp-bet-list .apx-bet-history-row.lost .apx-bet-status{background:#c52a38;}
+#tab-colour .cp-bet-list .apx-bet-history-row.placed .apx-bet-status{background:#c99b27;}
+#tab-colour .cp-bet-list .apx-bet-history-empty{padding:12px 3px;color:#a9beb0;font-size:11px;}
+#tab-colour .pg-responsible-note{margin:0;padding:2px 0 0;}
+#tab-colour .pg-wheel-stage,#tab-colour .pg-result-status,
+#tab-colour .pg-colour-intro,#tab-colour .apx-colour-history,
+#tab-colour .pg-colour-round-results{display:none!important;}
+@media(max-width:370px){
+  #tab-colour .cp-classic-shell{padding-left:9px;padding-right:9px;gap:10px;}
+  #tab-colour .cp-game-title{padding:11px;}
+  #tab-colour .cp-join-button{min-height:44px;font-size:11px;}
+  #tab-colour .cp-number-button{min-height:39px;}
+  #tab-colour .cp-results-panel,#tab-colour .cp-my-bets-panel{padding:10px;}
+}
