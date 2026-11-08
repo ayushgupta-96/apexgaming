@@ -310,3 +310,110 @@
   .wallet-screen .wallet-balance-value {font-size:1.05rem;}
   .wallet-screen .wallet-action>span:last-child {font-size:8px;}
 }
+
+
+/* Mobile wallet polish: stable page header and evenly distributed action tiles */
+.wallet-screen .wallet-head {
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:12px !important;
+  width:100% !important;
+  min-height:58px !important;
+  height:58px !important;
+  box-sizing:border-box !important;
+  padding:0 16px !important;
+  overflow:visible !important;
+}
+.wallet-screen .wallet-head .wallet-back {
+  display:inline-flex !important;
+  flex:0 0 34px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:34px !important;
+  height:34px !important;
+  min-width:34px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:1px solid rgba(232,202,114,.22) !important;
+  border-radius:10px !important;
+  outline:0 !important;
+  background:rgba(232,202,114,.07) !important;
+  color:#f1d77f !important;
+  font-size:25px !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+}
+.wallet-screen .wallet-head .wallet-back:focus:not(:focus-visible) {outline:0 !important;}
+.wallet-screen .wallet-head .wallet-back:focus-visible {
+  outline:2px solid #e8ca72 !important;outline-offset:2px !important;
+}
+.wallet-screen .wallet-head .wallet-head-title {
+  display:block !important;
+  flex:1 1 auto !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  color:#f7f7ef !important;
+  font-size:17px !important;
+  line-height:1.2 !important;
+  font-weight:850 !important;
+}
+.wallet-screen .wallet-panel {
+  width:100% !important;
+  box-sizing:border-box !important;
+  min-height:0 !important;
+}
+.wallet-screen .wallet-panel .wallet-actions {
+  display:grid !important;
+  width:100% !important;
+  box-sizing:border-box !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  align-items:stretch !important;
+  justify-items:stretch !important;
+  gap:7px !important;
+}
+.wallet-screen .wallet-panel .wallet-action {
+  display:flex !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:none !important;
+  min-height:82px !important;
+  box-sizing:border-box !important;
+  flex:none !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  margin:0 !important;
+  padding:8px 3px !important;
+  border-radius:13px !important;
+  white-space:normal !important;
+}
+.wallet-screen .wallet-panel .wallet-action-icon {
+  display:flex !important;
+  flex:0 0 37px !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:37px !important;
+  height:37px !important;
+  margin:0 auto !important;
+}
+.wallet-screen .wallet-panel .wallet-action>span:last-child {
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  font-size:9px !important;
+  line-height:1.2 !important;
+  text-align:center !important;
+  overflow-wrap:anywhere !important;
+}
+@media(max-width:360px) {
+  .wallet-screen .wallet-panel {padding:10px !important;}
+  .wallet-screen .wallet-panel .wallet-actions {gap:5px !important;}
+  .wallet-screen .wallet-panel .wallet-action {padding:7px 1px !important;}
+  .wallet-screen .wallet-panel .wallet-action>span:last-child {font-size:8px !important;}
+}
