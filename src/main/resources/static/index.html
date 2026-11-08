@@ -57,15 +57,35 @@
     </section>
 
     <section id="mobile-games" class="mobile-game-browser" style="display:none;">
-      <div class="home-section-heading"><h2>Games Catalogue</h2><button type="button" onclick="switchTab('home')">Home ↑</button></div>
-      <div class="home-category-row" aria-label="Filter games">
-        <button class="home-category-chip active" type="button" data-game-category="all" aria-pressed="true"><span>▦</span><strong>All</strong></button>
-        <button class="home-category-chip" type="button" data-game-category="crash" aria-pressed="false"><span>↗</span><strong>Crash</strong></button>
-        <button class="home-category-chip" type="button" data-game-category="prediction" aria-pressed="false"><span>◷</span><strong>Prediction</strong></button>
-        <button class="home-category-chip" type="button" data-game-category="board" aria-pressed="false"><span>▧</span><strong>Board</strong></button>
-        <button class="home-category-chip" type="button" data-game-category="other" aria-pressed="false"><span>✣</span><strong>Other</strong></button>
+      <div class="catalogue-hero">
+        <div class="catalogue-hero-top"><span class="catalogue-kicker">APEX ARCADE</span><span class="catalogue-live-mark"><i></i> GAME LOBBY</span></div>
+        <h1>Find your next game.</h1>
+        <p>Browse the collection, explore a category and jump into a game.</p>
+        <label class="catalogue-search" for="gameCatalogueSearch">
+          <span aria-hidden="true">⌕</span>
+          <input id="gameCatalogueSearch" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games">
+          <kbd>⌕</kbd>
+        </label>
       </div>
-      <div id="gamesCatalogGrid" class="home-game-grid"></div>
+
+      <section class="catalogue-section" aria-labelledby="catalogueSectionTitle">
+        <div class="home-section-heading catalogue-heading">
+          <div><span class="catalogue-overline">EXPLORE THE COLLECTION</span><h2 id="catalogueSectionTitle">All Games</h2></div>
+          <span id="catalogueGameCount" class="catalogue-count" aria-live="polite">5 GAMES</span>
+        </div>
+        <div class="home-category-row catalogue-category-row" aria-label="Filter games">
+          <button class="home-category-chip active" type="button" data-game-category="all" aria-pressed="true"><span>▦</span><strong>All</strong></button>
+          <button class="home-category-chip" type="button" data-game-category="crash" aria-pressed="false"><span>↗</span><strong>Crash</strong></button>
+          <button class="home-category-chip" type="button" data-game-category="prediction" aria-pressed="false"><span>◷</span><strong>Prediction</strong></button>
+          <button class="home-category-chip" type="button" data-game-category="board" aria-pressed="false"><span>▧</span><strong>Board</strong></button>
+          <button class="home-category-chip" type="button" data-game-category="other" aria-pressed="false"><span>✣</span><strong>Other</strong></button>
+        </div>
+        <div id="gamesCatalogGrid" class="home-game-grid catalogue-game-grid" aria-live="polite"></div>
+        <div id="catalogueEmptyState" class="catalogue-empty" hidden>
+          <span>⌕</span><strong>No games found</strong><p>Try another name or category.</p>
+        </div>
+      </section>
+      <p class="catalogue-footer-note">New titles may appear here as they become available.</p>
     </section>
 
     <section id="tab-aviator" class="tab-content" style="display:none;">
