@@ -744,3 +744,39 @@
   .deposit-screen .deposit-head .deposit-head-title {font-size:15px !important;}
   .deposit-screen .deposit-head .deposit-history-link {min-width:56px !important;padding:0 8px !important;}
 }
+
+
+/* Deposit typography: increase readable text by approximately 1px */
+.deposit-screen .deposit-head-title,
+.deposit-screen .deposit-history-link,
+.deposit-screen .balance-card-label,
+.deposit-screen .balance-card-foot,
+.deposit-screen .deposit-intro-kicker,
+.deposit-screen .deposit-intro h1,
+.deposit-screen .deposit-intro p,
+.deposit-screen .deposit-step b,
+.deposit-screen .deposit-step-label,
+.deposit-screen .panel-title,
+.deposit-screen .helper-text,
+.deposit-screen .form-label,
+.deposit-screen .amount-btn,
+.deposit-screen .deposit-field-hint,
+.deposit-screen .btn-deposit-submit,
+.deposit-screen .deposit-secure-note,
+.deposit-screen .deposit-result-heading h2,
+.deposit-screen .deposit-result-heading p,
+.deposit-screen .deposit-reference-label,
+.deposit-screen .qr-title,
+.deposit-screen .upi-id-label,
+.deposit-screen .upi-id-value,
+.deposit-screen .deposit-utr-section h3,
+.deposit-screen .deposit-utr-section>p,
+.deposit-screen .deposit-utr-section .form-control,
+.deposit-screen .btn-submit-utr,
+.deposit-screen .deposit-utr-note,
+.deposit-screen .deposit-help-title b,
+.deposit-screen .deposit-help-title small,
+.deposit-screen .deposit-help-card li p,
+.deposit-screen .deposit-help-warning {
+  font-size:calc(1em + 1px) !important;
+}
