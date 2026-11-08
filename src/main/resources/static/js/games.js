@@ -17,11 +17,15 @@
   function resizeAviatorCanvas(){
     const s=el("flightCanvas"); if(!s) return;
     const rect=s.getBoundingClientRect(), dpr=Math.min(window.devicePixelRatio||1,2);
-    s.width=Math.max(1,Math.floor(rect.width*dpr));
-    s.height=Math.max(1,Math.floor(rect.height*dpr));
-    s.style.width=rect.width+"px"; s.style.height=rect.height+"px";
+    const width=Math.max(0,rect.width),height=Math.max(0,rect.height);
+    if(!width||!height) return;
+    s.width=Math.max(1,Math.floor(width*dpr));
+    s.height=Math.max(1,Math.floor(height*dpr));
+    s.style.width=width+"px"; s.style.height=height+"px";
+    s.style.display="block"; s.style.position="absolute"; s.style.inset="0";
+    s.style.zIndex="1"; s.style.pointerEvents="none";
     const c=s.getContext("2d");
-    if(c){c.setTransform(dpr,0,0,dpr,0,0);ui.aviator.ctx=c;ui.aviator.width=rect.width;ui.aviator.height=rect.height;}
+    if(c){c.setTransform(dpr,0,0,dpr,0,0);ui.aviator.ctx=c;ui.aviator.width=width;ui.aviator.height=height;}
   }
 
   function initAviator(){
@@ -37,6 +41,23 @@
     }
     if(!ui.aviator.raf) ui.aviator.raf=requestAnimationFrame(drawAviator);
   }
+
+  // Mobile browsers can initially report a zero-sized canvas while its game
+  // panel is hidden. Re-measure after the panel becomes visible or the page
+  // returns from the background so the drawing surface is restored.
+  function refreshVisibleAviatorCanvas(){
+    const stage=el("flightCanvas")?.closest(".apx-aviator-stage");
+    if(!stage || !stage.getClientRects().length) return;
+    requestAnimationFrame(()=>{
+      resizeAviatorCanvas();
+      if(!ui.aviator.raf) ui.aviator.raf=requestAnimationFrame(drawAviator);
+    });
+  }
+  document.addEventListener("visibilitychange",()=>{
+    if(!document.hidden) refreshVisibleAviatorCanvas();
+  });
+  window.addEventListener("pageshow",refreshVisibleAviatorCanvas);
+  window.addEventListener("orientationchange",()=>setTimeout(refreshVisibleAviatorCanvas,180),{passive:true});
 
   function planePath(c,x,y,scale,angle){
     c.save();
@@ -119,7 +140,7 @@
     const dy=2*(1-p)*(controlY-startY)+2*p*(endY-controlY);
     const angle=Math.atan2(dy,dx);
     c.save();c.globalAlpha=.7;c.fillStyle="#ff7b8c";c.beginPath();c.arc(endX,endY,3.5,0,Math.PI*2);c.fill();c.restore();
-    planePath(c,endX,endY,clamp(w/360,.78,1.12),angle);
+    planePath(c,endX,endY,clamp(w/300,1,1.42),angle);
 
     if(a.phase==="BETTING"){
       c.save();c.fillStyle="rgba(240,207,104,.05)";c.beginPath();c.arc(w*.5,h*.52,72+Math.sin(ts/450)*3,0,Math.PI*2);c.fill();c.restore();
