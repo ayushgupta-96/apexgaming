@@ -59,52 +59,66 @@
   window.addEventListener("pageshow",refreshVisibleAviatorCanvas);
   window.addEventListener("orientationchange",()=>setTimeout(refreshVisibleAviatorCanvas,180),{passive:true});
 
-  function planePath(c,x,y,scale,angle){
+  function planePath(c,x,y,scale,angle,ts,phase){
     c.save();
-    c.translate(x,y);
+    c.translate(x,y+Math.sin(ts/190)*1.6);
     c.rotate(angle);
     c.scale(scale,scale);
 
-    // Custom aircraft silhouette: fuselage, swept wings, tail and cockpit.
-    c.shadowColor="rgba(255,70,100,.45)";
-    c.shadowBlur=14;
+    // Soft engine exhaust, layered so it remains visible on the dark arena.
+    const running=phase==="FLYING";
+    const pulse=.72+.28*Math.sin(ts/55);
+    c.save();
+    const flame=c.createLinearGradient(-58,0,-23,0);
+    flame.addColorStop(0,"rgba(255,116,43,0)");
+    flame.addColorStop(.45,"rgba(255,117,55,"+(running?.52:.28)+")");
+    flame.addColorStop(1,"rgba(255,220,139,"+(running?.92:.58)+")");
+    c.globalAlpha=pulse;
+    c.shadowColor="#ff6948";c.shadowBlur=running?17:9;
+    c.fillStyle=flame;
+    c.beginPath();c.moveTo(-25,-3.2);c.quadraticCurveTo(-43,-7,-59-(running?Math.sin(ts/38)*5:0),0);c.quadraticCurveTo(-43,7,-25,3.2);c.closePath();c.fill();
+    c.restore();
+
+    // Main fuselage and swept wings.
+    c.shadowColor="rgba(255,70,100,.58)";c.shadowBlur=running?20:12;
     c.beginPath();
-    c.moveTo(30,0);
-    c.quadraticCurveTo(20,-4,9,-4);
-    c.lineTo(-13,-3);
-    c.lineTo(-28,-10);
-    c.lineTo(-31,-8);
-    c.lineTo(-17,1);
-    c.lineTo(-31,10);
-    c.lineTo(-28,12);
-    c.lineTo(-5,5);
-    c.lineTo(5,7);
-    c.lineTo(12,15);
-    c.lineTo(16,14);
-    c.lineTo(12,5);
-    c.lineTo(24,3);
-    c.quadraticCurveTo(29,2,30,0);
+    c.moveTo(34,0);
+    c.quadraticCurveTo(28,-4,15,-4);
+    c.lineTo(-12,-3.4);
+    c.lineTo(-31,-14);
+    c.lineTo(-37,-12);
+    c.lineTo(-20,0);
+    c.lineTo(-37,12);
+    c.lineTo(-31,14);
+    c.lineTo(-9,5);
+    c.lineTo(9,6);
+    c.lineTo(17,17);
+    c.lineTo(22,16);
+    c.lineTo(18,5);
+    c.lineTo(29,3);
+    c.quadraticCurveTo(34,2,34,0);
     c.closePath();
-    const body=c.createLinearGradient(-30,-10,30,10);
-    body.addColorStop(0,"#ff6b80");
-    body.addColorStop(.5,"#ef3f5b");
-    body.addColorStop(1,"#b81e39");
-    c.fillStyle=body;
-    c.fill();
+    const body=c.createLinearGradient(-32,-15,34,15);
+    body.addColorStop(0,"#ff9aa6");body.addColorStop(.28,"#ff536e");body.addColorStop(.72,"#ed294d");body.addColorStop(1,"#9f1535");
+    c.fillStyle=body;c.fill();
 
+    // Upper wing highlight and tailplane.
     c.shadowBlur=0;
-    c.beginPath();
-    c.moveTo(4,-3); c.lineTo(13,-12); c.lineTo(19,-11); c.lineTo(12,-2); c.closePath();
-    c.fillStyle="#ff9aaa"; c.fill();
+    c.beginPath();c.moveTo(-18,-2);c.lineTo(-32,-12);c.lineTo(-27,-12);c.lineTo(-7,-3);c.closePath();
+    c.fillStyle="#ffb1b8";c.fill();
+    c.beginPath();c.moveTo(7,-3);c.lineTo(17,-13);c.lineTo(23,-12);c.lineTo(16,-2);c.closePath();
+    c.fillStyle="#ffb1b8";c.fill();
 
-    c.beginPath();
-    c.moveTo(8,0); c.quadraticCurveTo(17,-1,22,0); c.lineTo(16,3); c.lineTo(8,3); c.closePath();
-    c.fillStyle="#e8eff0"; c.fill();
+    // Cockpit glass and fuselage highlight.
+    c.beginPath();c.moveTo(8,-2.5);c.quadraticCurveTo(19,-3,26,-1);c.lineTo(19,2);c.lineTo(9,1.5);c.closePath();
+    c.fillStyle="#d9f5ff";c.fill();
+    c.beginPath();c.moveTo(-7,-1.4);c.lineTo(5,-1.4);c.strokeStyle="rgba(255,235,225,.75)";c.lineWidth=1.1;c.stroke();
 
-    c.beginPath();
-    c.arc(12,0,2.2,0,Math.PI*2);
-    c.fillStyle="#6fd4ff";
-    c.fill();
+    // Navigation lights.
+    c.fillStyle="#8de9ff";c.shadowColor="#6adfff";c.shadowBlur=8;
+    c.beginPath();c.arc(-29,-11,2,0,Math.PI*2);c.fill();
+    c.fillStyle="#ffe28a";c.shadowColor="#ffe28a";
+    c.beginPath();c.arc(-29,11,2,0,Math.PI*2);c.fill();
     c.restore();
   }
 
@@ -139,8 +153,17 @@
     const dx=2*(1-p)*(controlX-startX)+2*p*(endX-controlX);
     const dy=2*(1-p)*(controlY-startY)+2*p*(endY-controlY);
     const angle=Math.atan2(dy,dx);
-    c.save();c.globalAlpha=.7;c.fillStyle="#ff7b8c";c.beginPath();c.arc(endX,endY,3.5,0,Math.PI*2);c.fill();c.restore();
-    planePath(c,endX,endY,clamp(w/300,1,1.42),angle);
+    // Draw a subtle glowing flight marker and a short wake behind the aircraft.
+    c.save();
+    const wake=c.createLinearGradient(endX-76,endY+20,endX-8,endY);
+    wake.addColorStop(0,"rgba(255,91,116,0)");
+    wake.addColorStop(1,"rgba(255,116,139,.38)");
+    c.strokeStyle=wake;c.lineWidth=5;c.lineCap="round";
+    c.beginPath();c.moveTo(endX-72,endY+19);c.quadraticCurveTo(endX-36,endY+9,endX-8,endY);c.stroke();
+    c.globalAlpha=.75;c.fillStyle="#ff9baa";c.shadowColor="#ff536f";c.shadowBlur=15;
+    c.beginPath();c.arc(endX,endY,4.2,0,Math.PI*2);c.fill();
+    c.restore();
+    planePath(c,endX,endY,clamp(w/330,1.05,1.55),angle,ts,a.phase);
 
     if(a.phase==="BETTING"){
       c.save();c.fillStyle="rgba(240,207,104,.05)";c.beginPath();c.arc(w*.5,h*.52,72+Math.sin(ts/450)*3,0,Math.PI*2);c.fill();c.restore();
