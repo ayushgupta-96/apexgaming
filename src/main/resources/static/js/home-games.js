@@ -63,7 +63,7 @@
   function initHomeGames() {
     const homeGrid = document.getElementById("categoryGames");
     const catalogueGrid = document.getElementById("gamesCatalogGrid");
-    renderCards(homeGrid, HOME_GAMES.filter(game => game.available), true);
+    renderCards(homeGrid, HOME_GAMES, true);
     renderCards(catalogueGrid, HOME_GAMES, false);
 
     document.querySelectorAll("[data-game-category]").forEach(button => {
@@ -75,7 +75,7 @@
           item.setAttribute("aria-pressed", String(active));
         });
         const filtered = category === "all" ? HOME_GAMES : HOME_GAMES.filter(game => game.category === category);
-        renderCards(homeGrid, filtered.filter(game => game.available), true);
+        renderCards(homeGrid, filtered, true);
         renderCards(catalogueGrid, filtered, false);
       });
     });
