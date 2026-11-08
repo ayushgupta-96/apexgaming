@@ -208,6 +208,7 @@
         <label class="pg-stake-select-label" for="ludoStakeSelect">Entry amount</label>
         <select id="ludoStakeSelect" class="pg-stake-select"><option value="50">₹50 stake</option><option value="100">₹100 stake</option><option value="250">₹250 stake</option><option value="500">₹500 stake</option></select>
         <p class="pg-ludo-note">Your selected stake is committed when the match room is created.</p>
+        <div class="pg-join-room"><label class="pg-stake-select-label" for="ludoJoinRoomId">Or join an existing room</label><div class="pg-join-row"><input id="ludoJoinRoomId" class="pg-stake-select" type="text" placeholder="Enter match room ID"><button type="button" class="pg-join-button" onclick="joinLudoMatch()">JOIN</button></div></div>
         <button class="pg-primary-action pg-create-match" type="button" onclick="createLudoMatch()">CREATE MATCH ROOM <span>→</span></button>
       </div>
     </section>
