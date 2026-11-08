@@ -277,6 +277,14 @@ function renderBetHistory(container, rows) {
 
     const selection = document.createElement("span");
     selection.textContent = formatBetSelection(item.selection);
+    const selectionParts = String(item.selection || "").split(":");
+    const selectionType = String(selectionParts[0] || "").toUpperCase();
+    const selectionValue = String(selectionParts.slice(1).join(":") || "").toUpperCase();
+    if (selectionType === "COLOR") {
+      selection.classList.add("cp-selection-colour", "cp-selection-" + selectionValue.toLowerCase());
+    } else if (selectionType === "NUMBER") {
+      selection.classList.add("cp-selection-number");
+    }
 
     const round = document.createElement("small");
     round.textContent = String(item.roundUuid || "Round");
