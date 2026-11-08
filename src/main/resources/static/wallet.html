@@ -16,28 +16,31 @@
   </header>
 
   <main>
-    <section class="wallet-total" aria-label="Total wallet balance">
-      <div class="wallet-total-icon" aria-hidden="true"><svg viewBox="0 0 80 60" fill="none"><rect x="8" y="8" width="55" height="43" rx="10" fill="#F3F3F3"/><path d="M15 15l17-9h28c7 0 12 5 12 12v20c0 7-5 12-12 12H18c-6 0-10-4-10-10V15h7Z" fill="#D8DDDC"/><rect x="24" y="20" width="25" height="7" rx="4" fill="#7C8786"/><circle cx="67" cy="32" r="7" fill="#F1F1F1"/></svg></div>
+    <section class="wallet-total" aria-label="Total playable wallet balance">
+      <div class="wallet-total-topline"><span class="wallet-total-dot"></span> YOUR APEX WALLET</div>
+      <div class="wallet-total-label">Total playable balance</div>
       <div class="wallet-total-amount">₹<span id="walletTotalBalance">0.00</span></div>
-      <div class="wallet-total-label">Total balance</div>
+      <p class="wallet-total-note">Main wallet + withdrawal wallet + bonus balance</p>
+    </section>
+
+    <section class="wallet-balance-grid" aria-label="Wallet balances">
+      <article class="wallet-balance-card wallet-balance-main">
+        <div class="wallet-balance-card-top"><span class="wallet-balance-icon">↗</span><span class="wallet-balance-tag">DEPOSIT</span></div>
+        <div class="wallet-balance-label">Main Wallet</div>
+        <div class="wallet-balance-value">₹<span id="txtDepositBal">0.00</span></div>
+        <p>Available for gameplay</p>
+        <button type="button" class="wallet-balance-link" onclick="window.location.href='/deposit.html'">Add money <span>→</span></button>
+      </article>
+      <article class="wallet-balance-card wallet-balance-withdraw">
+        <div class="wallet-balance-card-top"><span class="wallet-balance-icon">↓</span><span class="wallet-balance-tag">PAYOUT</span></div>
+        <div class="wallet-balance-label">Withdrawal Wallet</div>
+        <div class="wallet-balance-value">₹<span id="walletThirdBalance">0.00</span></div>
+        <p>Winnings available to withdraw</p>
+        <button type="button" class="wallet-balance-link" onclick="toggleWithdrawalPanel()">Withdraw <span>→</span></button>
+      </article>
     </section>
 
     <section class="wallet-panel">
-      <div class="wallet-rings">
-        <div class="wallet-ring-wrap">
-          <div class="wallet-ring"><b id="walletMainPercent">0%</b></div>
-          <div class="wallet-ring-amount">₹<span id="txtDepositBal">0.00</span></div>
-          <div class="wallet-ring-name">Main wallet</div>
-        </div>
-        <div class="wallet-ring-wrap">
-          <div class="wallet-ring"><b id="walletThirdPercent">0%</b></div>
-          <div class="wallet-ring-amount">₹<span id="walletThirdBalance">0.00</span></div>
-          <div class="wallet-ring-name">3rd party wallet</div>
-        </div>
-      </div>
-
-      <button class="wallet-transfer" onclick="window.location.href='/deposit.html'">Main wallet transfer</button>
-
       <div class="wallet-actions">
         <button class="wallet-action deposit" onclick="window.location.href='/deposit.html'">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M10 28h44v20a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V28Z" fill="#FFF5D8"/><path d="M15 28c0-12 8-20 17-20s17 8 17 20" stroke="#E6C36A" stroke-width="7"/><path d="M17 35h30v13H17z" fill="#EBD59A"/></svg></span><span>Deposit</span>
@@ -54,15 +57,15 @@
       </div>
     </section>
 
-    <section class="wallet-lower-grid">
-      <div class="wallet-mini-card"><strong>0.00</strong><span>ARGame</span></div>
-      <div class="wallet-mini-card"><strong>0.00</strong><span>Lottery</span></div>
+    <section class="wallet-bonus-strip" aria-label="Bonus wallet balance">
+      <div><span class="wallet-bonus-mark">✦</span><span class="wallet-bonus-label">Bonus Balance</span></div>
+      <strong>₹<span id="walletBonusBalance">0.00</span></strong>
     </section>
 
     <section id="withdrawPanel" class="wallet-withdraw-panel">
       <h2>Withdraw Funds</h2>
       <div class="form-group">
-        <label class="form-label">Withdrawable Winnings Balance</label>
+        <label class="form-label">Withdrawal Wallet Balance</label>
         <div class="big-balance">₹<span id="txtWithdrawableBal">0.00</span></div>
       </div>
       <div class="form-group">
@@ -128,16 +131,6 @@
       }
       if (typeof fetchWallet === 'function') fetchWallet();
 
-      const observer = new MutationObserver(function () {
-        const dep = document.getElementById('txtDepositBal');
-        const total = document.getElementById('walletTotalBalance');
-        const withdrawable = document.getElementById('txtWithdrawableBal');
-        const winnings = document.getElementById('txtWinningsBal');
-        if (dep && total) total.textContent = dep.textContent;
-        if (withdrawable && winnings) withdrawable.textContent = winnings.textContent;
-      });
-      const dep = document.getElementById('txtDepositBal');
-      if (dep) observer.observe(dep, {childList:true,subtree:true});
     });
 
     async function openDepositHistory() {
