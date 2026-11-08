@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/mobile-home-fixes.css?v=20261003-2">
   <link rel="stylesheet" href="/css/home-redesign.css?v=20261108-2">
-  <link rel="stylesheet" href="/css/player-finance-redesign.css?v=20261108-3">
+  <link rel="stylesheet" href="/css/player-finance-redesign.css?v=20261108-4">
 </head>
 <body class="apex-mobile-app wallet-screen">
   <header class="wallet-head">
@@ -91,29 +91,22 @@
     </section>
   </main>
 
-  <div id="depositHistoryModal" class="wallet-history-modal" role="dialog" aria-modal="true" aria-labelledby="depositHistoryTitle" hidden>
-  <div class="wallet-history-sheet">
-    <button class="wallet-history-close" type="button" onclick="closeDepositHistory()" aria-label="Close">×</button>
-    <div class="wallet-history-kicker">TRANSACTIONS</div>
-    <h2 id="depositHistoryTitle">Deposit History</h2>
-    <p class="wallet-history-subtitle">Your recent deposit requests and verification status.</p>
-    <div id="depositHistoryList" class="wallet-history-list">
-      <div class="wallet-history-empty">Loading deposit history…</div>
-    </div>
+  <div id="transactionHistoryModal" class="wallet-history-modal" role="dialog" aria-modal="true" aria-labelledby="transactionHistoryTitle" hidden>
+    <section class="wallet-history-sheet wallet-transaction-sheet">
+      <button class="wallet-history-close" type="button" onclick="closeTransactionHistory()" aria-label="Close">×</button>
+      <div class="wallet-history-kicker">WALLET ACTIVITY</div>
+      <h2 id="transactionHistoryTitle">Transaction History</h2>
+      <p class="wallet-history-subtitle">Review your deposits, withdrawals and their latest statuses.</p>
+      <div class="wallet-history-tabs" role="tablist" aria-label="Transaction type">
+        <button id="historyDepositsTab" class="wallet-history-tab active" type="button" role="tab" aria-selected="true" onclick="loadTransactionHistory('deposits')">Deposits</button>
+        <button id="historyWithdrawalsTab" class="wallet-history-tab" type="button" role="tab" aria-selected="false" onclick="loadTransactionHistory('withdrawals')">Withdrawals</button>
+      </div>
+      <div id="transactionHistorySummary" class="wallet-history-summary">Recent deposit activity</div>
+      <div id="transactionHistoryList" class="wallet-history-list" aria-live="polite">
+        <div class="wallet-history-empty">Choose a history tab to load transactions.</div>
+      </div>
+    </section>
   </div>
-</div>
-
-<div id="withdrawalHistoryModal" class="wallet-history-modal" role="dialog" aria-modal="true" aria-labelledby="withdrawalHistoryTitle" hidden>
-  <div class="wallet-history-sheet">
-    <button class="wallet-history-close" type="button" onclick="closeWithdrawalHistory()" aria-label="Close">×</button>
-    <div class="wallet-history-kicker">TRANSACTIONS</div>
-    <h2 id="withdrawalHistoryTitle">Withdrawal History</h2>
-    <p class="wallet-history-subtitle">Your withdrawal requests and payout status.</p>
-    <div id="withdrawalHistoryList" class="wallet-history-list">
-      <div class="wallet-history-empty">Loading withdrawal history…</div>
-    </div>
-  </div>
-</div>
 
   <nav class="bottom-nav" aria-label="Mobile bottom navigation">
     <a class="bottom-nav-btn" href="/" data-tab="home" aria-label="Home"><span>⌂</span><small>Home</small></a>
@@ -133,78 +126,164 @@
 
     });
 
-    async function openDepositHistory() {
-      const modal = document.getElementById('depositHistoryModal');
-      const list = document.getElementById('depositHistoryList');
-      if (!modal || !list) return;
+    let activeHistoryType = 'deposits';
+    let historyRequestSequence = 0;
+
+    function openDepositHistory() {
+      openTransactionHistory('deposits');
+    }
+
+    function openWithdrawalHistory() {
+      openTransactionHistory('withdrawals');
+    }
+
+    function openTransactionHistory(type) {
+      const modal = document.getElementById('transactionHistoryModal');
+      if (!modal) return;
       modal.hidden = false;
       document.body.classList.add('history-open');
+      loadTransactionHistory(type || 'deposits');
+    }
+
+    function closeDepositHistory() { closeTransactionHistory(); }
+    function closeWithdrawalHistory() { closeTransactionHistory(); }
+
+    function closeTransactionHistory() {
+      const modal = document.getElementById('transactionHistoryModal');
+      if (modal) modal.hidden = true;
+      document.body.classList.remove('history-open');
+    }
+
+    function setHistoryTab(type) {
+      activeHistoryType = type;
+      const deposits = type === 'deposits';
+      const depTab = document.getElementById('historyDepositsTab');
+      const wdrTab = document.getElementById('historyWithdrawalsTab');
+      if (depTab) { depTab.classList.toggle('active', deposits); depTab.setAttribute('aria-selected', String(deposits)); }
+      if (wdrTab) { wdrTab.classList.toggle('active', !deposits); wdrTab.setAttribute('aria-selected', String(!deposits)); }
+      const summary = document.getElementById('transactionHistorySummary');
+      if (summary) summary.textContent = deposits ? 'Recent deposit activity' : 'Recent withdrawal activity';
+    }
+
+    function historyText(value, fallback) {
+      return value === null || value === undefined || value === '' ? fallback : String(value);
+    }
+
+    function formatHistoryDate(value) {
+      if (!value) return 'Date unavailable';
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? 'Date unavailable' : date.toLocaleString();
+    }
+
+    function maskHistoryDestination(value) {
+      const raw = String(value || '');
+      if (!raw) return '';
+      if (raw.includes('@')) {
+        const parts = raw.split('@');
+        const local = parts[0];
+        return (local.length > 2 ? local.slice(0, 2) + '•••' : '•••') + '@' + parts.slice(1).join('@');
+      }
+      return raw.length > 4 ? '••••' + raw.slice(-4) : '••••';
+    }
+
+    async function loadTransactionHistory(type) {
+      const selected = type === 'withdrawals' ? 'withdrawals' : 'deposits';
+      setHistoryTab(selected);
+      const list = document.getElementById('transactionHistoryList');
+      if (!list) return;
+      const requestId = ++historyRequestSequence;
       list.replaceChildren();
       const loading = document.createElement('div');
       loading.className = 'wallet-history-empty';
-      loading.textContent = 'Loading deposit history…';
+      loading.textContent = selected === 'deposits' ? 'Loading deposits…' : 'Loading withdrawals…';
       list.appendChild(loading);
+
       try {
-        const res = await fetch('/api/deposits/my', {
+        const endpoint = selected === 'deposits' ? '/api/deposits/my' : '/api/withdrawals/my';
+        const res = await fetch(endpoint, {
           headers: { 'Authorization': 'Bearer ' + localStorage.getItem('rmg_token') }
         });
         const data = await safeJsonResponse(res);
         if (!data.success) throw new Error(data.message || 'Unable to load history');
+        if (requestId !== historyRequestSequence) return;
+
         const rows = Array.isArray(data.data) ? data.data : [];
         list.replaceChildren();
         if (!rows.length) {
           const empty = document.createElement('div');
           empty.className = 'wallet-history-empty';
-          empty.textContent = 'No deposit requests yet.';
+          empty.textContent = selected === 'deposits' ? 'No deposit transactions yet.' : 'No withdrawal transactions yet.';
           list.appendChild(empty);
           return;
         }
-        rows.forEach(dep => {
+
+        rows.forEach(item => {
+          const isDeposit = selected === 'deposits';
           const card = document.createElement('article');
-          card.className = 'wallet-history-item';
+          card.className = 'wallet-history-item wallet-transaction-item';
 
           const top = document.createElement('div');
           top.className = 'wallet-history-item-top';
-
           const ref = document.createElement('strong');
-          ref.textContent = dep.referenceCode || 'Deposit';
+          ref.textContent = historyText(item.referenceCode, isDeposit ? 'Deposit' : 'Withdrawal');
+
+          const statusText = historyText(item.status, 'UNKNOWN').replaceAll('_', ' ');
           const status = document.createElement('span');
-          status.className = 'wallet-history-status status-' + String(dep.status || '').toLowerCase();
-          status.textContent = String(dep.status || 'UNKNOWN').replaceAll('_', ' ');
+          status.className = 'wallet-history-status status-' + statusText.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          status.textContent = statusText;
           top.append(ref, status);
 
+          const amountRow = document.createElement('div');
+          amountRow.className = 'wallet-history-amount-row';
           const amount = document.createElement('div');
           amount.className = 'wallet-history-amount';
-          amount.textContent = '₹' + Number(dep.amount || 0).toFixed(2);
+          amount.textContent = '₹' + Number(item.amount || 0).toFixed(2);
+          const kind = document.createElement('span');
+          kind.className = 'wallet-history-kind ' + (isDeposit ? 'deposit-kind' : 'withdraw-kind');
+          kind.textContent = isDeposit ? 'MONEY IN' : 'MONEY OUT';
+          amountRow.append(amount, kind);
 
           const meta = document.createElement('div');
           meta.className = 'wallet-history-meta';
-          const date = dep.createdAt ? new Date(dep.createdAt).toLocaleString() : 'Date unavailable';
-          meta.textContent = (dep.paymentMethod || 'UPI') + ' • ' + date;
+          meta.textContent = (isDeposit ? historyText(item.paymentMethod, 'UPI') : historyText(item.destinationType, 'UPI')) + ' · ' + formatHistoryDate(item.createdAt);
 
-          card.append(top, amount, meta);
-          if (dep.utrNumber) {
-            const utr = document.createElement('div');
-            utr.className = 'wallet-history-utr';
-            utr.textContent = 'UTR: ' + dep.utrNumber;
-            card.appendChild(utr);
+          const details = document.createElement('div');
+          details.className = 'wallet-history-details';
+          const addDetail = (label, value) => {
+            if (value === null || value === undefined || value === '') return;
+            const line = document.createElement('div');
+            line.className = 'wallet-history-detail';
+            const name = document.createElement('span');
+            name.textContent = label;
+            const detailValue = document.createElement('strong');
+            detailValue.textContent = String(value);
+            line.append(name, detailValue);
+            details.appendChild(line);
+          };
+
+          if (isDeposit) {
+            addDetail('Payment UTR', item.utrNumber);
+          } else {
+            addDetail('Destination', maskHistoryDestination(item.accountNumberOrVpa));
+            addDetail('Payout UTR', item.payoutUtr);
+            addDetail('Rejection reason', item.rejectionReason);
           }
+
+          card.append(top, amountRow, meta);
+          if (details.childElementCount) card.appendChild(details);
           list.appendChild(card);
         });
-      } catch (err) {
+      } catch (error) {
+        if (requestId !== historyRequestSequence) return;
+        console.error(selected + ' history error', error);
         list.replaceChildren();
-        const error = document.createElement('div');
-        error.className = 'wallet-history-empty';
-        error.textContent = 'Unable to load deposit history. Please try again.';
-        list.appendChild(error);
-        console.error('Deposit history error', err);
+        const errorBox = document.createElement('div');
+        errorBox.className = 'wallet-history-empty';
+        errorBox.textContent = selected === 'deposits'
+          ? 'Unable to load deposit history. Please try again.'
+          : 'Unable to load withdrawal history. Please try again.';
+        list.appendChild(errorBox);
       }
-    }
-
-    function closeDepositHistory() {
-      const modal = document.getElementById('depositHistoryModal');
-      if (modal) modal.hidden = true;
-      document.body.classList.remove('history-open');
     }
 
     function toggleWithdrawalPanel() {
@@ -348,10 +427,8 @@
     }
 
     document.addEventListener('click', function (event) {
-      const modal = document.getElementById('depositHistoryModal');
-      if (modal && !modal.hidden && event.target === modal) closeDepositHistory();
-      const withdrawalModal = document.getElementById('withdrawalHistoryModal');
-      if (withdrawalModal && !withdrawalModal.hidden && event.target === withdrawalModal) closeWithdrawalHistory();
+      const modal = document.getElementById('transactionHistoryModal');
+      if (modal && !modal.hidden && event.target === modal) closeTransactionHistory();
     });
   </script>
 </body>
