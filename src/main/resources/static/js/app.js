@@ -580,51 +580,6 @@ function drawLudoBoard(){const canvas=document.getElementById("ludoCanvas");if(!
 async function updateLimits(){if(!token){openModal("loginModal");return;}const dep=document.getElementById("limitDepositInput")?.value,loss=document.getElementById("limitLossInput")?.value;try{const res=await fetch("/api/users/limits",{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({dailyDepositLimit:dep,dailyLossLimit:loss})});const data=await safeJsonResponse(res);if(data.success)alert("Responsible gaming limits updated!");else alert("Unable to update limits");}catch(e){alert("Error updating limits");}}
 async function requestSelfExclusion(){if(!token){openModal("loginModal");return;}if(!confirm("Are you sure? You will be blocked from depositing and placing bets for 24 hours."))return;try{const res=await fetch("/api/users/self-exclude",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({exclusionType:"COOL_OFF",durationHours:24,reason:"User break"})});const data=await safeJsonResponse(res);if(data.success){alert("Account is now in 24-hour cool-off period. Logging out.");logout();}}catch(e){alert("Self-exclusion error");}}
 
-function cardHTML(game) {
-  const actions = {
-    aviator: "switchTab('aviator')",
-    colour: "switchTab('colour')",
-    ludo: "switchTab('ludo')",
-    mines: "switchTab('games')",
-    fruit: "switchTab('games')"
-  };
-  const action = actions[game.key] || "void(0)";
-  return `<button class="catalog-card ${game.key}" onclick="${action}"><div class="catalog-art"><img src="${game.image}" alt="${game.name}"></div><b>${game.name}</b></button>`;
-}
-
-const catalog = {
-  popular:[
-    {name:'Aviator',key:'aviator',image:'/images/games/aviator.svg'},
-    {name:'Colour Prediction',key:'colour',image:'/images/games/colour.svg'},
-    {name:'Ludo',key:'ludo',image:'/images/games/ludo.svg'},
-    {name:'Mines',key:'mines',image:'/images/games/mines.svg'},
-    {name:'Fruit 777',key:'fruit',image:'/images/games/fruit-777.svg'}
-  ]
-};
-
-function showGameCategory() {
-  const target = document.getElementById('categoryGames');
-  if (!target) return;
-  target.replaceChildren();
-  catalog.popular.forEach(game => {
-    const card = document.createElement('button');
-    card.type = 'button';
-    card.className = 'catalog-card ' + game.key;
-    card.setAttribute('aria-label', 'Open ' + game.name);
-    card.addEventListener('click', () => switchTab(game.key === 'fruit' || game.key === 'mines' ? 'games' : game.key));
-    const image = document.createElement('img');
-    image.className = 'catalog-image';
-    image.src = game.image;
-    image.alt = game.name;
-    image.loading = 'lazy';
-    image.decoding = 'async';
-    const title = document.createElement('b');
-    title.textContent = game.name;
-    card.append(image, title);
-    target.appendChild(card);
-  });
-}
-
 function setupMobileNavigation(){
   const home=document.querySelector('.mobile-home-shell'); const games=document.getElementById('mobile-games');
   if(!home||!games)return;
@@ -639,7 +594,7 @@ function setupMobileNavigation(){
   showGameCategory();
   setNavActive('home');
 }
-function setNavActive(tab){document.querySelectorAll('.bottom-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===tab));}
+function setNavActive(tab){const activeTab=tab==='aviator'||tab==='colour'||tab==='ludo'?'play':tab;document.querySelectorAll('.bottom-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===activeTab));}
 
 
 function setupAviatorControls() {
