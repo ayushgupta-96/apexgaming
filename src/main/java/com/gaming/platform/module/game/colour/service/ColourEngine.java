@@ -113,6 +113,7 @@ public class ColourEngine {
      * 1-second countdown clock for the 60-second round.
      */
     @Scheduled(fixedRate = 1000)
+    @Transactional
     public void clockTick() {
         String status = currentStatus.get();
 
