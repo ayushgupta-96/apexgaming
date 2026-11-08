@@ -193,7 +193,44 @@
     <p class="pg-responsible-note">Play responsibly. Results are supplied by the game server.</p>
   </div>
 </section>
-<section id="tab-ludo" class="tab-content" style="display:none;"><div class="card game-card"><div class="card-title"><span>Real-Money Ludo</span><span id="ludoMatchStatusBadge" class="badge badge-pending">Lobby</span></div><div id="ludoLobbySection" class="ludo-lobby"><div class="form-group"><label class="form-label" for="ludoStakeSelect">Stake Amount (₹)</label><select id="ludoStakeSelect" class="form-control"><option value="50">₹50 Stake (Prize: ₹92)</option><option value="100">₹100 Stake (Prize: ₹184)</option><option value="250">₹250 Stake (Prize: ₹460)</option><option value="500">₹500 Stake (Prize: ₹920)</option></select></div><button class="btn btn-primary wide-btn" onclick="createLudoMatch()">Create Match</button></div><div id="ludoGameSection" style="display:none;"><div class="ludo-status"><div><span>Match</span><b id="txtLudoMatchUuid">-</b></div><div><span>Pot</span><b class="amount-winnings">₹<span id="txtLudoPot">0.00</span></b></div><div><span>Turn</span><b id="txtLudoTurnColor">RED</b></div></div><button id="btnLudoRoll" class="btn btn-gold wide-btn" onclick="rollLudoDice()">Roll Dice</button><div class="ludo-board-wrapper"><canvas id="ludoCanvas" width="480" height="480" class="ludo-canvas"></canvas></div><div id="ludoTokenButtons" class="token-actions"></div></div></div></section>
+<section id="tab-ludo" class="tab-content pg-game pg-ludo" style="display:none;" aria-label="Ludo Arena">
+  <div class="pg-shell">
+    <header class="pg-topbar">
+      <button class="pg-icon-button" type="button" onclick="goHome()" aria-label="Back to home">←</button>
+      <div class="pg-brand"><span class="pg-brand-mark">A</span><span><b>APEX</b><small>LUDO ARENA</small></span></div>
+      <span id="ludoMatchStatusBadge" class="pg-match-status">LOBBY</span>
+    </header>
+
+    <section id="ludoLobbySection" class="pg-ludo-lobby">
+      <div class="pg-ludo-hero"><span class="pg-eyebrow">HEAD-TO-HEAD BOARD GAME</span><h1>Play your next move.</h1><p>Choose a stake and create a match room. The match begins when an opponent joins.</p><div class="pg-ludo-preview" aria-hidden="true"><span>●</span><span>●</span><span>●</span><span>●</span><b>APEX</b></div></div>
+      <div class="pg-control-panel">
+        <div class="pg-section-heading"><div><span class="pg-eyebrow">MATCH SETUP</span><h2>Choose your stake</h2></div><span class="pg-history-note">2 players</span></div>
+        <label class="pg-stake-select-label" for="ludoStakeSelect">Entry amount</label>
+        <select id="ludoStakeSelect" class="pg-stake-select"><option value="50">₹50 stake</option><option value="100">₹100 stake</option><option value="250">₹250 stake</option><option value="500">₹500 stake</option></select>
+        <p class="pg-ludo-note">Your selected stake is committed when the match room is created.</p>
+        <button class="pg-primary-action pg-create-match" type="button" onclick="createLudoMatch()">CREATE MATCH ROOM <span>→</span></button>
+      </div>
+    </section>
+
+    <section id="ludoGameSection" class="pg-ludo-match" style="display:none;">
+      <div class="pg-match-summary">
+        <div><span>MATCH ROOM</span><b id="txtLudoMatchUuid">-</b></div>
+        <div><span>TOTAL POT</span><b class="pg-pot-value">₹<span id="txtLudoPot">0.00</span></b></div>
+        <div><span>YOUR TURN</span><b id="txtLudoTurnColor">WAITING</b></div>
+      </div>
+      <div id="ludoPlayers" class="pg-player-list" aria-live="polite"></div>
+      <div class="pg-board-card">
+        <div class="pg-board-heading"><div><span class="pg-eyebrow">LIVE MATCH</span><h2>Game board</h2></div><span id="ludoBoardTurnLabel" class="pg-turn-indicator">WAITING FOR PLAYERS</span></div>
+        <div class="pg-board-wrap"><canvas id="ludoCanvas" width="600" height="600" class="pg-ludo-canvas" aria-label="Ludo board"></canvas></div>
+        <div class="pg-dice-row"><div class="pg-dice-readout"><span>LAST ROLL</span><b id="ludoDiceValue">–</b></div><button id="btnLudoRoll" class="pg-primary-action pg-roll-button" type="button" onclick="rollLudoDice()" disabled>ROLL DICE</button></div>
+        <div class="pg-token-heading"><span>AVAILABLE MOVES</span><small>Select a token after rolling</small></div>
+        <div id="ludoTokenButtons" class="pg-token-actions" aria-live="polite"></div>
+      </div>
+      <div id="ludoWinnerPanel" class="pg-winner-panel" hidden><span> MATCH COMPLETE </span><strong id="ludoWinnerText">Winner</strong><small id="ludoWinnerPayout"></small></div>
+    </section>
+    <p class="pg-responsible-note">Play responsibly. Match turns and outcomes are controlled by the game server.</p>
+  </div>
+</section>
   </main>
   <nav class="bottom-nav" aria-label="Mobile navigation">
     <button class="bottom-nav-btn active" type="button" onclick="switchTab('home')" data-tab="home"><span>⌂</span><small>Home</small></button>
@@ -204,6 +241,6 @@
   <div id="loginModal" class="modal"><div class="modal-content auth-modal"><button class="modal-close" onclick="closeModal('loginModal')">×</button><div class="auth-brand">A<span>pex</span></div><h3>Welcome back</h3><p class="auth-subtitle">Log in to continue playing</p><div class="form-group icon-input"><label class="form-label" for="loginUsername">Username or phone</label><div class="input-wrap"><span>◉</span><input type="text" id="loginUsername" class="form-control" value="" placeholder="Enter username or phone"></div></div><div class="form-group icon-input"><label class="form-label" for="loginPassword">Password</label><div class="input-wrap"><span>🔒</span><input type="password" id="loginPassword" class="form-control" value="" placeholder="Enter password"><button type="button" onclick="togglePassword('loginPassword',this)">◉</button></div></div><label class="check-row"><input type="checkbox" id="rememberLogin"><span>Remember me on this device</span><button type="button" class="link-btn">Forgot password?</button></label><button class="btn btn-primary wide-btn auth-submit" onclick="doLogin()">Log in</button><button class="btn btn-outline-gold wide-btn" onclick="closeModal('loginModal');openModal('registerModal')">Register</button></div></div>
   <div id="registerModal" class="modal"><div class="modal-content auth-modal register-modal"><button class="modal-close" onclick="closeModal('registerModal')">×</button><div class="auth-brand">A<span>pex</span></div><h3>Register</h3><p class="auth-subtitle">Create your player account</p><div class="form-group icon-input"><label class="form-label" for="regUsername">Username</label><div class="input-wrap"><span>◉</span><input type="text" id="regUsername" class="form-control" placeholder="Create username"></div></div><div class="form-group icon-input"><label class="form-label" for="regPhone">Phone number</label><div class="input-wrap"><span>☎</span><input type="text" id="regPhone" class="form-control" placeholder="+91 9876543210"></div></div><div class="form-group icon-input"><label class="form-label" for="regEmail">Email <small>(optional)</small></label><div class="input-wrap"><span>✉</span><input type="email" id="regEmail" class="form-control" placeholder="name@example.com"></div></div><div class="form-group icon-input"><label class="form-label" for="regPassword">Password</label><div class="input-wrap"><span>🔒</span><input type="password" id="regPassword" class="form-control" placeholder="At least 8 characters"><button type="button" onclick="togglePassword('regPassword',this)">◉</button></div></div><div class="form-group icon-input"><label class="form-label" for="regConfirmPassword">Confirm password</label><div class="input-wrap"><span>🔒</span><input type="password" id="regConfirmPassword" class="form-control" placeholder="Re-enter password"><button type="button" onclick="togglePassword('regConfirmPassword',this)">◉</button></div></div><div class="form-group"><label class="form-label" for="regDob">Date of birth</label><input type="date" id="regDob" class="form-control"></div><label class="check-row"><input type="checkbox" id="regAgeConfirm"><span>I confirm that I am 18+ and legally eligible to participate.</span></label><button class="btn btn-gold wide-btn auth-submit" onclick="doRegister()">Register</button><button class="btn btn-outline-gold wide-btn" onclick="closeModal('registerModal');openModal('loginModal')">I have an account · Login</button></div></div>
   <div id="colourBetModal" class="modal"><div class="modal-content"><button class="modal-close" onclick="closeModal('colourBetModal')">×</button><h3>Place Bet on <span id="modalBetTarget">-</span></h3><p class="helper-text">Estimated Payout: <b id="modalBetMultiplier" class="amount-winnings">-</b></p><div class="form-group"><label class="form-label" for="colourModalAmount">Bet Amount (₹)</label><input type="number" id="colourModalAmount" class="form-control" value="100" min="10" step="50"></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal('colourBetModal')">Cancel</button><button class="btn btn-primary" onclick="confirmColourBet()">Confirm Bet</button></div></div></div>
-  <script src="/js/game-assets.js"></script><script src="/js/home-games.js?v=20261108-2"></script><script src="/js/game-page-animations.js"></script><script src="/js/app.js?v=20261108-1"></script><script src="/js/game-round-ui.js?v=20261005-1"></script><script src="/js/games.js?v=20261008-5"></script>
+  <script src="/js/game-assets.js"></script><script src="/js/ludo-board.js?v=20261109-1"></script><script src="/js/home-games.js?v=20261108-2"></script><script src="/js/game-page-animations.js"></script><script src="/js/app.js?v=20261108-1"></script><script src="/js/game-round-ui.js?v=20261005-1"></script><script src="/js/games.js?v=20261008-5"></script>
 </body>
 </html>

@@ -560,11 +560,11 @@ async function moveLudoPawn(tokenIndex){if(!currentLudoMatch)return;try{const re
 function updateLudoGameState(state){
   if(!state) return;
   currentLudoMatch = { ...(currentLudoMatch || {}), ...state };
-  const turn=document.getElementById("txtLudoTurnColor");
+  const matchId=document.getElementById("txtLudoMatchUuid");\n  const turn=document.getElementById("txtLudoTurnColor");
   const pot=document.getElementById("txtLudoPot");
   const status=document.getElementById("ludoMatchStatusBadge");
   const roll=document.getElementById("btnLudoRoll");
-  if(turn) turn.textContent=state.currentTurnColor || "-";
+  if(matchId) matchId.textContent=state.matchUuid || "-";\n  if(turn) turn.textContent=state.currentTurnColor || "WAITING";\n  const turnLabel=document.getElementById("ludoBoardTurnLabel");\n  if(turnLabel) turnLabel.textContent=state.status==="WAITING"?"WAITING FOR OPPONENT":(state.currentTurnColor||"") + " TURN";\n  const players=document.getElementById("ludoPlayers");\n  if(players){players.replaceChildren();(state.players||[]).forEach(player=>{const card=document.createElement("div");card.className="pg-player-chip "+String(player.color||"").toLowerCase();const name=document.createElement("b");name.textContent=player.username||("Player "+(player.seatIndex+1));const meta=document.createElement("small");meta.textContent=player.color+" · "+(player.connected?"CONNECTED":"OFFLINE");card.append(name,meta);players.appendChild(card);});}\n  const dice=document.getElementById("ludoDiceValue");\n  if(dice&&state.lastDiceRoll!=null) dice.textContent=String(state.lastDiceRoll);
   if(pot) pot.textContent=Number(state.totalPot || 0).toFixed(2);
   if(status) status.textContent=String(state.status || "Lobby").replace("_"," ");
   if(roll) roll.disabled=state.status!=="IN_PROGRESS" || Number(state.currentTurnUserId)!==Number(currentUserId);
@@ -576,7 +576,7 @@ function updateLudoGameState(state){
     ludoStatePoll=null;
   }
 }
-function drawLudoBoard(){const canvas=document.getElementById("ludoCanvas");if(!canvas)return;const c=canvas.getContext("2d"),s=canvas.width;c.fillStyle="#1e293b";c.fillRect(0,0,s,s);c.fillStyle="#ef4444";c.fillRect(0,0,s*.4,s*.4);c.fillStyle="#10b981";c.fillRect(s*.6,0,s*.4,s*.4);c.fillStyle="#eab308";c.fillRect(s*.6,s*.6,s*.4,s*.4);c.fillStyle="#3b82f6";c.fillRect(0,s*.6,s*.4,s*.4);c.fillStyle="#f8fafc";c.beginPath();c.arc(s/2,s/2,s*.1,0,Math.PI*2);c.fill();}
+function drawLudoBoard(tokenPositions){const canvas=document.getElementById("ludoCanvas");if(!canvas)return;const state={...(currentLudoMatch||{}),tokenPositions:tokenPositions||currentLudoMatch?.tokenPositions||{}};if(window.ApexLudoBoard&&typeof window.ApexLudoBoard.render==="function"){window.ApexLudoBoard.render(canvas,state,currentUserId);} }
 async function updateLimits(){if(!token){openModal("loginModal");return;}const dep=document.getElementById("limitDepositInput")?.value,loss=document.getElementById("limitLossInput")?.value;try{const res=await fetch("/api/users/limits",{method:"PUT",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({dailyDepositLimit:dep,dailyLossLimit:loss})});const data=await safeJsonResponse(res);if(data.success)alert("Responsible gaming limits updated!");else alert("Unable to update limits");}catch(e){alert("Error updating limits");}}
 async function requestSelfExclusion(){if(!token){openModal("loginModal");return;}if(!confirm("Are you sure? You will be blocked from depositing and placing bets for 24 hours."))return;try{const res=await fetch("/api/users/self-exclude",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({exclusionType:"COOL_OFF",durationHours:24,reason:"User break"})});const data=await safeJsonResponse(res);if(data.success){alert("Account is now in 24-hour cool-off period. Logging out.");logout();}}catch(e){alert("Self-exclusion error");}}
 
