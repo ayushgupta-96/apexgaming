@@ -192,44 +192,63 @@
   </div>
 </section>
 <section id="tab-ludo" class="tab-content pg-game pg-ludo" style="display:none;" aria-label="Ludo Arena">
-  <div class="pg-shell">
-    <header class="pg-topbar">
+  <div class="pg-shell ludo-arena-shell">
+    <header class="pg-topbar ludo-arena-topbar">
       <button class="pg-icon-button" type="button" onclick="goHome()" aria-label="Back to home">←</button>
       <div class="pg-brand"><span class="pg-brand-mark">A</span><span><b>APEX</b><small>LUDO ARENA</small></span></div>
       <span id="ludoMatchStatusBadge" class="pg-match-status">LOBBY</span>
     </header>
 
     <section id="ludoLobbySection" class="pg-ludo-lobby">
-      <div class="pg-ludo-hero"><span class="pg-eyebrow">HEAD-TO-HEAD BOARD GAME</span><h1>Play your next move.</h1><p>Choose a stake and create a match room. The match begins when an opponent joins.</p><div class="pg-ludo-preview" aria-hidden="true"><span>●</span><span>●</span><span>●</span><span>●</span><b>APEX</b></div></div>
-      <div class="pg-control-panel">
-        <div class="pg-section-heading"><div><span class="pg-eyebrow">MATCH SETUP</span><h2>Choose your stake</h2></div><span class="pg-history-note">2 players</span></div>
+      <div class="pg-ludo-hero ludo-hero-premium">
+        <span class="pg-eyebrow">HEAD-TO-HEAD BOARD GAME</span>
+        <h1>Play your next move.</h1>
+        <p>Classic Ludo. Choose your entry amount, create a room and invite an opponent to play.</p>
+        <div class="ludo-hero-art" aria-hidden="true">
+          <div class="ludo-hero-token red"></div><div class="ludo-hero-token green"></div>
+          <div class="ludo-hero-dice"><span>⚄</span></div>
+          <div class="ludo-hero-token yellow"></div><div class="ludo-hero-token blue"></div>
+          <b>APEX</b>
+        </div>
+      </div>
+
+      <div class="pg-control-panel ludo-setup-panel">
+        <div class="pg-section-heading"><div><span class="pg-eyebrow">MATCH SETUP</span><h2>Choose your stake</h2></div><span class="pg-history-note">2 PLAYERS</span></div>
         <label class="pg-stake-select-label" for="ludoStakeSelect">Entry amount</label>
         <select id="ludoStakeSelect" class="pg-stake-select"><option value="50">₹50 stake</option><option value="100">₹100 stake</option><option value="250">₹250 stake</option><option value="500">₹500 stake</option></select>
-        <p class="pg-ludo-note">Your selected stake is committed when the match room is created.</p>
-        <div class="pg-join-room"><label class="pg-stake-select-label" for="ludoJoinRoomId">Or join an existing room</label><div class="pg-join-row"><input id="ludoJoinRoomId" class="pg-stake-select" type="text" placeholder="Enter match room ID"><button type="button" class="pg-join-button" onclick="joinLudoMatch()">JOIN</button></div></div>
+        <p class="pg-ludo-note">Your entry amount is committed when the match room is created.</p>
+        <div class="pg-join-room">
+          <label class="pg-stake-select-label" for="ludoJoinRoomId">Or join an existing room</label>
+          <div class="pg-join-row"><input id="ludoJoinRoomId" class="pg-stake-select" type="text" placeholder="Enter match room ID" autocomplete="off"><button type="button" class="pg-join-button" onclick="joinLudoMatch()">JOIN</button></div>
+        </div>
         <button class="pg-primary-action pg-create-match" type="button" onclick="createLudoMatch()">CREATE MATCH ROOM <span>→</span></button>
       </div>
     </section>
 
-    <section id="ludoGameSection" class="pg-ludo-match" style="display:none;">
-      <div class="pg-match-summary">
-        <div><span>MATCH ROOM</span><b id="txtLudoMatchUuid">-</b></div>
-        <div><span>TOTAL POT</span><b class="pg-pot-value">₹<span id="txtLudoPot">0.00</span></b></div>
-        <div><span>YOUR TURN</span><b id="txtLudoTurnColor">WAITING</b></div>
+    <section id="ludoGameSection" class="pg-ludo-match ludo-live-match" style="display:none;">
+      <div class="ludo-match-topline">
+        <div class="ludo-match-title"><span class="ludo-match-die" aria-hidden="true">⚄</span><div><strong>Ludo Match</strong><small>Room: <span id="txtLudoMatchUuid">-</span></small></div></div>
+        <div class="ludo-match-pot"><small>TOTAL POT</small><strong>₹<span id="txtLudoPot">0.00</span></strong></div>
       </div>
-      <div id="ludoPlayers" class="pg-player-list" aria-live="polite"></div>
-      <div class="pg-board-card">
-        <div class="pg-board-heading"><div><span class="pg-eyebrow">LIVE MATCH</span><h2>Game board</h2></div><span id="ludoBoardTurnLabel" class="pg-turn-indicator">WAITING FOR PLAYERS</span></div>
-        <div class="pg-board-wrap"><canvas id="ludoCanvas" width="600" height="600" class="pg-ludo-canvas" aria-label="Ludo board"></canvas></div>
-        <div class="pg-dice-row"><div class="pg-dice-readout"><span>LAST ROLL</span><b id="ludoDiceValue">–</b></div><button id="btnLudoRoll" class="pg-primary-action pg-roll-button" type="button" onclick="rollLudoDice()" disabled>ROLL DICE</button></div>
-        <div class="pg-token-heading"><span>AVAILABLE MOVES</span><small>Select a token after rolling</small></div>
-        <div id="ludoTokenButtons" class="pg-token-actions" aria-live="polite"></div>
+      <div class="ludo-turn-banner"><span class="ludo-turn-pulse"></span><div><small>TURN STATUS</small><strong id="txtLudoTurnColor">WAITING</strong></div><span id="ludoBoardTurnLabel" class="pg-turn-indicator">WAITING FOR PLAYERS</span></div>
+      <div class="ludo-match-arena">
+        <div id="ludoPlayers" class="pg-player-list ludo-player-seats" aria-live="polite"></div>
+        <div class="pg-board-card ludo-board-card">
+          <div class="pg-board-heading"><div><span class="pg-eyebrow">LIVE MATCH</span><h2>Game board</h2></div><span class="ludo-board-live"><i></i> LIVE</span></div>
+          <div class="pg-board-wrap"><canvas id="ludoCanvas" width="600" height="600" class="pg-ludo-canvas" aria-label="Ludo board"></canvas></div>
+          <div class="ludo-dice-console">
+            <div class="pg-dice-readout ludo-dice-readout"><span>LAST ROLL</span><b id="ludoDiceValue">–</b></div>
+            <button id="btnLudoRoll" class="pg-primary-action pg-roll-button ludo-roll-button" type="button" onclick="rollLudoDice()" disabled><span aria-hidden="true">⚄</span><strong>ROLL THE DICE</strong></button>
+          </div>
+          <div class="pg-token-heading"><span>AVAILABLE MOVES</span><small>Select a token after rolling</small></div>
+          <div id="ludoTokenButtons" class="pg-token-actions" aria-live="polite"></div>
+        </div>
       </div>
-      <div id="ludoWinnerPanel" class="pg-winner-panel" hidden><span> MATCH COMPLETE </span><strong id="ludoWinnerText">Winner</strong><small id="ludoWinnerPayout"></small></div>
+      <div id="ludoWinnerPanel" class="pg-winner-panel" hidden><span>MATCH COMPLETE</span><strong id="ludoWinnerText">Winner</strong><small id="ludoWinnerPayout"></small></div>
     </section>
     <p class="pg-responsible-note">Play responsibly. Match turns and outcomes are controlled by the game server.</p>
   </div>
-</section>
+</section>>
   </main>
   <nav class="bottom-nav" aria-label="Mobile navigation">
     <button class="bottom-nav-btn active" type="button" onclick="switchTab('home')" data-tab="home"><span>⌂</span><small>Home</small></button>
