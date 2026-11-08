@@ -554,6 +554,33 @@ async function createLudoMatch(){if(!token){openModal("loginModal");return;}cons
     }catch(e){console.warn("Ludo state poll failed",e);}
   },2000);
 }else alert("Ludo room error: "+(data.message||"Unknown error"));}catch(e){alert("Error creating match");}}
+async function joinLudoMatch(){
+  if(!token){openModal("loginModal");return;}
+  const roomId=document.getElementById("ludoJoinRoomId")?.value.trim();
+  if(!roomId){alert("Enter a match room ID.");return;}
+  try{
+    const res=await fetch("/api/games/ludo/rooms/"+encodeURIComponent(roomId)+"/join",{method:"POST",headers:{"Authorization":"Bearer "+token}});
+    const data=await safeJsonResponse(res);
+    if(data.success){
+      currentLudoMatch=data.data;
+      const lobby=document.getElementById("ludoLobbySection");
+      const game=document.getElementById("ludoGameSection");
+      if(lobby)lobby.style.display="none";
+      if(game)game.style.display="block";
+      updateLudoGameState(data.data);
+      fetchWallet();
+      clearInterval(ludoStatePoll);
+      ludoStatePoll=setInterval(async()=>{
+        if(!currentLudoMatch?.matchUuid)return;
+        try{
+          const stateRes=await fetch("/api/games/ludo/rooms/"+encodeURIComponent(currentLudoMatch.matchUuid)+"/state",{headers:{"Authorization":"Bearer "+token}});
+          const stateData=await safeJsonResponse(stateRes);
+          if(stateData.success)updateLudoGameState(stateData.data);
+        }catch(e){console.warn("Ludo state poll failed",e);}
+      },2000);
+    }else alert("Unable to join room: "+(data.message||"Unknown error"));
+  }catch(e){console.error("Ludo join failed",e);alert("Unable to join this room right now.");}
+}
 async function rollLudoDice(){
   if(!currentLudoMatch||!token)return;
   const button=document.getElementById("btnLudoRoll");

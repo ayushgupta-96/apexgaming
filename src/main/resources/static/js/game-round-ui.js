@@ -9,7 +9,7 @@
     chip.className = "apx-round-chip";
     if(type === "colour"){
       const number = Number(item.number);
-      const color = String(item.winningColor || "").toUpperCase();
+      const color = String(item.color || item.winningColor || "").toUpperCase();
       chip.classList.add(
         color === "GREEN" ? "is-green" :
         color === "VIOLET" ? "is-violet" :
@@ -57,38 +57,6 @@
       empty.textContent="Waiting for completed rounds…";
       host.appendChild(empty);
     }
-  }
-
-  function animateColourWheel(result){
-    const disc=document.getElementById("colourWheelDisc");
-    const center=document.getElementById("colourWheelCenterNumber");
-    const label=document.getElementById("colourWheelCenterLabel");
-    const wheel=document.getElementById("colourWheel");
-    if(!disc || !center || !label) return;
-
-    const number=Number(result && result.number);
-    if(!Number.isInteger(number) || number<0 || number>9) return;
-
-    const targetDeg=number*36;
-    const currentNorm=((wheelRotation%360)+360)%360;
-    const targetNorm=(((-targetDeg)%360)+360)%360;
-    const delta=((targetNorm-currentNorm)+360)%360;
-    wheelRotation += 360*4 + delta;
-
-    wheel?.classList.remove("is-spinning","is-result");
-    void disc.offsetWidth;
-    wheel?.classList.add("is-spinning");
-    disc.style.setProperty("--wheel-counter-rotation",(-wheelRotation)+"deg");
-    disc.style.transform="translate(-50%,-50%) rotate("+wheelRotation+"deg)";
-
-    window.setTimeout(function(){
-      center.textContent=String(number);
-      center.classList.add("is-revealed");
-      label.textContent=String(result.winningColor || "RESULT").toUpperCase();
-      wheel?.classList.remove("is-spinning");
-      wheel?.classList.add("is-result");
-      window.setTimeout(()=>center.classList.remove("is-revealed"),900);
-    },1350);
   }
 
   function install(){
