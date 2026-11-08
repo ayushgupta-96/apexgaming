@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/mobile-home-fixes.css?v=20261003-2">
   <link rel="stylesheet" href="/css/home-redesign.css?v=20261108-2">
-  <link rel="stylesheet" href="/css/player-finance-redesign.css?v=20261108-5">
+  <link rel="stylesheet" href="/css/player-finance-redesign.css?v=20261108-6">
 </head>
 <body class="apex-mobile-app wallet-screen">
   <header class="wallet-head">
@@ -51,7 +51,7 @@
         <button class="wallet-action dep-history" onclick="openDepositHistory()">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M15 8h34v48H15z" fill="#FFF2F4"/><path d="M24 18h16M24 28h16M24 38h16M24 48h10" stroke="#D9556C" stroke-width="4" stroke-linecap="round"/></svg></span><span>Deposit<br>history</span>
         </button>
-        <button class="wallet-action wdr-history" type="button" onclick="openWithdrawalHistory()">
+        <button id="openWithdrawalHistoryButton" class="wallet-action wdr-history" type="button" aria-haspopup="dialog" aria-controls="transactionHistoryModal">
           <span class="wallet-action-icon" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none"><path d="M8 20c0-5 4-9 9-9h30c5 0 9 4 9 9v25c0 5-4 9-9 9H17c-5 0-9-4-9-9V20Z" fill="#E8FFF7"/><path d="M8 23h48v13H8z" fill="#B5EEDC"/><circle cx="21" cy="44" r="7" fill="#3AC09A"/><path d="m18 44 2 2 4-5" stroke="#E8FFF7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>Withdrawal<br>history</span>
         </button>
       </div>
@@ -141,6 +141,8 @@
       const modal = document.getElementById('transactionHistoryModal');
       if (!modal) return;
       modal.hidden = false;
+      modal.removeAttribute('hidden');
+      modal.classList.add('is-open');
       document.body.classList.add('history-open');
       loadTransactionHistory(type || 'deposits');
     }
@@ -150,7 +152,11 @@
 
     function closeTransactionHistory() {
       const modal = document.getElementById('transactionHistoryModal');
-      if (modal) modal.hidden = true;
+      if (modal) {
+        modal.classList.remove('is-open');
+        modal.hidden = true;
+        modal.setAttribute('hidden', '');
+      }
       document.body.classList.remove('history-open');
     }
 
@@ -335,9 +341,16 @@
       }
     }
 
+    // Bind the wallet shortcut directly, independent of inline-handler caching.
     document.addEventListener('click', function (event) {
+      const withdrawalHistoryButton = event.target.closest('#openWithdrawalHistoryButton');
+      if (withdrawalHistoryButton) {
+        event.preventDefault();
+        openTransactionHistory('withdrawals');
+        return;
+      }
       const modal = document.getElementById('transactionHistoryModal');
-      if (modal && !modal.hidden && event.target === modal) closeTransactionHistory();
+      if (modal && modal.classList.contains('is-open') && event.target === modal) closeTransactionHistory();
     });
   </script>
 </body>
