@@ -75,6 +75,7 @@
           item.setAttribute("aria-pressed", String(active));
         });
         const filtered = category === "all" ? HOME_GAMES : HOME_GAMES.filter(game => game.category === category);
+        renderCards(homeGrid, filtered.filter(game => game.available), true);
         renderCards(catalogueGrid, filtered, false);
       });
     });
