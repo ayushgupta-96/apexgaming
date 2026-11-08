@@ -7,11 +7,6 @@
     { name: "Fruit 777", type: "fruit", category: "other", description: "Fruit slots", image: "/images/games/fruit-777.svg", available: false }
   ];
 
-  const CATEGORY_LABELS = [
-    ["all", "All"], ["crash", "Crash"], ["prediction", "Prediction"],
-    ["board", "Board"], ["other", "Other"]
-  ];
-
   function gameTarget(type) {
     return ["aviator", "colour", "ludo"].includes(type) ? type : null;
   }
@@ -53,32 +48,71 @@
     return card;
   }
 
-  function renderCards(grid, games, compact) {
+  function createEmptyState(grid, emptyState, isEmpty) {
+    if (emptyState) emptyState.hidden = !isEmpty;
+    if (grid) grid.hidden = isEmpty;
+  }
+
+  function renderCards(grid, games, compact, emptyState) {
     if (!grid) return;
     const fragment = document.createDocumentFragment();
     games.forEach(game => fragment.appendChild(createGameCard(game, compact)));
     grid.replaceChildren(fragment);
+    createEmptyState(grid, emptyState, games.length === 0);
+    return games.length;
   }
 
-  function initHomeGames() {
-    const homeGrid = document.getElementById("categoryGames");
-    const catalogueGrid = document.getElementById("gamesCatalogGrid");
-    renderCards(homeGrid, HOME_GAMES, true);
-    renderCards(catalogueGrid, HOME_GAMES, false);
+  function updateCatalogueCount(count) {
+    const output = document.getElementById("catalogueGameCount");
+    if (output) output.textContent = count + (count === 1 ? " GAME" : " GAMES");
+  }
 
-    document.querySelectorAll("[data-game-category]").forEach(button => {
+  function bindCategoryFilters(scope, grid, compact, emptyState, searchInput) {
+    if (!scope || !grid) return;
+    let activeCategory = "all";
+    let searchTerm = "";
+
+    const apply = () => {
+      const filtered = HOME_GAMES.filter(game => {
+        const matchesCategory = activeCategory === "all" || game.category === activeCategory;
+        const haystack = (game.name + " " + game.description + " " + game.category).toLowerCase();
+        return matchesCategory && haystack.includes(searchTerm);
+      });
+      renderCards(grid, filtered, compact, emptyState);
+      if (!compact) updateCatalogueCount(filtered.length);
+    };
+
+    scope.querySelectorAll("[data-game-category]").forEach(button => {
       button.addEventListener("click", () => {
-        const category = button.dataset.gameCategory;
-        document.querySelectorAll("[data-game-category]").forEach(item => {
+        activeCategory = button.dataset.gameCategory || "all";
+        scope.querySelectorAll("[data-game-category]").forEach(item => {
           const active = item === button;
           item.classList.toggle("active", active);
           item.setAttribute("aria-pressed", String(active));
         });
-        const filtered = category === "all" ? HOME_GAMES : HOME_GAMES.filter(game => game.category === category);
-        renderCards(homeGrid, filtered, true);
-        renderCards(catalogueGrid, filtered, false);
+        apply();
       });
     });
+
+    if (searchInput) {
+      searchInput.addEventListener("input", () => {
+        searchTerm = searchInput.value.trim().toLowerCase();
+        apply();
+      });
+    }
+    apply();
+  }
+
+  function initHomeGames() {
+    const homeScope = document.querySelector(".mobile-home-shell");
+    const catalogueScope = document.getElementById("mobile-games");
+    const homeGrid = document.getElementById("categoryGames");
+    const catalogueGrid = document.getElementById("gamesCatalogGrid");
+    const catalogueSearch = document.getElementById("gameCatalogueSearch");
+    const emptyState = document.getElementById("catalogueEmptyState");
+
+    bindCategoryFilters(homeScope, homeGrid, true, null, null);
+    bindCategoryFilters(catalogueScope, catalogueGrid, false, emptyState, catalogueSearch);
   }
 
   document.addEventListener("DOMContentLoaded", initHomeGames);
