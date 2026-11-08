@@ -591,3 +591,182 @@
   #tab-ludo .pg-section-heading h2{font-size:17px;}
   #tab-ludo .pg-create-match{font-size:12px;}
 }
+
+
+/* Ludo Arena visual refresh: premium lobby and focused live match. */
+#tab-ludo.pg-game{
+  min-height:100dvh;
+  padding:0 0 calc(88px + env(safe-area-inset-bottom,0px));
+  background:
+    radial-gradient(ellipse at 50% 0%,rgba(20,112,67,.24),transparent 42%),
+    linear-gradient(180deg,#03190f 0%,#001109 65%,#000d08 100%);
+}
+#tab-ludo .ludo-arena-shell{
+  width:min(100%,560px);
+  padding:12px 14px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+#tab-ludo .ludo-arena-topbar{min-height:54px;margin:0 0 2px;gap:12px;}
+#tab-ludo .ludo-arena-topbar .pg-icon-button{width:46px;height:46px;font-size:25px;}
+#tab-ludo .ludo-arena-topbar .pg-brand-mark{width:48px;height:48px;font-size:26px;}
+#tab-ludo .ludo-arena-topbar .pg-brand b{font-size:15px;letter-spacing:.2em;}
+#tab-ludo .ludo-arena-topbar .pg-brand small{font-size:10px;letter-spacing:.16em;}
+#tab-ludo .ludo-arena-topbar .pg-match-status{font-size:10px;padding:9px 13px;}
+#tab-ludo .ludo-ludo-hero{min-width:0;}
+#tab-ludo .ludo-hero-premium{
+  min-height:300px;
+  padding:25px 22px 18px;
+  border:1px solid #246b48;
+  border-radius:25px;
+  background:
+    radial-gradient(ellipse at 50% 83%,rgba(28,173,105,.2),transparent 42%),
+    radial-gradient(circle at 88% 10%,rgba(230,196,94,.13),transparent 30%),
+    linear-gradient(145deg,#10442c 0%,#062618 58%,#03180f 100%);
+  box-shadow:inset 0 1px rgba(255,255,255,.08),0 18px 38px #0004;
+}
+#tab-ludo .ludo-hero-premium .pg-eyebrow{font-size:10px;letter-spacing:.2em;color:#68d9ad;}
+#tab-ludo .ludo-hero-premium h1{max-width:300px;margin:10px 0 8px;font-size:clamp(34px,8vw,42px);line-height:1.03;color:#f5dfa0;}
+#tab-ludo .ludo-hero-premium p{max-width:340px;margin:0;color:#c1d5c8;font-size:14px;line-height:1.55;}
+#tab-ludo .ludo-hero-art{
+  position:relative;display:flex;align-items:center;justify-content:center;gap:clamp(6px,3vw,18px);
+  min-height:116px;margin:14px -6px 0;padding:12px 8px 20px;
+  border-radius:18px;
+  background:radial-gradient(ellipse at 50% 90%,rgba(38,197,126,.18),transparent 68%);
+}
+#tab-ludo .ludo-hero-art:before{
+  content:"";position:absolute;left:4%;right:4%;bottom:15px;height:30px;
+  transform:perspective(90px) rotateX(35deg);
+  background:repeating-linear-gradient(90deg,#1b7546 0 28px,#d0b65e 28px 30px),repeating-linear-gradient(0deg,transparent 0 25px,#d0b65e 25px 27px);
+  border:1px solid #bca35466;opacity:.45;filter:drop-shadow(0 8px 8px #0008);
+}
+#tab-ludo .ludo-hero-token{
+  position:relative;z-index:1;width:clamp(24px,7vw,38px);height:clamp(24px,7vw,38px);
+  border:3px solid #ffffffb0;border-radius:50%;
+  box-shadow:inset 0 -5px 0 #0003,0 8px 14px #0007,0 0 17px currentColor;
+}
+#tab-ludo .ludo-hero-token:after{content:"";position:absolute;left:18%;right:18%;bottom:-13px;height:17px;border-radius:4px 4px 12px 12px;background:inherit;filter:brightness(.8);}
+#tab-ludo .ludo-hero-token.red{color:#ff6571;background:#e84a59;}
+#tab-ludo .ludo-hero-token.green{color:#38e0a2;background:#19bd7d;}
+#tab-ludo .ludo-hero-token.yellow{color:#ffdf78;background:#e9bd43;}
+#tab-ludo .ludo-hero-token.blue{color:#7ebaff;background:#4c91e5;}
+#tab-ludo .ludo-hero-dice{
+  position:relative;z-index:2;display:grid;place-items:center;width:clamp(72px,20vw,104px);height:clamp(72px,20vw,104px);
+  border:1px solid #fff4cf;border-radius:22px;transform:rotate(-9deg);
+  background:linear-gradient(145deg,#fff5c8,#cba84c 65%,#8d6a25);
+  box-shadow:inset 0 2px 5px #fff9,0 13px 24px #0008,0 0 25px #e7c65b55;
+}
+#tab-ludo .ludo-hero-dice span{color:#493714;font-size:clamp(42px,12vw,66px);line-height:1;text-shadow:0 2px #fff8;}
+#tab-ludo .ludo-hero-art>b{position:absolute;right:7px;bottom:0;color:#f4dfa0;font-size:10px;letter-spacing:.28em;}
+#tab-ludo .ludo-setup-panel{
+  margin:0;padding:20px;border:1px solid #1c6240;border-radius:22px;
+  background:linear-gradient(150deg,#0b281a,#061a10);
+  box-shadow:inset 0 1px #ffffff0a,0 16px 30px #0004;
+}
+#tab-ludo .ludo-setup-panel .pg-section-heading{margin-bottom:17px;}
+#tab-ludo .ludo-setup-panel .pg-section-heading h2{font-size:22px;}
+#tab-ludo .ludo-setup-panel .pg-eyebrow{font-size:10px;letter-spacing:.18em;}
+#tab-ludo .ludo-setup-panel .pg-history-note{font-size:10px;}
+#tab-ludo .ludo-setup-panel .pg-stake-select-label{font-size:11px;margin:8px 0 10px;}
+#tab-ludo .ludo-setup-panel .pg-stake-select{
+  min-height:62px;padding:0 17px;border:2px solid #d6c17a;border-radius:16px;
+  background:#03190f;color:#fff4cc;font-size:19px;font-weight:750;
+  box-shadow:0 0 0 3px #d6c17a12,inset 0 1px #ffffff0b;
+}
+#tab-ludo .ludo-setup-panel .pg-ludo-note{margin:12px 0 17px;font-size:12px;line-height:1.5;}
+#tab-ludo .ludo-setup-panel .pg-join-room{margin-top:18px;padding-top:17px;border-top:1px solid #ffffff20;}
+#tab-ludo .ludo-setup-panel .pg-join-row{grid-template-columns:minmax(0,1fr) 96px;gap:10px;}
+#tab-ludo .ludo-setup-panel .pg-join-row .pg-stake-select{min-width:0;min-height:60px;font-size:14px;font-weight:500;border:1px solid #286544;border-radius:14px;}
+#tab-ludo .ludo-setup-panel .pg-join-button{min-width:90px;border:1px solid #e8ca7270;border-radius:14px;background:linear-gradient(145deg,#e8ca7230,#e8ca7210);color:#f5dfa0;font-size:13px;}
+#tab-ludo .ludo-setup-panel .pg-create-match{
+  min-height:72px;margin-top:14px;border:1px solid #f7dc80;border-radius:16px;
+  background:linear-gradient(145deg,#ffe58b,#d6a92e);
+  color:#152013;font-size:16px;font-weight:950;letter-spacing:.045em;
+  box-shadow:0 8px 20px #d3a52b2c,inset 0 1px #fff9;
+}
+#tab-ludo .ludo-setup-panel .pg-create-match span{font-size:22px;}
+#tab-ludo .ludo-live-match{width:100%;max-width:560px;margin:0 auto;}
+#tab-ludo .ludo-match-topline{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:13px 14px;border:1px solid #1e6843;border-radius:17px;
+  background:linear-gradient(145deg,#0d3824,#061b11);
+}
+#tab-ludo .ludo-match-title{display:flex;align-items:center;gap:11px;min-width:0;}
+#tab-ludo .ludo-match-die{display:grid;place-items:center;width:48px;height:48px;flex:none;border-radius:15px;background:#124b31;font-size:30px;}
+#tab-ludo .ludo-match-title>div{min-width:0;display:flex;flex-direction:column;gap:4px;}
+#tab-ludo .ludo-match-title strong{font-size:19px;color:#f5dfa0;}
+#tab-ludo .ludo-match-title small{font-size:11px;color:#b7cbbd;overflow-wrap:anywhere;}
+#tab-ludo .ludo-match-title small span{color:#fff;}
+#tab-ludo .ludo-match-pot{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding:8px 11px;border:1px solid #4b9c66;border-radius:13px;background:#052517;}
+#tab-ludo .ludo-match-pot small{font-size:9px;letter-spacing:.12em;color:#9db7a5;}
+#tab-ludo .ludo-match-pot strong{font-size:17px;color:#f6d978;}
+#tab-ludo .ludo-turn-banner{
+  display:flex;align-items:center;gap:10px;margin:10px 0;padding:12px 14px;
+  border:1px solid #176b42;border-radius:14px;background:#062919;
+}
+#tab-ludo .ludo-turn-pulse{width:10px;height:10px;flex:none;border-radius:50%;background:#36d99b;box-shadow:0 0 0 5px #36d99b20,0 0 13px #36d99b;}
+#tab-ludo .ludo-turn-banner>div{display:flex;flex-direction:column;gap:3px;min-width:0;}
+#tab-ludo .ludo-turn-banner small{font-size:9px;color:#91b29d;letter-spacing:.12em;}
+#tab-ludo .ludo-turn-banner strong{font-size:14px;color:#f4dfa0;}
+#tab-ludo .ludo-turn-banner .pg-turn-indicator{margin-left:auto;font-size:9px;white-space:normal;text-align:right;}
+#tab-ludo .ludo-match-arena{display:flex;flex-direction:column;gap:9px;}
+#tab-ludo .ludo-player-seats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:0;}
+#tab-ludo .ludo-player-seats .pg-player-chip{
+  min-width:0;min-height:62px;display:flex;flex-direction:column;justify-content:center;gap:5px;
+  padding:9px 12px;border:1px solid #ffffff22;border-left:4px solid #85958a;
+  border-radius:14px;background:linear-gradient(145deg,#102b1c,#071a10);
+}
+#tab-ludo .ludo-player-seats .pg-player-chip.red{border-color:#e65a6266;border-left-color:#ff5968;}
+#tab-ludo .ludo-player-seats .pg-player-chip.green{border-color:#25bd8266;border-left-color:#25d995;}
+#tab-ludo .ludo-player-seats .pg-player-chip.yellow{border-color:#e9c65d66;border-left-color:#e9c65d;}
+#tab-ludo .ludo-player-seats .pg-player-chip.blue{border-color:#5d9ce866;border-left-color:#5d9ce8;}
+#tab-ludo .ludo-player-seats .pg-player-chip b{font-size:14px;color:#f5f7f3;}
+#tab-ludo .ludo-player-seats .pg-player-chip small{font-size:9px;letter-spacing:.08em;}
+#tab-ludo .ludo-board-card{
+  margin:0;padding:13px;border:1px solid #236542;border-radius:20px;
+  background:linear-gradient(155deg,#0c291a,#04170d);
+  box-shadow:0 15px 30px #0005,inset 0 1px #ffffff0a;
+}
+#tab-ludo .ludo-board-card .pg-board-heading{margin-bottom:11px;}
+#tab-ludo .ludo-board-card .pg-board-heading h2{font-size:18px;}
+#tab-ludo .ludo-board-live{display:flex;align-items:center;gap:6px;color:#72d8a8;font-size:10px;font-weight:850;letter-spacing:.12em;}
+#tab-ludo .ludo-board-live i{width:7px;height:7px;border-radius:50%;background:#3bdfa0;box-shadow:0 0 10px #3bdfa0;}
+#tab-ludo .ludo-board-card .pg-board-wrap{
+  width:min(100%,500px);margin:0 auto;padding:6px;border:1px solid #c9ae5b77;border-radius:15px;
+  background:radial-gradient(circle,#173c27,#04140c 75%);
+  box-shadow:0 0 24px #0007,inset 0 0 15px #0007;
+}
+#tab-ludo .ludo-board-card .pg-ludo-canvas{width:100%;height:auto;display:block;border-radius:9px;}
+#tab-ludo .ludo-dice-console{display:grid;grid-template-columns:88px minmax(0,1fr);gap:10px;margin-top:12px;}
+#tab-ludo .ludo-dice-readout{min-height:68px;border:1px solid #987d37;border-radius:14px;background:#101e13;}
+#tab-ludo .ludo-dice-readout span{font-size:9px;letter-spacing:.12em;}
+#tab-ludo .ludo-dice-readout b{font-size:27px;color:#ffe28a;}
+#tab-ludo .ludo-roll-button{
+  min-height:68px;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:9px;
+  border:1px solid #ffe58b;border-radius:14px;
+  background:linear-gradient(145deg,#fce58e,#d5a52b);
+  color:#172013;box-shadow:0 7px 18px #d5a52b2b,inset 0 1px #fff9;
+}
+#tab-ludo .ludo-roll-button>span{font-size:27px;}
+#tab-ludo .ludo-roll-button strong{font-size:14px;letter-spacing:.04em;}
+#tab-ludo .ludo-roll-button:disabled{opacity:.42;filter:saturate(.45);box-shadow:none;}
+#tab-ludo .ludo-board-card .pg-token-heading{margin:15px 0 9px;}
+#tab-ludo .ludo-board-card .pg-token-heading span{font-size:11px;}
+#tab-ludo .ludo-board-card .pg-token-heading small{font-size:10px;}
+#tab-ludo .ludo-board-card .pg-token-actions button{min-height:48px;font-size:12px;border-color:#d6b75a77;background:#caa74318;color:#f8df91;}
+#tab-ludo .ludo-winner-panel{margin-top:12px;}
+#tab-ludo .pg-responsible-note{font-size:10px;line-height:1.5;}
+@media(max-width:380px){
+  #tab-ludo .ludo-arena-shell{padding:9px 10px 16px;gap:11px;}
+  #tab-ludo .ludo-hero-premium{min-height:270px;padding:21px 17px 15px;}
+  #tab-ludo .ludo-hero-premium h1{font-size:32px;}
+  #tab-ludo .ludo-hero-premium p{font-size:13px;}
+  #tab-ludo .ludo-setup-panel{padding:15px;}
+  #tab-ludo .ludo-setup-panel .pg-create-match{font-size:14px;}
+  #tab-ludo .ludo-match-topline{padding:10px;}
+  #tab-ludo .ludo-match-title strong{font-size:16px;}
+  #tab-ludo .ludo-player-seats .pg-player-chip{padding:8px;min-height:58px;}
+  #tab-ludo .ludo-player-seats .pg-player-chip b{font-size:12px;}
+  #tab-ludo .ludo-roll-button strong{font-size:12px;}
+}
