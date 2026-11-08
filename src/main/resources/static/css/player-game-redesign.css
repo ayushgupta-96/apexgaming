@@ -310,3 +310,36 @@
 @media(prefers-reduced-motion:reduce){
   #tab-aviator .apx-aviator-canvas{animation:none!important;}
 }
+
+
+/* Colour Prediction reference layout: activity, live round, betting, results. */
+@media(max-width:600px){
+  #tab-colour .pg-personal-history{
+    order:1 !important;
+    margin:0;
+    padding:9px 10px;
+    border-radius:15px;
+  }
+  #tab-colour .pg-personal-history .pg-section-heading{margin-bottom:6px;}
+  #tab-colour .pg-personal-history .pg-section-heading h2{font-size:12px;}
+  #tab-colour .pg-personal-history .apx-bet-history-list{
+    max-height:220px;
+    overflow-y:auto;
+    gap:5px;
+  }
+  #tab-colour .pg-personal-history .apx-bet-history-row{
+    padding:8px 9px;
+    border-radius:10px;
+  }
+  #tab-colour .pg-personal-history .apx-bet-history-main strong{font-size:10px;}
+  #tab-colour .pg-personal-history .apx-bet-history-main span{font-size:9px;}
+  #tab-colour .pg-personal-history .apx-bet-history-result strong{font-size:11px;}
+  #tab-colour .pg-personal-history .apx-bet-history-result{min-width:66px;}
+  #tab-colour .pg-colour-intro{order:2 !important;}
+  #tab-colour .pg-wheel-stage{order:3 !important;}
+  #tab-colour .pg-result-status{order:4 !important;}
+  #tab-colour .pg-colour-controls{order:5 !important;}
+  #tab-colour .pg-colour-round-results{order:6 !important;}
+  #tab-colour .pg-colour-history{order:1 !important;}
+  #tab-colour .pg-responsible-note{order:7 !important;}
+}
