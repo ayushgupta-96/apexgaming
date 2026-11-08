@@ -746,37 +746,48 @@
 }
 
 
-/* Deposit typography: increase readable text by approximately 1px */
-.deposit-screen .deposit-head-title,
-.deposit-screen .deposit-history-link,
-.deposit-screen .balance-card-label,
-.deposit-screen .balance-card-foot,
-.deposit-screen .deposit-intro-kicker,
-.deposit-screen .deposit-intro h1,
-.deposit-screen .deposit-intro p,
-.deposit-screen .deposit-step b,
-.deposit-screen .deposit-step-label,
-.deposit-screen .panel-title,
-.deposit-screen .helper-text,
-.deposit-screen .form-label,
-.deposit-screen .amount-btn,
-.deposit-screen .deposit-field-hint,
-.deposit-screen .btn-deposit-submit,
-.deposit-screen .deposit-secure-note,
-.deposit-screen .deposit-result-heading h2,
-.deposit-screen .deposit-result-heading p,
-.deposit-screen .deposit-reference-label,
-.deposit-screen .qr-title,
-.deposit-screen .upi-id-label,
-.deposit-screen .upi-id-value,
-.deposit-screen .deposit-utr-section h3,
-.deposit-screen .deposit-utr-section>p,
-.deposit-screen .deposit-utr-section .form-control,
-.deposit-screen .btn-submit-utr,
-.deposit-screen .deposit-utr-note,
-.deposit-screen .deposit-help-title b,
-.deposit-screen .deposit-help-title small,
-.deposit-screen .deposit-help-card li p,
-.deposit-screen .deposit-help-warning {
-  font-size:calc(1em + 1px) !important;
+/* Deposit typography: explicit +1px scale without inherited-size compounding */
+.deposit-screen .deposit-head-title {font-size:17px !important;}
+.deposit-screen .deposit-history-link {font-size:12px !important;}
+.deposit-screen .balance-card-label {font-size:11px !important;}
+.deposit-screen .balance-card-foot {font-size:9px !important;}
+.deposit-screen .deposit-intro-kicker {font-size:10px !important;}
+.deposit-screen .deposit-intro h1 {font-size:22px !important;}
+.deposit-screen .deposit-intro p {font-size:12px !important;}
+.deposit-screen .deposit-step b {font-size:10px !important;}
+.deposit-screen .deposit-step-label {font-size:9px !important;}
+.deposit-screen .panel-title {font-size:18px !important;}
+.deposit-screen .helper-text {font-size:12px !important;}
+.deposit-screen .form-label {font-size:12px !important;}
+.deposit-screen .amount-btn {font-size:13px !important;}
+.deposit-screen .deposit-field-hint {font-size:10px !important;}
+.deposit-screen .btn-deposit-submit {font-size:13px !important;}
+.deposit-screen .deposit-secure-note {font-size:10px !important;}
+.deposit-screen .deposit-result-heading h2 {font-size:17px !important;}
+.deposit-screen .deposit-result-heading p {font-size:11px !important;}
+.deposit-screen .deposit-reference-label {font-size:9px !important;}
+.deposit-screen .qr-title {font-size:12px !important;}
+.deposit-screen .upi-id-label {font-size:9px !important;}
+.deposit-screen .upi-id-value {font-size:13px !important;}
+.deposit-screen .deposit-utr-section h3 {font-size:16px !important;}
+.deposit-screen .deposit-utr-section>p {font-size:11px !important;}
+.deposit-screen .deposit-utr-section .form-control {font-size:15px !important;}
+.deposit-screen .btn-submit-utr {font-size:11px !important;}
+.deposit-screen .deposit-utr-note {font-size:10px !important;}
+.deposit-screen .deposit-help-title b {font-size:13px !important;}
+.deposit-screen .deposit-help-title small {font-size:10px !important;}
+.deposit-screen .deposit-help-card li p {font-size:11px !important;}
+.deposit-screen .deposit-help-warning {font-size:10px !important;}
+
+/* Keep all six quick amounts in a consistent three-column grid on phones */
+.deposit-screen .deposit-quick-group .amounts-grid {
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:8px !important;
+  width:100% !important;
+}
+.deposit-screen .deposit-quick-group .amount-btn {
+  width:100% !important;
+  min-width:0 !important;
+  white-space:nowrap !important;
 }
