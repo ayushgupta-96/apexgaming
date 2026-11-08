@@ -871,3 +871,18 @@ body.history-open {overflow:hidden;}
   .wallet-transaction-sheet {border-radius:24px !important;}
   .wallet-history-list {max-height:58vh;}
 }
+
+/* Ensure wallet history shortcut receives taps and modal is visibly opened */
+.wallet-screen .wallet-panel .wallet-action.wdr-history {
+  position:relative !important;
+  z-index:2 !important;
+  pointer-events:auto !important;
+  cursor:pointer !important;
+  touch-action:manipulation;
+}
+.wallet-screen .wallet-history-modal.is-open {
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  pointer-events:auto !important;
+}
