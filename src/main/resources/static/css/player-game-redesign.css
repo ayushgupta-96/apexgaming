@@ -169,3 +169,144 @@
 .pg-join-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;}
 .pg-join-row .pg-stake-select{min-width:0;font-size:11px;}
 .pg-join-button{min-width:72px;padding:0 13px;border:1px solid #e8ca7250;border-radius:11px;background:#e8ca7218;color:var(--pg-gold-soft);font-size:9px;font-weight:950;letter-spacing:.1em;}
+
+
+/* Compact single-screen game arena | mobile-first */
+@media(max-width:600px){
+  #tab-aviator.pg-game,#tab-colour.pg-game{
+    min-height:100dvh;
+    padding-bottom:calc(78px + env(safe-area-inset-bottom,0px));
+    overflow-x:hidden;
+  }
+  #tab-aviator .pg-shell,#tab-colour .pg-shell{
+    width:100%;
+    max-width:520px;
+    padding:8px 10px 16px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  #tab-aviator .pg-topbar,#tab-colour .pg-topbar{
+    order:0;
+    min-height:42px;
+    margin:0 0 2px;
+    gap:9px;
+  }
+  #tab-aviator .pg-icon-button,#tab-colour .pg-icon-button{width:38px;height:38px;}
+  #tab-aviator .pg-wallet,#tab-colour .pg-wallet{padding:6px 10px;}
+  #tab-aviator .pg-history-panel,#tab-aviator .pg-control-panel,
+  #tab-colour .pg-history-panel,#tab-colour .pg-control-panel{margin-top:0;}
+  /* Aviator: flight window, round strip and controls stay together. */
+  #tab-aviator .apx-aviator-stage{
+    order:1;
+    height:clamp(205px,31dvh,260px);
+    min-height:205px;
+    border-radius:20px;
+  }
+  #tab-aviator .pg-flight-topline{top:10px;left:11px;right:11px;}
+  #tab-aviator .pg-flight-readout{padding-top:12px;}
+  #tab-aviator .pg-flight-card .apx-aviator-multiplier{font-size:clamp(46px,13vw,68px);}
+  #tab-aviator .pg-flight-caption{margin-top:7px;font-size:9px;}
+  #tab-aviator .pg-history-panel.apx-round-results{
+    order:2;
+    padding:9px 11px;
+    border-radius:15px;
+  }
+  #tab-aviator .pg-history-panel .pg-section-heading{margin-bottom:6px;}
+  #tab-aviator .pg-history-panel .pg-section-heading h2{font-size:12px;}
+  #tab-aviator .pg-round-list{gap:6px;}
+  #tab-aviator .pg-history-panel .apx-aviator-result-card{
+    min-width:62px;height:42px;border-radius:10px;
+  }
+  #tab-aviator .pg-control-panel.apx-console{
+    order:3;
+    padding:11px;
+    border-radius:17px;
+  }
+  #tab-aviator .pg-control-heading{margin-bottom:8px;}
+  #tab-aviator .pg-control-heading h2{font-size:14px;}
+  #tab-aviator .pg-mode button{min-width:58px;padding:7px 9px;}
+  #tab-aviator .pg-control-layout{grid-template-columns:minmax(0,1fr) minmax(112px,.82fr);gap:8px;}
+  #tab-aviator .pg-stake-card{padding:8px;}
+  #tab-aviator .pg-stake-stepper{margin:6px 0;padding:3px;}
+  #tab-aviator .pg-stake-stepper button{width:27px;height:29px;}
+  #tab-aviator .pg-stake-stepper strong{font-size:15px;}
+  #tab-aviator .pg-stake-presets{gap:4px;}
+  #tab-aviator .pg-stake-presets .apx-preset{min-height:27px;font-size:8px;}
+  #tab-aviator .pg-primary-action{min-height:88px;padding:7px;border-radius:13px;}
+  #tab-aviator .pg-primary-action strong{font-size:13px;}
+  #tab-aviator .pg-cashout-zone{margin-top:7px;}
+  #tab-aviator .pg-cashout-zone .pg-cashout-action{min-height:48px;}
+  #tab-aviator .pg-no-bet{padding:5px;font-size:9px;}
+  #tab-aviator .pg-personal-history{order:4;}
+  #tab-aviator .pg-responsible-note{order:5;margin-top:3px;}
+
+  /* Colour Prediction: compact result window with all selections close by. */
+  #tab-colour .pg-colour-intro{
+    order:1;
+    padding:10px 12px;
+    grid-template-columns:minmax(0,1fr) auto;
+    gap:8px;
+    border-radius:15px;
+  }
+  #tab-colour .pg-colour-intro h1{font-size:19px;}
+  #tab-colour .pg-colour-intro p{margin-top:3px;font-size:9px;line-height:1.35;}
+  #tab-colour .pg-round-clock .apx-timer{width:52px;height:52px;font-size:16px;}
+  #tab-colour .pg-round-code{padding-top:6px;font-size:7px;}
+  #tab-colour .pg-wheel-stage{
+    order:2;
+    width:clamp(112px,34vw,138px);
+    margin:0 auto;
+  }
+  #tab-colour .pg-wheel-stage .apx-wheel-disc{border-width:4px;}
+  #tab-colour .pg-wheel-stage .wheel-sector b{font-size:8px;}
+  #tab-colour .pg-wheel-stage .apx-wheel-center{border-width:3px;}
+  #tab-colour .pg-wheel-stage .apx-wheel-center strong{font-size:24px;}
+  #tab-colour .pg-wheel-stage .apx-wheel-pointer{
+    border-left-width:7px;border-right-width:7px;border-top-width:15px;
+  }
+  #tab-colour .pg-result-status{
+    order:3;
+    min-height:34px;
+    margin:0;
+    padding:8px 10px;
+    font-size:8px;
+  }
+  #tab-colour .pg-colour-controls{
+    order:4;
+    padding:10px;
+    border-radius:16px;
+  }
+  #tab-colour .pg-colour-controls>.pg-section-heading{margin-bottom:7px;}
+  #tab-colour .pg-colour-controls .pg-section-heading h2{font-size:13px;}
+  #tab-colour .pg-colour-options{gap:6px;}
+  #tab-colour .pg-colour-option{min-height:58px;gap:3px;border-radius:10px;}
+  #tab-colour .pg-colour-orb{width:13px;height:13px;border-width:2px;}
+  #tab-colour .pg-colour-option b{font-size:9px;}
+  #tab-colour .pg-colour-option small{font-size:8px;}
+  #tab-colour .pg-number-heading{margin:10px 0 6px;}
+  #tab-colour .pg-number-heading h2{font-size:12px;}
+  #tab-colour .pg-number-grid{gap:5px;}
+  #tab-colour .pg-number-option{min-height:36px;border-radius:8px;font-size:15px;}
+  #tab-colour .pg-history-panel.apx-colour-round-results{
+    order:5;
+    padding:9px 10px;
+    border-radius:14px;
+  }
+  #tab-colour .pg-colour-round-results .pg-section-heading{margin-bottom:6px;}
+  #tab-colour .pg-colour-round-results .pg-section-heading h2{font-size:12px;}
+  #tab-colour .pg-colour-round-results .pg-round-list{gap:5px;}
+  #tab-colour .pg-colour-round-results .apx-round-chip{min-width:42px;min-height:40px;}
+  #tab-colour .pg-colour-history{order:6;}
+  #tab-colour .pg-responsible-note{order:7;margin-top:2px;}
+}
+@media(max-width:370px){
+  #tab-aviator .pg-control-layout{grid-template-columns:minmax(0,1fr) 106px;}
+  #tab-aviator .pg-primary-action strong{font-size:11px;}
+  #tab-colour .pg-colour-intro h1{font-size:17px;}
+  #tab-colour .pg-wheel-stage{width:108px;}
+  #tab-colour .pg-colour-option{min-height:54px;}
+}
+@media(prefers-reduced-motion:reduce){
+  #tab-aviator .apx-aviator-canvas{animation:none!important;}
+}
