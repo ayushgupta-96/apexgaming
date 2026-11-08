@@ -70,11 +70,7 @@
           renderColourRoundResults(state.recentResults);
           if(state.status==="RESULT" && state.recentResults.length){
             const latest=state.recentResults[0];
-            const key=String(state.roundUuid||"")+"|"+String(latest.number);
-            if(key!==lastColourResultKey){
-              lastColourResultKey=key;
-              animateColourWheel(latest);
-            }
+            lastColourResultKey=String(state.roundUuid||"")+"|"+String(latest.number);
           }
         }
       };
