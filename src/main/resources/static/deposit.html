@@ -9,117 +9,105 @@
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="stylesheet" href="/css/mobile-home-fixes.css?v=20261003-2">
   <link rel="stylesheet" href="/css/home-redesign.css?v=20261108-2">
-  <link rel="stylesheet" href="/css/player-finance-redesign.css?v=20261108-1">
+  <link rel="stylesheet" href="/css/player-finance-redesign.css?v=20261108-3">
   
-<style>
-.deposit-screen{min-height:100vh;background:#03150d;color:#fff;padding-bottom:110px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.deposit-screen *{box-sizing:border-box}
-.deposit-head{height:56px;background:#03150d;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:relative;border-bottom:1px solid rgba(255,255,255,.04)}
-.deposit-back{border:0;background:transparent;color:#fff;font-size:30px;line-height:1;cursor:pointer;padding:4px 8px}.deposit-head-title{font-size:20px;font-weight:500;position:absolute;left:50%;transform:translateX(-50%)}.deposit-history-link{font-size:14px;color:#a0b2a6;text-decoration:none}
-.balance-card{margin:12px 16px;background:linear-gradient(135deg,#0b8457 0%,#05462e 100%);border-radius:12px;padding:20px;position:relative;box-shadow:0 4px 15px rgba(0,0,0,.2)}.balance-card-label{font-size:14px;color:#bdf0d9;display:flex;align-items:center;gap:6px;margin-bottom:8px}.balance-card-amount{font-size:30px;font-weight:700;display:flex;align-items:center;gap:10px}.balance-refresh-icon{width:20px;height:20px;cursor:pointer}.balance-card-masked{position:absolute;bottom:16px;right:20px;color:rgba(3,21,13,.45);font-size:14px;letter-spacing:2px}
-.deposit-panel{margin:16px 16px 0;background:#052618;border:1px solid #0a3a25;border-radius:12px;padding:20px 16px}.panel-title{font-size:16px;font-weight:600;color:#f5cd79;margin-bottom:16px;display:flex;align-items:center;gap:8px}.helper-text{font-size:13px;color:#8fa397;line-height:1.45}.form-group{margin-bottom:15px}.form-label{display:block;font-size:13px;font-weight:600;color:#d7e0dc;margin-bottom:7px}.form-control{width:100%;background:#03150d!important;border:1px solid #0a3a25!important;border-radius:8px!important;height:48px;padding:0 14px;color:#fff!important;font-size:16px;outline:none}.form-control:focus{border-color:#f5cd79!important}
-.amounts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:0 0 16px}.amount-btn{background:transparent;border:1px solid #0a3a25;border-radius:6px;color:#8fa397;height:44px;font-size:15px;cursor:pointer}.amount-btn.active{border-color:#f5cd79;color:#f5cd79;background:rgba(245,205,121,.05)}
-.amount-input-wrapper{background:#03150d;border:1px solid #0a3a25;border-radius:8px;display:flex;align-items:center;padding:0 14px;height:48px}.currency-symbol{font-size:18px;color:#f5cd79;padding-right:12px;border-right:1px solid #0a3a25}.amount-field{background:transparent;border:0;color:#fff;font-size:16px;padding:0 12px;flex:1;outline:none}.amount-clear-btn{background:transparent;border:0;color:#4a6356;font-size:18px;cursor:pointer}
-.btn-deposit-submit,.deposit-panel .wide-btn{display:block;width:100%;margin:16px 0 0;height:48px;background:#f5cd79;color:#03150d;border:0;border-radius:24px;font-size:16px;font-weight:700;cursor:pointer}
-.upi-payment-box{margin-top:16px;background:#03150d;border:1px dashed #0a3a25;border-radius:8px;padding:16px;text-align:center;display:flex;flex-direction:column;align-items:center}.qr-title{font-size:13px;color:#8fa397;margin-bottom:10px}.qr-holder{background:#fff;padding:8px;border-radius:6px;display:inline-block;margin-bottom:12px}.qr-holder img{width:140px;height:140px;display:block}.upi-id-label{font-size:12px;color:#8fa397;margin-bottom:4px}.upi-id-value{font-size:14px;font-weight:600;color:#f5cd79;background:rgba(245,205,121,.1);padding:6px 12px;border-radius:4px;letter-spacing:.5px;word-break:break-all}
-.deposit-action-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:10px;margin-top:12px}.deposit-action-grid .wide-btn{margin-top:0}.btn-submit-utr{background:#0bbf79!important;color:#03150d!important}.btn-whatsapp{background:#20b874!important;color:#fff!important;text-decoration:none;text-align:center;line-height:48px}
-.result-box{margin-top:16px;background:#03150d;border:1px dashed #0a3a25;border-radius:8px;padding:16px}.reference-code{font-size:18px;font-weight:700;color:#f5cd79;margin:6px 0 14px}.bank-details{background:#052618;border:1px solid #0a3a25;border-radius:8px;padding:12px;margin:8px 0 12px;color:#8fa397;font-size:13px;line-height:1.8}.bank-details b{color:#fff}.btn-whatsapp{background:#20b874!important;color:#fff!important;text-decoration:none;text-align:center;line-height:48px}
-.instructions-panel{margin:16px;background:#052618;border:1px solid #0a3a25;border-radius:12px;padding:20px 16px}.instruction-list{list-style:none;display:flex;flex-direction:column;gap:14px;padding:0;margin:0}.instruction-list li{font-size:13px;color:#8fa397;line-height:1.5;position:relative;padding-left:18px}.instruction-list li:before{content:"◆";position:absolute;left:0;top:0;color:#f5cd79;font-size:10px}
-@media(max-width:420px){.deposit-head{height:56px}.deposit-panel{margin-left:16px;margin-right:16px;padding:18px 14px}.balance-card{margin-left:16px;margin-right:16px}.amounts-grid{gap:8px}.amount-btn{height:42px}.balance-card-amount{font-size:29px}}
-/* Deposit mobile polish */
-.deposit-screen{background:linear-gradient(180deg,#03140e 0%,#041b13 55%,#020907 100%)!important;}
-.deposit-screen .deposit-head{background:rgba(3,18,13,.96)!important;border-bottom:1px solid rgba(39,194,130,.14);}
-.deposit-screen .balance-card{
-  margin:12px 14px 0!important;
-  border:1px solid rgba(39,194,130,.18)!important;
-  background:radial-gradient(circle at 80% 10%,rgba(230,196,91,.16),transparent 32%),linear-gradient(145deg,#0a4a36,#06271e)!important;
-  box-shadow:0 14px 30px rgba(0,0,0,.28);
-}
-.deposit-screen .deposit-panel{
-  margin:12px 14px 0!important;
-  background:linear-gradient(180deg,#07281f,#052018)!important;
-  border-color:rgba(39,194,130,.15)!important;
-  border-radius:16px!important;
-  box-shadow:0 10px 26px rgba(0,0,0,.22);
-}
-.deposit-screen .amount-btn{
-  border-radius:10px!important;
-  border-color:rgba(39,194,130,.2)!important;
-  background:#06251c!important;
-  color:#a8bdb4!important;
-}
-.deposit-screen .amount-btn.active{
-  border-color:#e5c760!important;
-  color:#f0d77e!important;
-  background:rgba(230,196,91,.09)!important;
-}
-.deposit-screen .amount-input-wrapper{
-  background:#031710!important;
-  border-color:rgba(39,194,130,.18)!important;
-}
-.deposit-screen .btn-deposit-submit{
-  min-height:52px!important;
-  border-radius:15px!important;
-  background:linear-gradient(180deg,#f5d879,#c69a32)!important;
-  box-shadow:0 10px 24px rgba(230,196,91,.13)!important;
-}
-@media(max-width:420px){
-  .deposit-screen .balance-card,.deposit-screen .deposit-panel{margin-left:12px!important;margin-right:12px!important;}
-}
-</style></head>
+</head>
 <body class="apex-mobile-app deposit-screen">
 <header class="deposit-head">
   <button class="deposit-back" onclick="window.location.href='/'" aria-label="Back to home">‹</button>
-  <div class="deposit-head-title">Deposit</div>
-  <a class="deposit-history-link" href="/wallet.html" aria-label="Open Wallet"><svg width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true"><path d="M8 20c0-5 4-9 9-9h30c5 0 9 4 9 9v25c0 5-4 9-9 9H17c-5 0-9-4-9-9V20Z" fill="#e8f4ef"/><path d="M8 23h48v13H8z" fill="#c7d9d3"/><circle cx="45" cy="42" r="5" fill="#7d918a"/></svg></a>
+  <div class="deposit-head-title">Add Funds</div>
+  <a class="deposit-history-link" href="/wallet.html" aria-label="Back to Wallet"><span>Wallet</span></a>
 </header>
-<main>
-  <section class="balance-card">
-    <div class="balance-card-label">ACCOUNT BALANCE <span>◆</span></div>
+<main class="deposit-main">
+  <section class="balance-card" aria-label="Current wallet balance">
+    <div class="balance-card-label"><span class="balance-live-dot"></span> CURRENT WALLET BALANCE</div>
     <div class="balance-card-amount">₹<span id="depositPageBalance">0.00</span></div>
-    <div class="balance-card-masked">••••••</div>
+    <div class="balance-card-foot"><span>APEX GAMING</span><span>INR · Wallet</span></div>
   </section>
+
+  <div class="deposit-intro">
+    <div class="deposit-intro-kicker">SECURE WALLET TOP-UP</div>
+    <h1>Add money to your wallet</h1>
+    <p>Choose an amount, complete your UPI payment and submit the transaction reference.</p>
+  </div>
+
+  <div class="deposit-steps" aria-label="Deposit steps">
+    <div class="deposit-step"><span>01</span><b>Amount</b></div>
+    <i></i>
+    <div class="deposit-step"><span>02</span><b>Pay</b></div>
+    <i></i>
+    <div class="deposit-step"><span>03</span><b>Verify</b></div>
+  </div>
+
   <section class="deposit-panel">
-    <div class="panel-title">Deposit Funds</div>
-    <p class="helper-text">Choose an amount, generate your payment QR, then enter the UTR after payment.</p>
-    <div class="form-group" style="margin-top:16px">
-      <label class="form-label">Quick amount</label>
+    <div class="deposit-section-heading">
+      <div><span class="deposit-step-label">STEP 01</span><div class="panel-title">Choose deposit amount</div></div>
+      <span class="deposit-heading-icon">₹</span>
+    </div>
+    <p class="helper-text">Select a quick amount or enter your own amount below.</p>
+    <div class="form-group deposit-quick-group">
+      <label class="form-label">Quick select</label>
       <div class="amounts-grid">
         <button class="amount-btn" type="button" onclick="setDepositAmount(200)">₹200</button>
-        <button class="amount-btn" type="button" onclick="setDepositAmount(500)">₹500</button>
-        <button class="amount-btn" type="button" onclick="setDepositAmount(1000)">₹1K</button>
-        <button class="amount-btn" type="button" onclick="setDepositAmount(2000)">₹2K</button>
-        <button class="amount-btn" type="button" onclick="setDepositAmount(5000)">₹5K</button>
-        <button class="amount-btn" type="button" onclick="setDepositAmount(10000)">₹10K</button>
+        <button class="amount-btn active" type="button" onclick="setDepositAmount(500)">₹500</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(1000)">₹1,000</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(2000)">₹2,000</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(5000)">₹5,000</button>
+        <button class="amount-btn" type="button" onclick="setDepositAmount(10000)">₹10,000</button>
       </div>
     </div>
-    <div class="form-group">
-      <label class="form-label" for="depositAmountInput">Deposit Amount (Rs)</label>
+    <div class="form-group deposit-custom-amount">
+      <label class="form-label" for="depositAmountInput">Enter amount</label>
       <div class="amount-input-wrapper">
         <span class="currency-symbol">₹</span>
-        <input type="number" id="depositAmountInput" class="amount-field" value="500" min="100" step="100">
-        <button class="amount-clear-btn" type="button" onclick="document.getElementById('depositAmountInput').value=''">×</button>
+        <input type="number" id="depositAmountInput" class="amount-field" value="500" min="100" step="100" inputmode="decimal" aria-label="Deposit amount in rupees">
+        <button class="amount-clear-btn" type="button" onclick="document.getElementById('depositAmountInput').value='';document.getElementById('depositAmountInput').focus()" aria-label="Clear amount">×</button>
       </div>
+      <p class="deposit-field-hint">Enter the amount you want to add to your Main Wallet.</p>
     </div>
-    <button class="btn-deposit-submit" type="button" onclick="openWhatsAppPayment()"><span class="whatsapp-icon" aria-hidden="true"><svg width="21" height="21" viewBox="0 0 32 32" fill="none"><path d="M16 3a12.8 12.8 0 0 0-11 19.4L3.5 28.5l6.3-1.6A13 13 0 1 0 16 3Z" fill="#03150d"/><path d="M11.2 10.1c.4-.5.8-.5 1.2-.5h.8c.3 0 .6.2.7.5l1.2 2.9c.1.3.1.6-.1.8l-.9 1.1c.8 1.6 2 2.7 3.6 3.5l1-.9c.2-.2.5-.2.8-.1l2.8 1.3c.3.1.5.4.5.7v.8c0 .4-.1.8-.5 1.1-.6.5-1.4.8-2.2.8-4.5-.1-9.1-4.6-9.2-9.1 0-1 .5-2 1.3-2.9Z" fill="#fff"/></svg></span> Generate Payment Code</button>
+    <button class="btn-deposit-submit" type="button" onclick="openWhatsAppPayment()">
+      <span>Generate Payment Code</span><span class="deposit-submit-arrow">→</span>
+    </button>
+    <p class="deposit-secure-note"><span>●</span> Your deposit request will be created securely.</p>
+
     <div id="depositResultBox" class="result-box" style="display:none;">
-      <div class="helper-text">Unique Reference Code</div>
-      <div id="dispDepRefCode" class="reference-code">DEP-000</div>
-      <div class="helper-text">My UPI QR & UPI ID</div>
+      <div class="deposit-result-heading">
+        <span class="deposit-step-label">STEP 02 · PAYMENT</span>
+        <h2>Complete your payment</h2>
+        <p>Scan the QR code or pay using the UPI ID below.</p>
+      </div>
+      <div class="deposit-reference-card">
+        <span class="deposit-reference-label">YOUR DEPOSIT REFERENCE</span>
+        <div id="dispDepRefCode" class="reference-code">DEP-000</div>
+      </div>
       <div class="upi-payment-box">
-        <div class="qr-title">Scan this static UPI QR to pay</div>
+        <div class="qr-title">Scan with any UPI app</div>
         <div class="qr-holder"><img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=12&data=upi%3A%2F%2Fpay%3Fpa%3Dpaytmqr5i37ho%40ptys%26pn%3DApex%2520Gaming%26cu%3DINR" alt="Apex Gaming UPI QR" width="220" height="220" loading="eager" decoding="async"></div>
-        <div class="upi-id-label">UPI ID</div>
+        <div class="upi-id-label">PAY TO THIS UPI ID</div>
         <div id="dispOfficialUpi" class="upi-id-value">paytmqr5i37ho@ptys</div>
       </div>
-      <div class="form-group" style="margin-top:16px;">
-        <label class="form-label" for="depositUtrInput">Payment UTR</label>
-        <input type="text" id="depositUtrInput" class="form-control" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="Enter 12-digit UTR">
-        <div class="helper-text" style="margin-top:6px;">After payment, enter your UTR. The button below submits the UTR first, then opens WhatsApp.</div>
-      </div>
-      <div class="deposit-action-grid deposit-single-action">
-        <button id="btnSubmitUtr" class="btn btn-submit-utr wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">SUBMIT &amp; GO TO WHATSAPP</button>
+      <div class="deposit-utr-section">
+        <span class="deposit-step-label">STEP 03 · VERIFICATION</span>
+        <h3>Submit payment UTR</h3>
+        <p>After completing the payment, enter the 12-digit UTR from your UPI app.</p>
+        <div class="form-group">
+          <label class="form-label" for="depositUtrInput">12-digit UTR number</label>
+          <input type="text" id="depositUtrInput" class="form-control" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="Enter 12-digit UTR">
+        </div>
+        <button id="btnSubmitUtr" class="btn btn-submit-utr wide-btn" type="button" onclick="submitUtrAndOpenWhatsApp()">Submit UTR &amp; Continue to WhatsApp <span>→</span></button>
+        <p class="deposit-utr-note">Your UTR is submitted before WhatsApp opens. Keep your payment confirmation available.</p>
       </div>
     </div>
+  </section>
+
+  <section class="deposit-help-card">
+    <div class="deposit-help-title"><span>?</span><div><b>How to deposit</b><small>Follow these three steps</small></div></div>
+    <ol>
+      <li><span>1</span><p>Choose your amount and generate a deposit reference.</p></li>
+      <li><span>2</span><p>Pay using the displayed UPI QR code or UPI ID.</p></li>
+      <li><span>3</span><p>Enter your UTR and continue to WhatsApp for verification.</p></li>
+    </ol>
+    <p class="deposit-help-warning">Only submit a UTR after the payment is successful in your UPI app.</p>
   </section>
 </main>
   <nav class="bottom-nav" aria-label="Mobile bottom navigation">
@@ -128,7 +116,7 @@
     <a class="bottom-nav-btn center-action play-action" href="/" data-tab="play" aria-label="Play"><span>▶</span><small>Play</small></a>
     <a class="bottom-nav-btn active" href="/wallet.html" data-tab="wallet" aria-label="Wallet"><span>◈</span><small>Wallet</small></a>
   </nav>
-<script src="/js/app.js?v=20261108-1"></script>
+<script src="/js/app.js?v=20261108-3"></script>
 <script>
 document.addEventListener('DOMContentLoaded',function(){
   if(!localStorage.getItem('rmg_token')){window.location.href='/';return;}
