@@ -591,7 +591,6 @@ function setupMobileNavigation(){
     if(tabId==='wallet'){document.body.classList.remove('game-mode');window.location.href='/wallet.html';return;}
     home.style.display='none';games.style.display='none';originalSwitchTab(tabId);setNavActive(tabId);window.scrollTo(0,0);
   };
-  showGameCategory();
   setNavActive('home');
 }
 function setNavActive(tab){const activeTab=tab==='aviator'||tab==='colour'||tab==='ludo'?'play':tab;document.querySelectorAll('.bottom-nav-btn').forEach(btn=>btn.classList.toggle('active',btn.dataset.tab===activeTab));}
