@@ -489,3 +489,73 @@
   #tab-colour .cp-number-button{min-height:39px;}
   #tab-colour .cp-results-panel,#tab-colour .cp-my-bets-panel{padding:10px;}
 }
+
+
+/* Colour result legibility, result-state countdown and accurate bet selection colours. */
+#tab-colour .cp-results-list .apx-round-chip strong{
+  display:block!important;
+  color:#fff!important;
+  font-size:16px!important;
+  font-weight:950!important;
+  line-height:1!important;
+  -webkit-text-stroke:.35px #00180d;
+  text-shadow:0 1px 3px #00180d,0 0 2px #00180d;
+}
+#tab-colour .cp-results-list .apx-round-chip.is-neutral{
+  background:#18271f!important;
+  border:1px solid #617468!important;
+}
+#tab-colour .cp-countdown .apx-timer{
+  min-height:58px;
+  display:grid;
+  place-items:center;
+  overflow:hidden;
+  background:#00180d!important;
+  transition:background .22s ease,border-color .22s ease,box-shadow .22s ease;
+}
+#tab-colour .cp-countdown .apx-timer-inner{
+  min-width:100%;
+  padding:9px 12px;
+  border-radius:7px;
+  background:#07130d!important;
+  color:#fff!important;
+  font-size:22px;
+  font-weight:950;
+  text-shadow:0 1px 3px #000;
+  transition:background .22s ease,color .22s ease;
+}
+#tab-colour .cp-countdown .apx-timer.result-green{
+  border-color:#20e879!important;
+  background:#078b43!important;
+  box-shadow:0 0 20px #0ddc6a55;
+}
+#tab-colour .cp-countdown .apx-timer.result-green .apx-timer-inner{background:#078b43!important;color:#fff!important;}
+#tab-colour .cp-countdown .apx-timer.result-red{
+  border-color:#ff5963!important;
+  background:#c7192b!important;
+  box-shadow:0 0 20px #e51c3a55;
+}
+#tab-colour .cp-countdown .apx-timer.result-red .apx-timer-inner{background:#c7192b!important;color:#fff!important;}
+#tab-colour .cp-countdown .apx-timer.result-violet{
+  border-color:#d77aff!important;
+  background:#8614b7!important;
+  box-shadow:0 0 20px #a72be855;
+}
+#tab-colour .cp-countdown .apx-timer.result-violet .apx-timer-inner{background:#8614b7!important;color:#fff!important;}
+#tab-colour .cp-countdown .apx-timer.result-neutral{
+  border-color:#b8c7bd!important;
+  background:#27352d!important;
+}
+#tab-colour .cp-countdown .apx-timer.result-neutral .apx-timer-inner{background:#27352d!important;color:#fff!important;}
+#tab-colour .cp-bet-list .cp-selection-colour{
+  min-width:66px;
+  padding:5px 8px!important;
+  border-radius:20px!important;
+  color:#fff!important;
+  font-weight:850!important;
+  text-shadow:0 1px 2px #0008;
+}
+#tab-colour .cp-bet-list .cp-selection-green{background:#078d43!important;}
+#tab-colour .cp-bet-list .cp-selection-red{background:#d91f32!important;}
+#tab-colour .cp-bet-list .cp-selection-violet{background:#8b22c1!important;}
+#tab-colour .cp-bet-list .cp-selection-number{background:#087d3b!important;}
