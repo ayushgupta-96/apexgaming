@@ -89,45 +89,58 @@
       <p class="catalogue-footer-note">New titles may appear here as they become available.</p>
     </section>
 
-    <section id="tab-aviator" class="tab-content" style="display:none;">
-  <div class="apx-game-shell">
-    <div class="apx-game-top">
-      <button class="apx-back" type="button" onclick="goHome()" aria-label="Back to games">‹</button>
-      <div class="apx-game-brand"><span class="apx-game-brand-mark">A</span><div class="apx-game-brand-copy"><strong>APEX GAMING</strong><small>AVIATOR LIVE</small></div></div>
-      <button class="apx-wallet-mini" type="button" onclick="switchTab('wallet')" aria-label="Open wallet"><span class="apx-wallet-balance-value">₹0.00</span></button>
-    </div>
-    <section class="apx-aviator-stage" aria-label="Aviator live game">
-      <canvas id="flightCanvas" class="apx-aviator-canvas" aria-hidden="true"></canvas>
-      <span id="aviatorLiveBadge" class="apx-aviator-live">LIVE</span>
-      <div id="aviatorStatusSubtitle" class="apx-aviator-status">CONNECTING...</div>
-      <div id="multiplier-display" class="apx-aviator-multiplier">1.00x</div>
-      <div class="apx-aviator-crash-label">Provably fair round · live server state</div>
-      <span id="aviatorSeedHash" class="apx-seed">Seed: connecting…</span>
-    </section>
-    <section class="apx-round-results" aria-label="Aviator round result history">
-      <div class="apx-round-results-head"><strong>Round results</strong><span>Recent crashes</span></div>
-      <div class="apx-round-results-list" id="aviatorRoundResults"></div>
-    </section>
-    <section class="apx-console">
-      <div class="apx-console-head"><span class="apx-console-title">Your bet</span><div class="apx-mode" role="tablist"><button type="button" class="active" data-aviator-mode="bet">Manual</button><button type="button" data-aviator-mode="auto">Auto</button></div></div>
-      <div class="apx-aviator-controls">
-        <div class="apx-bet-box">
-          <span class="apx-bet-label">Stake</span>
-          <div class="apx-stepper"><button type="button" id="aviatorBetMinus" aria-label="Decrease bet">−</button><span class="apx-stepper-value">₹<span id="aviatorBetAmountDisplay">50</span></span><button type="button" id="aviatorBetPlus" aria-label="Increase bet">+</button></div>
-          <div class="apx-presets"><button class="apx-preset" type="button" data-aviator-preset="50">₹50</button><button class="apx-preset" type="button" data-aviator-preset="100">₹100</button><button class="apx-preset" type="button" data-aviator-preset="500">₹500</button><button class="apx-preset" type="button" data-aviator-preset="1000">₹1K</button></div>
-          <div id="aviatorAutoField" class="apx-auto-field"><input id="aviatorAutoCashout" type="number" min="1.01" step=".1" placeholder="Auto cash-out ×"></div>
-          <input id="aviatorBetAmount" type="number" value="50" min="10" max="50000" step="10" hidden>
-        </div>
-        <button id="btnAviatorBet" class="apx-action" type="button" onclick="placeAviatorBet()"><small>Enter round</small><strong>PLACE ₹<span id="aviatorBetActionAmount">50</span></strong></button>
+    <section id="tab-aviator" class="tab-content pg-game pg-aviator" style="display:none;" aria-label="Aviator game">
+      <div class="pg-shell">
+        <header class="pg-topbar">
+          <button class="pg-icon-button" type="button" onclick="goHome()" aria-label="Back to home">←</button>
+          <div class="pg-brand"><span class="pg-brand-mark">A</span><span><b>APEX</b><small>FLIGHT ARENA</small></span></div>
+          <button class="pg-wallet" type="button" onclick="switchTab('wallet')" aria-label="Open wallet"><span class="pg-wallet-label">WALLET</span><b class="apx-wallet-balance-value">₹0.00</b></button>
+        </header>
+
+        <section class="pg-flight-card apx-aviator-stage" aria-label="Live flight arena">
+          <div class="pg-flight-grid" aria-hidden="true"></div>
+          <canvas id="flightCanvas" class="apx-aviator-canvas" aria-hidden="true"></canvas>
+          <div class="pg-flight-topline"><span id="aviatorLiveBadge" class="apx-aviator-live">LIVE</span><span class="pg-flight-label">ROUND IN PROGRESS</span></div>
+          <div class="pg-flight-readout">
+            <span id="aviatorStatusSubtitle" class="apx-aviator-status">CONNECTING...</span>
+            <strong id="multiplier-display" class="apx-aviator-multiplier">1.00x</strong>
+            <span class="pg-flight-caption">Watch the flight. Cash out before the crash.</span>
+          </div>
+          <span id="aviatorSeedHash" class="apx-seed">Seed: connecting…</span>
+        </section>
+
+        <section class="pg-history-panel apx-round-results" aria-label="Recent Aviator rounds">
+          <div class="pg-section-heading"><div><span class="pg-eyebrow">ROUND TRACKER</span><h2>Recent rounds</h2></div><span class="pg-live-dot">LIVE DATA</span></div>
+          <div class="apx-round-results-list pg-round-list" id="aviatorRoundResults"></div>
+        </section>
+
+        <section class="pg-control-panel apx-console" aria-label="Aviator betting controls">
+          <div class="pg-section-heading pg-control-heading"><div><span class="pg-eyebrow">YOUR POSITION</span><h2>Place your bet</h2></div><div class="apx-mode pg-mode-switch" role="tablist" aria-label="Bet mode"><button type="button" class="active" data-aviator-mode="bet">Manual</button><button type="button" data-aviator-mode="auto">Auto</button></div></div>
+          <div class="pg-control-layout apx-aviator-controls">
+            <div class="pg-stake-card apx-bet-box">
+              <span class="apx-bet-label">STAKE AMOUNT</span>
+              <div class="pg-stake-stepper apx-stepper"><button type="button" id="aviatorBetMinus" aria-label="Decrease stake">−</button><strong class="apx-stepper-value">₹<span id="aviatorBetAmountDisplay">50</span></strong><button type="button" id="aviatorBetPlus" aria-label="Increase stake">+</button></div>
+              <div class="pg-stake-presets apx-presets">
+                <button class="apx-preset" type="button" data-aviator-preset="50">₹50</button><button class="apx-preset" type="button" data-aviator-preset="100">₹100</button><button class="apx-preset" type="button" data-aviator-preset="500">₹500</button><button class="apx-preset" type="button" data-aviator-preset="1000">₹1K</button>
+              </div>
+              <label id="aviatorAutoField" class="pg-auto-field apx-auto-field"><span>Auto cash-out multiplier</span><input id="aviatorAutoCashout" type="number" min="1.01" step=".1" placeholder="e.g. 2.00x"></label>
+              <input id="aviatorBetAmount" type="number" value="50" min="10" max="50000" step="10" hidden>
+            </div>
+            <button id="btnAviatorBet" class="pg-primary-action apx-action" type="button" onclick="placeAviatorBet()"><small>READY FOR TAKEOFF</small><strong>PLACE ₹<span id="aviatorBetActionAmount">50</span></strong></button>
+          </div>
+          <div class="pg-cashout-zone apx-cashout" id="aviatorCashoutRow">
+            <button id="btnAviatorCashout" class="pg-cashout-action apx-action" type="button" style="display:none" onclick="cashoutAviator()"><small>SECURE YOUR WINNINGS</small><strong>CASH OUT ₹<span id="cashoutAmountDisplay">0.00</span></strong></button>
+            <div id="aviatorNoBetNotice" class="pg-no-bet apx-muted">Your active bet will appear here.</div>
+          </div>
+        </section>
+
+        <section class="pg-history-panel pg-personal-history apx-bet-history" aria-label="Your Aviator bet history">
+          <div class="pg-section-heading"><div><span class="pg-eyebrow">ACCOUNT ACTIVITY</span><h2>My bets</h2></div><span class="pg-history-note">Latest activity</span></div>
+          <div class="apx-bet-history-list" id="aviatorBetHistory"></div>
+        </section>
+        <p class="pg-responsible-note">Play responsibly. Outcomes are determined by the game server.</p>
       </div>
-      <div class="apx-cashout" id="aviatorCashoutRow"><button id="btnAviatorCashout" class="apx-action" type="button" style="display:none" onclick="cashoutAviator()"><small>Active bet</small><strong>CASH OUT ₹<span id="cashoutAmountDisplay">0.00</span></strong></button><div id="aviatorNoBetNotice" class="apx-muted">No active bet in this round</div></div>
     </section>
-    <section class="apx-bet-history" aria-label="Aviator bet history">
-      <div class="apx-history-head"><strong>Bet history</strong><span>Wins & losses</span></div>
-      <div class="apx-bet-history-list" id="aviatorBetHistory"></div>
-    </section>
-  </div>
-</section>
 
 <section id="tab-colour" class="tab-content" style="display:none;">
   <div class="apx-colour-wrap">

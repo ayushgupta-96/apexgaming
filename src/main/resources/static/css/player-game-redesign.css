@@ -1,169 +1,83 @@
-/* Player game surfaces | Aviator presentation only
-   Keep all game state, canvas drawing, betting and cashout handlers untouched. */
-#tab-aviator {
-  background:
-    radial-gradient(ellipse at 50% -12%,rgba(19,194,126,.11),transparent 36%),
-    linear-gradient(180deg,#06130e,#030906) !important;
-  color:#f5f7ef;
+/* APEX player game system | Premium Emerald Casino
+   Mobile-first game presentation. API and game state remain in app.js. */
+:root{
+  --pg-bg:#04100b;--pg-surface:#0a1c13;--pg-surface-2:#10271b;
+  --pg-line:rgba(103,190,143,.18);--pg-emerald:#16a36a;--pg-emerald-bright:#35d69a;
+  --pg-gold:#e8ca72;--pg-gold-soft:#f5dfa0;--pg-text:#f4f6ef;--pg-muted:#8ea69a;
+  --pg-danger:#f06470;--pg-radius:20px;
 }
-#tab-aviator .apx-game-shell {
-  width:min(100%,720px);
-  padding:12px 12px 30px;
+#tab-aviator.pg-game{
+  display:none;min-height:calc(100vh - 72px);padding:0 0 104px;
+  color:var(--pg-text);background:
+    radial-gradient(ellipse at 50% -12%,rgba(25,150,96,.16),transparent 38%),
+    linear-gradient(180deg,#06170f 0%,#030a06 100%);
 }
-#tab-aviator .apx-game-top {
-  min-height:48px;
-  margin-bottom:12px;
+.pg-shell{width:min(100%,760px);margin:0 auto;padding:12px 12px 26px;}
+.pg-topbar{display:grid;grid-template-columns:42px 1fr auto;align-items:center;gap:12px;margin-bottom:14px;min-height:48px;}
+.pg-icon-button{width:42px;height:42px;border:1px solid var(--pg-line);border-radius:14px;background:#0b2117;color:var(--pg-gold);font-size:23px;cursor:pointer;}
+.pg-brand{display:flex;align-items:center;gap:9px;min-width:0;}
+.pg-brand-mark{width:37px;height:37px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(145deg,#f6df99,#bc9130);color:#142116;font-weight:1000;font-size:18px;box-shadow:0 7px 20px #e8ca7220;}
+.pg-brand b,.pg-brand small{display:block;line-height:1.2}.pg-brand b{font-size:11px;letter-spacing:.2em;color:var(--pg-gold-soft)}.pg-brand small{margin-top:4px;font-size:8px;letter-spacing:.17em;color:var(--pg-muted);}
+.pg-wallet{display:flex;flex-direction:column;align-items:flex-end;gap:3px;padding:8px 12px;border:1px solid #e8ca7233;border-radius:13px;background:linear-gradient(145deg,#142d20,#091a11);color:var(--pg-gold-soft);cursor:pointer;}
+.pg-wallet-label{font-size:7px;letter-spacing:.15em;color:var(--pg-muted)}.pg-wallet b{font-size:12px;}
+.pg-flight-card{height:clamp(290px,78vw,430px);position:relative;isolation:isolate;overflow:hidden;border:1px solid #40b77d38;border-radius:25px;background:radial-gradient(ellipse at 78% 15%,#8d344322,transparent 34%),radial-gradient(ellipse at 18% 100%,#0f95602b,transparent 42%),linear-gradient(155deg,#10251a,#06110b 75%);box-shadow:inset 0 1px #ffffff0c,0 20px 50px #0006;}
+.pg-flight-grid{position:absolute;inset:0;z-index:-1;opacity:.4;background-image:linear-gradient(#9ac5a311 1px,transparent 1px),linear-gradient(90deg,#9ac5a311 1px,transparent 1px);background-size:42px 42px;mask-image:linear-gradient(transparent,#000 30%,#000 90%);}
+.pg-flight-card .apx-aviator-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+.pg-flight-topline{position:absolute;z-index:2;top:14px;left:15px;right:15px;display:flex;align-items:center;justify-content:space-between;}
+.pg-flight-label{font-size:8px;letter-spacing:.16em;color:#a5b9ac;}
+.pg-flight-card .apx-aviator-live{position:static;padding:6px 9px;border:1px solid #35d69a44;border-radius:99px;background:#0b6a4633;color:#6ce3b0;font-size:8px;letter-spacing:.12em;}
+.pg-flight-card .apx-aviator-live.off{border-color:#f0647044;background:#7d273033;color:#ff8790;}
+.pg-flight-readout{position:absolute;z-index:2;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;padding-top:18px;}
+.pg-flight-card .apx-aviator-status{position:static;margin-bottom:7px;color:#c4d2c8;font-size:9px;letter-spacing:.17em;text-align:center;}
+.pg-flight-card .apx-aviator-multiplier{position:static;transform:none;font-size:clamp(54px,15vw,94px);line-height:1;font-weight:950;letter-spacing:-.06em;color:#f7e8b3;text-shadow:0 8px 32px #0009;}
+.pg-flight-card .apx-aviator-multiplier.crashed{color:#ff7580;}
+.pg-flight-caption{margin-top:12px;color:#8ca397;font-size:9px;letter-spacing:.04em;}
+.pg-flight-card .apx-seed{position:absolute;z-index:3;bottom:10px;left:12px;right:12px;color:#62796c;font-size:7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pg-history-panel,.pg-control-panel{margin-top:13px;padding:14px;border:1px solid var(--pg-line);border-radius:var(--pg-radius);background:linear-gradient(155deg,#10271b,#08170f);box-shadow:0 12px 28px #0003;}
+.pg-section-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+.pg-eyebrow{display:block;margin-bottom:4px;color:var(--pg-emerald-bright);font-size:7px;font-weight:900;letter-spacing:.18em;}
+.pg-section-heading h2{margin:0;color:var(--pg-gold-soft);font-size:14px;letter-spacing:.01em;}
+.pg-live-dot,.pg-history-note{color:var(--pg-muted);font-size:8px;letter-spacing:.08em;}
+.pg-live-dot:before{content:"";display:inline-block;width:6px;height:6px;margin-right:6px;border-radius:50%;background:#35d69a;box-shadow:0 0 9px #35d69a;}
+.pg-round-list{display:flex;gap:7px;overflow-x:auto;padding:2px 1px 4px;scrollbar-width:none;}
+.pg-round-list::-webkit-scrollbar{display:none;}
+.pg-history-panel .apx-aviator-result-card{min-width:68px;height:58px;border:1px solid var(--pg-line);border-radius:12px;background:#09190f;}
+.pg-control-heading{align-items:center;}
+.pg-control-heading .pg-mode{margin:0;border:1px solid #ffffff12;border-radius:12px;background:#06130c;padding:3px;}
+.pg-mode button{min-width:62px;padding:8px 10px;border:0;border-radius:9px;background:transparent;color:var(--pg-muted);font-size:10px;font-weight:800;}
+.pg-mode button.active{background:linear-gradient(145deg,#f4dc92,#c59a3b);color:#182116;}
+.pg-control-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(130px,.9fr);gap:10px;align-items:stretch;}
+.pg-stake-card{min-width:0;padding:11px;border:1px solid var(--pg-line);border-radius:15px;background:#06150d;}
+.pg-stake-card .apx-bet-label{color:var(--pg-muted);font-size:8px;letter-spacing:.13em;}
+.pg-stake-stepper{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:8px 0;border:1px solid #ffffff10;border-radius:11px;background:#0b2116;padding:5px;}
+.pg-stake-stepper button{width:31px;height:31px;border:0;border-radius:9px;background:#173a29;color:var(--pg-gold);font-size:19px;}
+.pg-stake-stepper strong{font-size:17px;color:#f6f5eb;}
+.pg-stake-presets{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;}
+.pg-stake-presets .apx-preset{min-height:31px;border:1px solid var(--pg-line);border-radius:8px;background:#0a1d13;color:#b6c9bc;font-size:9px;font-weight:800;}
+.pg-stake-presets .apx-preset.active{border-color:#e8ca7270;background:#e8ca7218;color:var(--pg-gold-soft);}
+.pg-auto-field{display:none;margin-top:10px;gap:6px;color:var(--pg-muted);font-size:9px;}
+.pg-auto-field.visible{display:grid;}
+.pg-auto-field input{width:100%;min-height:38px;border:1px solid var(--pg-line);border-radius:10px;background:#0a1d13;padding:0 10px;color:var(--pg-text);}
+.pg-primary-action,.pg-cashout-action{display:flex;min-height:112px;flex-direction:column;align-items:center;justify-content:center;gap:7px;border:0;border-radius:15px;background:linear-gradient(155deg,#3be0a0,#0b9862);color:#04170e;box-shadow:0 10px 22px #16a36a20;cursor:pointer;}
+.pg-primary-action small,.pg-cashout-action small{font-size:8px;font-weight:900;letter-spacing:.12em;}
+.pg-primary-action strong,.pg-cashout-action strong{font-size:16px;line-height:1.2;}
+.pg-cashout-zone{margin-top:10px;text-align:center;}
+.pg-cashout-zone .pg-cashout-action{width:100%;min-height:62px;background:linear-gradient(155deg,#f7e4a7,#c79b3b);color:#1b2418;}
+.pg-no-bet{padding:11px;color:var(--pg-muted);font-size:10px;}
+.pg-personal-history{margin-top:13px;}
+.pg-personal-history .apx-bet-history-list{max-height:320px;overflow:auto;}
+.pg-responsible-note{margin:15px 5px 0;color:#688174;font-size:8px;text-align:center;}
+@media(max-width:370px){
+  .pg-shell{padding-left:9px;padding-right:9px;}
+  .pg-flight-card{height:275px;border-radius:20px;}
+  .pg-control-layout{grid-template-columns:1fr;}
+  .pg-primary-action{min-height:62px;}
 }
-#tab-aviator .apx-back {
-  flex:0 0 40px;width:40px;height:40px;
-  border-color:rgba(45,190,131,.17);
-  background:#0a2117;color:#f0d783;
+@media(min-width:700px){
+  .pg-shell{padding-top:20px;}
+  .pg-flight-card{height:430px;}
+  .pg-control-panel,.pg-history-panel{padding:18px;}
 }
-#tab-aviator .apx-game-brand {gap:10px;}
-#tab-aviator .apx-game-brand-mark {
-  width:38px;height:38px;border-radius:12px;
-  background:linear-gradient(145deg,#f5dc8a,#c49a38);
-  box-shadow:0 7px 20px rgba(232,202,114,.15);
-}
-#tab-aviator .apx-game-brand-copy strong {font-size:11px;letter-spacing:.16em;}
-#tab-aviator .apx-game-brand-copy small {font-size:9px;letter-spacing:.12em;}
-#tab-aviator .apx-wallet-mini {
-  min-height:38px;padding:0 13px;
-  border-color:rgba(232,202,114,.25);
-  background:linear-gradient(145deg,#102d20,#071b12);
-  color:#f0d783;font-size:12px;
-}
-#tab-aviator .apx-aviator-stage {
-  height:clamp(280px,72vw,420px);
-  border-color:rgba(45,190,131,.2);
-  border-radius:23px;
-  background:
-    radial-gradient(ellipse at 75% 15%,rgba(176,48,73,.22),transparent 35%),
-    radial-gradient(ellipse at 22% 90%,rgba(17,147,97,.17),transparent 40%),
-    linear-gradient(180deg,#101b17,#07110c 80%);
-  box-shadow:inset 0 1px rgba(255,255,255,.05),0 18px 42px rgba(0,0,0,.28);
-}
-#tab-aviator .apx-aviator-stage::before {
-  background-size:100% 44px,44px 100%;
-  opacity:.7;
-}
-#tab-aviator .apx-aviator-status {
-  top:19px;font-size:10px;letter-spacing:.16em;color:#b6c8bd;
-}
-#tab-aviator .apx-aviator-live {
-  top:14px;right:13px;padding:6px 8px;
-  font-size:8px;letter-spacing:.1em;
-}
-#tab-aviator .apx-aviator-multiplier {
-  font-size:clamp(52px,14vw,88px);
-  text-shadow:0 8px 28px rgba(0,0,0,.55);
-}
-#tab-aviator .apx-aviator-crash-label {
-  bottom:24px;font-size:9px;letter-spacing:.04em;color:#8ba095;
-}
-#tab-aviator .apx-seed {
-  bottom:9px;left:11px;color:#61756a;font-size:7px;
-}
-#tab-aviator .apx-round-results {
-  margin-top:12px;padding:12px;
-  border-color:rgba(45,190,131,.16);
-  border-radius:18px;
-  background:linear-gradient(160deg,#0d261b,#07150e);
-}
-#tab-aviator .apx-round-results-head {margin-bottom:9px;}
-#tab-aviator .apx-round-results-head strong {
-  color:#f0d783;font-size:11px;letter-spacing:.11em;
-}
-#tab-aviator .apx-round-results-head span {
-  color:#80988b;font-size:8px;letter-spacing:.08em;
-}
-#tab-aviator .apx-round-results-list {gap:7px;}
-#tab-aviator .apx-aviator-result-card {
-  min-width:67px;height:57px;padding:7px 6px;
-  border-radius:12px;border-color:rgba(45,190,131,.13);
-  background:linear-gradient(145deg,#102b1e,#08170f);
-}
-#tab-aviator .apx-console {
-  margin-top:12px;padding:14px;
-  border-color:rgba(45,190,131,.17);
-  border-radius:20px;
-  background:linear-gradient(155deg,#10271c,#08160f);
-  box-shadow:0 13px 32px rgba(0,0,0,.22);
-}
-#tab-aviator .apx-console-head {margin-bottom:12px;}
-#tab-aviator .apx-console-title {
-  color:#e6eee7;font-size:11px;letter-spacing:.12em;
-}
-#tab-aviator .apx-mode {
-  border-color:rgba(255,255,255,.07);background:#06130d;
-}
-#tab-aviator .apx-mode button {min-width:67px;padding:8px 12px;font-size:10px;}
-#tab-aviator .apx-mode button.active {
-  background:linear-gradient(180deg,#f5dc8a,#c49a38);
-  color:#142016;
-}
-#tab-aviator .apx-aviator-controls {
-  grid-template-columns:minmax(0,1.1fr) minmax(130px,.9fr);
-  align-items:stretch;gap:10px;
-}
-#tab-aviator .apx-bet-box {
-  min-width:0;padding:10px;
-  border-color:rgba(45,190,131,.14);border-radius:15px;
-  background:#06170f;
-}
-#tab-aviator .apx-bet-label {color:#92a99b;font-size:9px;}
-#tab-aviator .apx-stepper {
-  margin-top:7px;border-color:rgba(45,190,131,.15);
-  background:#0b2117;border-radius:12px;
-}
-#tab-aviator .apx-stepper button {
-  width:31px;height:31px;border-radius:9px;
-  background:#143326;color:#f0d783;
-}
-#tab-aviator .apx-stepper-value {font-size:17px;}
-#tab-aviator .apx-presets {gap:5px;}
-#tab-aviator .apx-preset {
-  min-height:32px;border-color:rgba(45,190,131,.14);
-  background:#0a1d14;color:#b2c4b8;font-size:9px;
-}
-#tab-aviator .apx-preset.active {
-  border-color:rgba(232,202,114,.45);
-  background:rgba(232,202,114,.1);color:#f0d783;
-}
-#tab-aviator .apx-action {
-  min-height:100px;border-radius:15px;
-  background:linear-gradient(160deg,#36d99a,#0d9864);
-  color:#04170e;box-shadow:0 10px 22px rgba(19,194,126,.12);
-}
-#tab-aviator .apx-action small {font-size:9px;letter-spacing:.1em;}
-#tab-aviator .apx-action strong {font-size:17px;line-height:1.2;}
-#tab-aviator .apx-cashout {margin-top:9px;}
-#tab-aviator .apx-cashout .apx-action {
-  min-height:58px;
-  background:linear-gradient(160deg,#f5dc8a,#c49a38);
-  color:#172015;box-shadow:0 9px 20px rgba(232,202,114,.12);
-}
-#tab-aviator .apx-muted {color:#91a99b;font-size:10px;}
-#tab-aviator .apx-bet-history {
-  margin-top:12px;padding:13px;
-  border:1px solid rgba(45,190,131,.14);border-radius:18px;
-  background:linear-gradient(160deg,#0c2117,#06130c);
-}
-#tab-aviator .apx-history-head {margin-bottom:9px;}
-#tab-aviator .apx-history-head strong {color:#e8d58d;font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
-#tab-aviator .apx-history-head span {color:#82998d;font-size:9px;}
-#tab-aviator .apx-bet-history-list {max-height:300px;overflow:auto;}
-@media(max-width:360px) {
-  #tab-aviator .apx-game-shell {padding-left:9px;padding-right:9px;}
-  #tab-aviator .apx-aviator-stage {height:270px;border-radius:19px;}
-  #tab-aviator .apx-aviator-controls {grid-template-columns:1fr;}
-  #tab-aviator .apx-action {min-height:65px;}
-}
-@media(min-width:700px) {
-  #tab-aviator .apx-game-shell {padding-top:18px;}
-  #tab-aviator .apx-aviator-stage {height:420px;}
-  #tab-aviator .apx-console {padding:17px;}
-}
-@media(prefers-reduced-motion:reduce) {
-  #tab-aviator .apx-action {transition:none;}
+@media(prefers-reduced-motion:reduce){
+  .pg-primary-action,.pg-cashout-action{transition:none!important;}
 }
