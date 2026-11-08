@@ -143,52 +143,50 @@
     </section>
 
 <section id="tab-colour" class="tab-content pg-game pg-colour" style="display:none;" aria-label="Colour Prediction game">
-  <div class="pg-shell">
-    <header class="pg-topbar">
+  <div class="pg-shell cp-classic-shell">
+    <header class="pg-topbar cp-topbar">
       <button class="pg-icon-button" type="button" onclick="goHome()" aria-label="Back to home">←</button>
-      <div class="pg-brand"><span class="pg-brand-mark">A</span><span><b>APEX</b><small>COLOUR ROYALE</small></span></div>
+      <div class="pg-brand"><span class="pg-brand-mark">A</span><span><b>APEX</b><small>GAMING</small></span></div>
       <button class="pg-wallet" type="button" onclick="switchTab('wallet')" aria-label="Open wallet"><span class="pg-wallet-label">WALLET</span><b class="apx-wallet-balance-value">₹0.00</b></button>
     </header>
 
-    <section class="pg-colour-intro">
-      <div><span class="pg-eyebrow">LIVE PREDICTION TABLE</span><h1>Colour Royale</h1><p>Choose a colour or an exact number before the round locks.</p></div>
-      <div class="pg-round-clock"><span>ROUND TIMER</span><div id="colourTimerBadge" class="apx-timer" style="--timer-progress:100"><div class="apx-timer-inner">60</div></div></div>
-      <span id="colourRoundUuid" class="pg-round-code">CP-00000000</span>
-    </section>
-
-    <section id="colourWheel" class="pg-wheel-stage apx-wheel" aria-label="Live result wheel">
-      <div class="pg-wheel-glow" aria-hidden="true"></div>
-      <div id="colourWheelDisc" class="apx-wheel-disc" aria-hidden="true">
-        <div class="apx-wheel-sectors">
-          <span class="wheel-sector red"><b>0</b></span><span class="wheel-sector green"><b>1</b></span><span class="wheel-sector red"><b>2</b></span><span class="wheel-sector green"><b>3</b></span><span class="wheel-sector red"><b>4</b></span><span class="wheel-sector green"><b>5</b></span><span class="wheel-sector red"><b>6</b></span><span class="wheel-sector green"><b>7</b></span><span class="wheel-sector red"><b>8</b></span><span class="wheel-sector green"><b>9</b></span>
-        </div><div class="apx-wheel-rim"></div>
-      </div>
-      <div class="apx-wheel-center"><strong id="colourWheelCenterNumber">?</strong><span id="colourWheelCenterLabel">NEXT RESULT</span></div>
-      <div class="apx-wheel-pointer" aria-hidden="true"></div>
-    </section>
-    <div id="colourLiveResult" class="pg-result-status"><span>OPEN FOR PREDICTIONS</span><b>LIVE TABLE</b></div>
-
-    <section class="pg-history-panel apx-round-results apx-colour-round-results" aria-label="Recent Colour results">
-      <div class="pg-section-heading"><div><span class="pg-eyebrow">ROUND TRACKER</span><h2>Recent results</h2></div><span class="pg-history-note">Last rounds</span></div>
-      <div class="apx-round-results-list pg-round-list" id="colourRoundResults"></div>
-    </section>
-
-    <section class="pg-control-panel pg-colour-controls apx-colour-panel">
-      <div class="pg-section-heading"><div><span class="pg-eyebrow">MAKE YOUR PREDICTION</span><h2>Choose a colour</h2></div><span class="pg-history-note">Select one option</span></div>
-      <div class="pg-colour-options apx-colour-bets">
-        <button class="pg-colour-option apx-colour-btn green" type="button" onclick="openColourBetModal('COLOR','GREEN')"><span class="pg-colour-orb"></span><b>GREEN</b><small>2.0×</small></button>
-        <button class="pg-colour-option apx-colour-btn violet" type="button" onclick="openColourBetModal('COLOR','VIOLET')"><span class="pg-colour-orb"></span><b>VIOLET</b><small>4.5×</small></button>
-        <button class="pg-colour-option apx-colour-btn red" type="button" onclick="openColourBetModal('COLOR','RED')"><span class="pg-colour-orb"></span><b>RED</b><small>2.0×</small></button>
-      </div>
-      <div class="pg-number-heading"><div><span class="pg-eyebrow">EXACT MATCH</span><h2>Pick a number</h2></div><span class="pg-history-note">0 to 9</span></div>
-      <div class="pg-number-grid apx-number-grid">
-        <button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','0')">0</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','1')">1</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','2')">2</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','3')">3</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','4')">4</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','5')">5</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','6')">6</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','7')">7</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','8')">8</button><button class="pg-number-option apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','9')">9</button>
+    <section class="cp-game-title" aria-label="Colour Prediction">
+      <div class="cp-title-line"><span class="cp-game-icon" aria-hidden="true">●</span><h1>Colour Prediction</h1></div>
+      <div class="cp-period-row">
+        <div class="cp-period"><span>Period:</span><strong id="colourRoundUuid">202610090387</strong></div>
+        <div class="cp-countdown"><span>Count Down</span><div id="colourTimerBadge" class="apx-timer"><div class="apx-timer-inner">00 : 60</div></div></div>
       </div>
     </section>
 
-    <section class="pg-history-panel pg-personal-history apx-bet-history apx-colour-history" aria-label="Your Colour Prediction bet history">
-      <div class="pg-section-heading"><div><span class="pg-eyebrow">ACCOUNT ACTIVITY</span><h2>My bets</h2></div><span class="pg-history-note">Latest activity</span></div>
-      <div class="apx-bet-history-list" id="colourBetHistory"></div>
+    <section class="cp-prediction-panel" aria-label="Place a colour prediction">
+      <div class="cp-colour-options">
+        <button class="cp-join-button cp-green apx-colour-btn" type="button" onclick="openColourBetModal('COLOR','GREEN')">Join Green</button>
+        <button class="cp-join-button cp-violet apx-colour-btn" type="button" onclick="openColourBetModal('COLOR','VIOLET')">Join Violet</button>
+        <button class="cp-join-button cp-red apx-colour-btn" type="button" onclick="openColourBetModal('COLOR','RED')">Join Red</button>
+      </div>
+      <div class="cp-number-grid apx-number-grid" aria-label="Choose a number">
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','0')">0</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','1')">1</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','2')">2</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','3')">3</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','4')">4</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','5')">5</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','6')">6</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','7')">7</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','8')">8</button>
+        <button class="cp-number-button apx-number-btn" type="button" onclick="openColourBetModal('NUMBER','9')">9</button>
+      </div>
+    </section>
+
+    <section class="cp-results-panel" aria-label="Recent Colour Prediction results">
+      <div class="cp-panel-heading"><h2>Recent Results</h2><span>More ›</span></div>
+      <div class="cp-results-list" id="colourRoundResults"></div>
+    </section>
+
+    <section class="cp-my-bets-panel" aria-label="My Colour Prediction bets">
+      <div class="cp-panel-heading"><h2>▣ &nbsp;My Bets</h2><span>History ›</span></div>
+      <div class="cp-bet-table-head"><span>Period</span><span>Select</span><span>Amount</span><span>Result</span></div>
+      <div class="apx-bet-history-list cp-bet-list" id="colourBetHistory"></div>
     </section>
     <p class="pg-responsible-note">Play responsibly. Results are supplied by the game server.</p>
   </div>
