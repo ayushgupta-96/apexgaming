@@ -11,9 +11,9 @@
       const number = Number(item.number);
       const color = String(item.color || item.winningColor || "").toUpperCase();
       chip.classList.add(
-        color === "GREEN" ? "is-green" :
-        color === "VIOLET" ? "is-violet" :
-        color === "RED" ? "is-red" : "is-neutral"
+        color.includes("GREEN") ? "is-green" :
+        color.includes("VIOLET") ? "is-violet" :
+        color.includes("RED") ? "is-red" : "is-neutral"
       );
       const n = document.createElement("strong");
       n.textContent = Number.isFinite(number) ? String(number) : "?";
