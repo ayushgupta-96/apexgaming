@@ -580,7 +580,7 @@ async function loadLudoHistory(){
   }
 }
 
-async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await safeJsonResponse(res);if(data.success){
+async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;const maxPlayers=Number(document.getElementById("ludoPlayerCount")?.value||2);try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers})});const data=await safeJsonResponse(res);if(data.success){
   currentLudoMatch=data.data;
   document.getElementById("ludoLobbySection").style.display="none";
   document.getElementById("ludoGameSection").style.display="block";
