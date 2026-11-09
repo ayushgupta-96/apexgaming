@@ -1,5 +1,17 @@
 // Client Application Controller
+function isCompactJwt(value) {
+  if (typeof value !== "string") return false;
+  const parts = value.trim().split(".");
+  return parts.length === 3 && parts.every(part => /^[A-Za-z0-9_-]+$/.test(part));
+}
+
+// Discard stale/corrupt browser tokens before any authenticated startup request.
 let token = localStorage.getItem("rmg_token");
+if (token && !isCompactJwt(token)) {
+  localStorage.removeItem("rmg_token");
+  localStorage.removeItem("rmg_userId");
+  token = null;
+}
 let currentUserId = localStorage.getItem("rmg_userId");
 let stompClient = null;
 let currentAviatorState = null;
@@ -118,7 +130,7 @@ async function doLogin() {
       data = await login(totp);
     }
 
-    if (data.success && data.data?.accessToken) {
+    if (data.success && isCompactJwt(data.data?.accessToken)) {
       token = data.data.accessToken;
       currentUserId = data.data.userId;
 
