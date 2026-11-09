@@ -17,64 +17,77 @@
   };
   const BASE={RED:[[2,2],[4,2],[2,4],[4,4]],GREEN:[[10,2],[12,2],[10,4],[12,4]],YELLOW:[[10,10],[12,10],[10,12],[12,12]],BLUE:[[2,10],[4,10],[2,12],[4,12]]};
   const START={RED:0,GREEN:13,YELLOW:26,BLUE:39};
-  const rounded=(c,x,y,w,h,r)=>{c.beginPath();c.roundRect(x,y,w,h,r);};
-  function tile(c,x,y,s,fill,stroke="#b7c7bb"){
-    const pad=s*.025;rounded(c,x*s+pad,y*s+pad,s-pad*2,s-pad*2,s*.025);
-    c.fillStyle=fill;c.fill();c.strokeStyle=stroke;c.lineWidth=Math.max(1,s*.014);c.stroke();
+  function tile(c,x,y,s,fill,stroke="#82938a"){
+    const px=x*s,py=y*s;
+    c.fillStyle=fill;c.fillRect(px,py,s,s);
+    c.strokeStyle=stroke;c.lineWidth=Math.max(1,s*.012);
+    c.strokeRect(px+.5,py+.5,s-1,s-1);
   }
   function drawBase(c,color,x,y,s){
-    const span=s*6;
-    c.fillStyle=COLORS[color];c.fillRect(x*s,y*s,span,span);
-    c.fillStyle="rgba(0,0,0,.10)";c.fillRect(x*s,y*s,span,span);
-    c.strokeStyle="rgba(255,255,255,.7)";c.lineWidth=s*.035;c.strokeRect(x*s+s*.08,y*s+s*.08,span-s*.16,span-s*.16);
-    rounded(c,x*s+s*.72,y*s+s*.72,span-s*1.44,span-s*1.44,s*.12);
-    c.fillStyle=SOFT[color];c.fill();c.strokeStyle="rgba(20,35,27,.35)";c.lineWidth=s*.025;c.stroke();
-    BASE[color].forEach(([gx,gy],i)=>{
-      const cx=(gx+.5)*s,cy=(gy+.5)*s;
-      c.beginPath();c.arc(cx,cy,s*.29,0,Math.PI*2);c.fillStyle="#fff";c.fill();
-      c.beginPath();c.arc(cx,cy,s*.215,0,Math.PI*2);c.fillStyle=COLORS[color];c.fill();
-      c.beginPath();c.arc(cx-s*.07,cy-s*.08,s*.055,0,Math.PI*2);c.fillStyle="rgba(255,255,255,.55)";c.fill();
+    const size=s*6,px=x*s,py=y*s;
+    c.fillStyle=COLORS[color];c.fillRect(px,py,size,size);
+    c.strokeStyle="#ffffff";c.lineWidth=Math.max(2,s*.055);
+    c.strokeRect(px+s*.08,py+s*.08,size-s*.16,size-s*.16);
+    const inset=s*.72,inner=size-inset*2;
+    c.fillStyle=SOFT[color];c.fillRect(px+inset,py+inset,inner,inner);
+    c.strokeStyle="rgba(20,35,27,.25)";c.lineWidth=Math.max(1,s*.018);
+    c.strokeRect(px+inset,py+inset,inner,inner);
+    BASE[color].forEach(([gx,gy])=>{
+      const cx=(gx+.5)*s,cy=(gy+.5)*s,r=s*.22;
+      c.beginPath();c.arc(cx,cy,r,0,Math.PI*2);c.fillStyle="#fff";c.fill();
+      c.beginPath();c.arc(cx,cy,r*.72,0,Math.PI*2);c.fillStyle=COLORS[color];c.fill();
     });
   }
   function drawCenter(c,s){
     const x=6*s,y=6*s,w=3*s,h=3*s,mx=x+w/2,my=y+h/2;
-    c.fillStyle="#f8f7ed";c.fillRect(x,y,w,h);
     const tris=[
       {color:COLORS.RED,pts:[[x,y],[x+w,y],[mx,my]]},
       {color:COLORS.GREEN,pts:[[x+w,y],[x+w,y+h],[mx,my]]},
       {color:COLORS.YELLOW,pts:[[x+w,y+h],[x,y+h],[mx,my]]},
       {color:COLORS.BLUE,pts:[[x,y+h],[x,y],[mx,my]]}
     ];
-    tris.forEach(t=>{c.beginPath();c.moveTo(...t.pts[0]);c.lineTo(...t.pts[1]);c.lineTo(...t.pts[2]);c.closePath();c.fillStyle=t.color;c.fill();});
-    c.beginPath();c.arc(mx,my,s*.36,0,Math.PI*2);c.fillStyle="#082217";c.fill();
-    c.strokeStyle="#f3d77c";c.lineWidth=s*.035;c.stroke();
-    c.fillStyle="#f4dfa0";c.font="900 "+(s*.26)+"px system-ui,sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText("A",mx,my);
+    tris.forEach(t=>{
+      c.beginPath();c.moveTo(...t.pts[0]);c.lineTo(...t.pts[1]);c.lineTo(...t.pts[2]);c.closePath();
+      c.fillStyle=t.color;c.fill();
+    });
+    c.beginPath();c.arc(mx,my,s*.31,0,Math.PI*2);c.fillStyle="#fff";c.fill();
+    c.strokeStyle="#34443a";c.lineWidth=Math.max(1,s*.025);c.stroke();
   }
   function render(canvas,state,userId){
-    const c=canvas.getContext("2d");if(!c)return;
-    const n=15,s=canvas.width/n;
-    c.clearRect(0,0,canvas.width,canvas.height);
-    c.fillStyle="#07180f";c.fillRect(0,0,canvas.width,canvas.height);
-    const bases={RED:[0,0],GREEN:[9,0],YELLOW:[9,9],BLUE:[0,9]};
-    Object.entries(bases).forEach(([color,[x,y]])=>drawBase(c,color,x,y,s));
+    const ctx=canvas.getContext("2d");if(!ctx)return;
+    const n=15,size=canvas.width/n;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,canvas.width,canvas.height);
 
-    const startColors={0:"RED",13:"GREEN",26:"YELLOW",39:"BLUE"};
+    // Four flat home quadrants with matching token bays.
+    const bases={RED:[0,0],GREEN:[9,0],YELLOW:[9,9],BLUE:[0,9]};
+    Object.entries(bases).forEach(([color,[x,y]])=>drawBase(ctx,color,x,y,size));
+
+    // Neutral outer track and four straight home lanes.
     TRACK.forEach(([x,y],i)=>{
-      const color=startColors[i];
-      tile(c,x,y,s,color?COLORS[color]:"#f4f5ed",color?"#ffffffaa":"#aebdb1");
-      if(color){
-        c.beginPath();c.arc((x+.5)*s,(y+.5)*s,s*.12,0,Math.PI*2);
-        c.fillStyle="#fff";c.fill();
+      const startColor=({0:"RED",13:"GREEN",26:"YELLOW",39:"BLUE"})[i];
+      tile(ctx,x,y,size,startColor?COLORS[startColor]:"#fff", "#8b9b91");
+      if(startColor){
+        ctx.beginPath();ctx.arc((x+.5)*size,(y+.5)*size,size*.105,0,Math.PI*2);
+        ctx.fillStyle="#fff";ctx.fill();
       }
     });
     Object.entries(HOME).forEach(([color,path])=>path.forEach(([x,y],i)=>{
-      tile(c,x,y,s,COLORS[color], "#ffffff88");
+      tile(ctx,x,y,size,COLORS[color],"#ffffff");
       if(i===path.length-1){
-        c.beginPath();c.arc((x+.5)*s,(y+.5)*s,s*.12,0,Math.PI*2);c.fillStyle="#fff";c.fill();
+        ctx.beginPath();ctx.arc((x+.5)*size,(y+.5)*size,size*.105,0,Math.PI*2);
+        ctx.fillStyle="#fff";ctx.fill();
       }
     }));
-    drawCenter(c,s);
 
+    // Small neutral corner connectors keep the visual track continuous
+    // without changing the server's 52-position token index mapping.
+    [[13,7],[7,13],[1,7],[5,0]].forEach(([x,y])=>{
+      tile(ctx,x,y,size,"#fff","#8b9b91");
+    });
+    drawCenter(ctx,size);
+
+    // Only server-provided token positions are rendered.
     const positions=state.tokenPositions||{};
     Object.entries(positions).forEach(([color,tokens])=>(tokens||[]).forEach((pos,i)=>{
       let x,y;
@@ -82,15 +95,13 @@
       else if(pos===999){x=7;y=7;}
       else if(pos>=100){[x,y]=HOME[color]?.[Math.min(5,Math.max(0,pos-100))]||[7,7];}
       else{const trackIndex=Number(pos);[x,y]=TRACK[trackIndex]||TRACK[0];}
-      const cx=(x+.5)*s,cy=(y+.5)*s;
-      c.save();
-      c.beginPath();c.arc(cx,cy,s*.27,0,Math.PI*2);c.fillStyle=COLORS[color]||"#fff";c.fill();
-      c.lineWidth=s*.035;c.strokeStyle="#fff";c.stroke();
-      c.beginPath();c.arc(cx-s*.06,cy-s*.065,s*.045,0,Math.PI*2);c.fillStyle="rgba(255,255,255,.62)";c.fill();
-      c.fillStyle="#102016";c.font="900 "+(s*.18)+"px system-ui,sans-serif";c.textAlign="center";c.textBaseline="middle";c.fillText(String(i+1),cx,cy+s*.015);
-      c.restore();
+      const cx=(x+.5)*size,cy=(y+.5)*size,r=size*.23;
+      ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);ctx.fillStyle=COLORS[color]||"#fff";ctx.fill();
+      ctx.strokeStyle="#fff";ctx.lineWidth=Math.max(2,size*.035);ctx.stroke();
+      ctx.beginPath();ctx.arc(cx-r*.22,cy-r*.25,r*.12,0,Math.PI*2);ctx.fillStyle="#ffffffaa";ctx.fill();
     }));
-    c.strokeStyle="#d7bd68";c.lineWidth=Math.max(2,s*.04);c.strokeRect(s*.035,s*.035,canvas.width-s*.07,canvas.height-s*.07);
+    ctx.strokeStyle="#263a2d";ctx.lineWidth=Math.max(2,size*.045);
+    ctx.strokeRect(size*.02,size*.02,canvas.width-size*.04,canvas.height-size*.04);
   }
   window.ApexLudoBoard={render};
 })();
