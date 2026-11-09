@@ -426,6 +426,7 @@ public class LudoEngine {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     public LudoGameStateDto getMatchState(String matchUuid) {
         LudoMatch match = matchRepository.findByMatchUuid(matchUuid)
                 .orElseThrow(() -> new BusinessException("Match not found"));
