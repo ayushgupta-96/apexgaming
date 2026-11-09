@@ -670,11 +670,21 @@ function updateLudoGameState(state){
     (state.players||[]).forEach(player=>{
       const card=document.createElement("div");
       card.className="pg-player-chip "+String(player.color||"").toLowerCase();
+      card.classList.add("ludo-seat-card");
+      const avatar=document.createElement("span");
+      avatar.className="ludo-seat-avatar";
+      avatar.textContent=String(player.username||"P").trim().slice(0,1).toUpperCase();
+      const details=document.createElement("span");
+      details.className="ludo-seat-details";
       const name=document.createElement("b");
       name.textContent=player.username||("Player "+(Number(player.seatIndex)+1));
       const meta=document.createElement("small");
-      meta.textContent=String(player.color||"PLAYER")+" · "+(player.connected?"CONNECTED":"OFFLINE");
-      card.append(name,meta);players.appendChild(card);
+      meta.textContent=String(player.color||"PLAYER")+" · "+(player.connected?"ONLINE":"OFFLINE");
+      details.append(name,meta);
+      const ready=document.createElement("span");
+      ready.className="ludo-seat-ready";
+      ready.textContent=player.ready?"READY":"WAITING";
+      card.append(avatar,details,ready);players.appendChild(card);
     });
   }
   drawLudoBoard(state.tokenPositions);
