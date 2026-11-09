@@ -228,7 +228,6 @@ public class AviatorEngine {
         });
     }
 
-    @Transactional
     public synchronized void triggerCrash(BigDecimal crashPoint) {
         if (!isTransitioning.compareAndSet(false, true)) {
             return;
@@ -237,9 +236,8 @@ public class AviatorEngine {
         currentStatus.set("CRASHED");
         currentMultiplier.set(crashPoint);
 
-        // Schedule recovery BEFORE any database work or WebSocket broadcast.
-        // If settlement or broadcasting throws, the scheduler can still move
-        // the game to the next round instead of freezing on CRASHED.
+        // Schedule recovery before settlement or broadcasting so a database failure
+        // cannot leave the game loop stuck in the crashed state.
         nextRoundAt = Instant.now().plusSeconds(4);
 
         try {
@@ -247,21 +245,35 @@ public class AviatorEngine {
             AviatorRound avRound = currentAviatorRound.get();
 
             if (round != null && avRound != null) {
-                round.setStatus(GameRound.RoundStatus.COMPLETED);
-                round.setEndedAt(Instant.now());
-                roundRepository.save(round);
+                // This method is invoked by the scheduler through self-invocation,
+                // so @Transactional on this class would not open a proxy transaction.
+                // Use TransactionTemplate explicitly for the complete settlement.
+                org.springframework.transaction.support.TransactionTemplate tx =
+                        new org.springframework.transaction.support.TransactionTemplate(transactionManager);
 
-                avRound.setStatus(AviatorRound.AviatorStatus.CRASHED);
-                avRound.setCrashedAt(Instant.now());
-                aviatorRoundRepository.save(avRound);
+                tx.executeWithoutResult(status -> {
+                    GameRound managedRound = roundRepository.findById(round.getId())
+                            .orElseThrow(() -> new IllegalStateException("Aviator game round not found: " + round.getId()));
+                    AviatorRound managedAviatorRound = aviatorRoundRepository.findById(avRound.getId())
+                            .orElseThrow(() -> new IllegalStateException("Aviator round not found: " + avRound.getId()));
 
-                // Mark any remaining uncached bets as LOST.
-                List<AviatorBet> lostBets = aviatorBetRepository.findActiveBetsInRound(round.getId());
-                for (AviatorBet lost : lostBets) {
-                    lost.getBet().setStatus(Bet.BetStatus.LOST);
-                    lost.getBet().setSettledAt(Instant.now());
-                    betRepository.save(lost.getBet());
-                }
+                    Instant settledAt = Instant.now();
+                    managedRound.setStatus(GameRound.RoundStatus.COMPLETED);
+                    managedRound.setEndedAt(settledAt);
+                    managedAviatorRound.setStatus(AviatorRound.AviatorStatus.CRASHED);
+                    managedAviatorRound.setCrashedAt(settledAt);
+
+                    // Repository query JOIN FETCHes ab.bet. Accessing and updating
+                    // Bet therefore happens inside this transaction with no detached proxy.
+                    List<AviatorBet> lostBets = aviatorBetRepository.findActiveBetsInRound(round.getId());
+                    for (AviatorBet lost : lostBets) {
+                        Bet bet = lost.getBet();
+                        if (bet != null && bet.getStatus() == Bet.BetStatus.PLACED) {
+                            bet.setStatus(Bet.BetStatus.LOST);
+                            bet.setSettledAt(settledAt);
+                        }
+                    }
+                });
 
                 recentCrashHistory.addFirst(crashPoint);
                 while (recentCrashHistory.size() > 15) {
@@ -278,9 +290,7 @@ public class AviatorEngine {
                 log.warn("Aviator crash broadcast failed; next round recovery remains scheduled", broadcastError);
             }
         } catch (Exception settlementError) {
-            // Keep the round lifecycle alive even if settlement has an unexpected
-            // DB/ledger error. The exception is logged for diagnosis, but CRASHED
-            // must transition to a fresh round rather than freezing forever.
+            // Keep the round lifecycle alive if settlement has a database/ledger error.
             log.error("Aviator crash settlement failed at {}x; recovering to next round", crashPoint, settlementError);
         }
     }
