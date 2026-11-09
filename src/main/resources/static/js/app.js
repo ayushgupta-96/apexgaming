@@ -45,7 +45,7 @@ function switchTab(tabId) {
       setTimeout(() => window.ApexGameUI.resizeAviatorCanvas(), 120);
     }
   }
-  if (tabId === "ludo" && currentLudoMatch) drawLudoBoard();
+  if (tabId === "ludo") { loadLudoHistory(); if (currentLudoMatch) drawLudoBoard(); }
 }
 function goHome() {
   if (typeof window.switchTab === "function") {
@@ -546,6 +546,40 @@ function startAviatorBetStatusPolling(){
 }
 function openColourBetModal(type,val){if(!token){openModal("loginModal");return;}selectedColourTarget={type,value:val};document.getElementById("modalBetTarget").textContent=val;document.getElementById("modalBetMultiplier").textContent=type==="NUMBER"?"9.0x":(val==="VIOLET"?"4.5x":"2.0x");openModal("colourBetModal");}
 async function confirmColourBet(){const amt=document.getElementById("colourModalAmount")?.value;try{const res=await fetch("/api/games/colour/bet",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({roundUuid:currentColourState.roundUuid,targetType:selectedColourTarget.type,targetValue:selectedColourTarget.value,amount:amt})});const data=await safeJsonResponse(res);if(data.success){alert("Bet placed!");closeModal("colourBetModal");fetchWallet();loadBetHistory("COLOUR_PREDICTION");}else alert("Bet error: "+(data.message||"Unknown error"));}catch(e){alert("Failed to submit bet");}}
+async function loadLudoHistory(){
+  const list=document.getElementById("ludoHistoryList");
+  if(!list)return;
+  if(!token){list.innerHTML='<div class="ludo-history-empty">Log in to view your Ludo bet history.</div>';return;}
+  list.innerHTML='<div class="ludo-history-empty">Loading your recent matches…</div>';
+  try{
+    const response=await fetch("/api/games/ludo/history",{headers:{"Authorization":"Bearer "+token}});
+    const data=await safeJsonResponse(response);
+    if(!data.success)throw new Error(data.message||"Unable to load history");
+    const records=Array.isArray(data.data)?data.data:[];
+    list.replaceChildren();
+    if(!records.length){list.innerHTML='<div class="ludo-history-empty">No Ludo matches yet. Your entries will appear here.</div>';return;}
+    records.forEach(item=>{
+      const row=document.createElement("article");
+      row.className="ludo-history-row";
+      const main=document.createElement("div");main.className="ludo-history-main";
+      const id=document.createElement("strong");id.textContent=item.matchUuid||"Ludo match";
+      const meta=document.createElement("small");meta.textContent=(item.playerColor||"PLAYER")+" · "+(item.status||"");
+      main.append(id,meta);
+      const stake=document.createElement("div");stake.className="ludo-history-stake";
+      const amount=document.createElement("strong");amount.textContent="₹"+Number(item.stakeAmount||0).toFixed(2);
+      const label=document.createElement("small");label.textContent="Entry";
+      stake.append(amount,label);
+      const status=document.createElement("span");status.className="ludo-history-status "+String(item.result||"").toLowerCase().replace(/[^a-z]/g,"-");status.textContent=item.result||item.status||"UNKNOWN";
+      row.append(main,stake,status);
+      if(item.createdAt){const date=document.createElement("time");date.className="ludo-history-date";date.textContent=new Date(item.createdAt).toLocaleDateString();row.append(date);}
+      list.append(row);
+    });
+  }catch(error){
+    list.innerHTML='<div class="ludo-history-empty">Could not load match history. Tap refresh to try again.</div>';
+    console.warn("Ludo history load failed",error);
+  }
+}
+
 async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers:2})});const data=await safeJsonResponse(res);if(data.success){
   currentLudoMatch=data.data;
   document.getElementById("ludoLobbySection").style.display="none";
