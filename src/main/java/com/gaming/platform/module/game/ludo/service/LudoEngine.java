@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -394,6 +395,35 @@ public class LudoEngine {
         } catch (Exception e) {
             return "{}";
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<LudoMatchHistoryDto> getPlayerHistory(Long userId) {
+        return matchRepository.findDistinctByPlayersUserIdOrderByCreatedAtDesc(userId, PageRequest.of(0, 10))
+                .getContent()
+                .stream()
+                .map(match -> {
+                    LudoPlayer player = match.getPlayers().stream()
+                            .filter(p -> p.getUser().getId().equals(userId))
+                            .findFirst()
+                            .orElse(null);
+                    String result = "IN_PROGRESS".equals(match.getStatus().name()) ? "IN PROGRESS"
+                            : "WAITING".equals(match.getStatus().name()) ? "WAITING"
+                            : match.getWinner() != null && match.getWinner().getId().equals(userId) ? "WON"
+                            : "COMPLETED".equals(match.getStatus().name()) ? "LOST" : "CANCELLED";
+                    return new LudoMatchHistoryDto(
+                            match.getMatchUuid(),
+                            match.getStatus().name(),
+                            match.getStakeAmount(),
+                            match.getTotalPot(),
+                            match.getWinnerPayout(),
+                            match.getWinner() != null ? match.getWinner().getUsername() : null,
+                            player != null ? player.getColor() : null,
+                            result,
+                            match.getCreatedAt()
+                    );
+                })
+                .toList();
     }
 
     public LudoGameStateDto getMatchState(String matchUuid) {
