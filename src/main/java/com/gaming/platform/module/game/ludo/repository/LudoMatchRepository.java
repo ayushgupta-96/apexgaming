@@ -15,4 +15,5 @@ public interface LudoMatchRepository extends JpaRepository<LudoMatch, Long> {
     Optional<LudoMatch> findByMatchUuid(String matchUuid);
     List<LudoMatch> findByStatusAndStakeAmount(LudoMatch.MatchStatus status, BigDecimal stakeAmount);
     Page<LudoMatch> findByStatusOrderByCreatedAtDesc(LudoMatch.MatchStatus status, Pageable pageable);
+    Page<LudoMatch> findDistinctByPlayersUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 }
