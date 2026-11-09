@@ -843,3 +843,82 @@
   #tab-ludo .ludo-board-card{padding:8px;}
   #tab-ludo .ludo-board-card .pg-board-wrap{padding:2px;border-radius:7px;}
 }
+
+
+/* Ludo King-inspired player table, profile seats and lobby history. */
+#tab-ludo .ludo-hero-premium{background:linear-gradient(145deg,#0c3260,#0a2446 58%,#06182f);border-color:#28598a;}
+#tab-ludo .ludo-hero-premium .pg-eyebrow{color:#8fc8ff;}
+#tab-ludo .ludo-hero-premium h1{color:#f1d98c;}
+#tab-ludo .ludo-hero-art{background:radial-gradient(ellipse at 50% 80%,#2c78ba66,transparent 68%);}
+#tab-ludo .ludo-history-panel{
+  margin:0;padding:16px;border:1px solid #246b91;border-radius:19px;
+  background:linear-gradient(145deg,#0a2942,#061a2c);
+  box-shadow:inset 0 1px #ffffff0b,0 12px 25px #0004;
+}
+#tab-ludo .ludo-history-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px;}
+#tab-ludo .ludo-history-heading h2{margin:4px 0 0;color:#f4dfa0;font-size:19px;}
+#tab-ludo .ludo-history-refresh{border:1px solid #5a91ad;border-radius:10px;background:#ffffff0a;color:#c7e5f8;padding:8px 10px;font-size:11px;font-weight:750;}
+#tab-ludo .ludo-history-list{display:flex;flex-direction:column;gap:8px;}
+#tab-ludo .ludo-history-empty{padding:14px 10px;border:1px dashed #5b8194;border-radius:12px;color:#a9c1d0;font-size:12px;text-align:center;}
+#tab-ludo .ludo-history-row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:10px;
+  padding:11px 10px;border:1px solid #ffffff17;border-radius:13px;background:#ffffff08;
+}
+#tab-ludo .ludo-history-main{display:flex;min-width:0;flex-direction:column;gap:4px;}
+#tab-ludo .ludo-history-main strong{overflow:hidden;color:#edf5fb;font-size:12px;text-overflow:ellipsis;white-space:nowrap;}
+#tab-ludo .ludo-history-main small,#tab-ludo .ludo-history-stake small{color:#a5bdc9;font-size:9px;}
+#tab-ludo .ludo-history-stake{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+#tab-ludo .ludo-history-stake strong{color:#f4dfa0;font-size:12px;white-space:nowrap;}
+#tab-ludo .ludo-history-status{padding:5px 7px;border-radius:20px;background:#4b6575;color:#fff;font-size:8px;font-weight:900;letter-spacing:.04em;white-space:nowrap;}
+#tab-ludo .ludo-history-status.won{background:#087b4b;}
+#tab-ludo .ludo-history-status.lost{background:#9a3340;}
+#tab-ludo .ludo-history-status.in-progress{background:#a27624;}
+#tab-ludo .ludo-history-status.waiting{background:#426b91;}
+#tab-ludo .ludo-history-date{grid-column:1/-1;color:#8fa9b8;font-size:9px;}
+#tab-ludo .ludo-match-arena{gap:12px;}
+#tab-ludo .ludo-player-seats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;}
+#tab-ludo .ludo-seat-card{
+  min-width:0;min-height:68px;display:flex;align-items:center;gap:9px;
+  padding:9px 10px;border:1px solid #3b6f9b;border-left:3px solid #9aafc0;
+  border-radius:14px;background:linear-gradient(145deg,#102e4e,#081d35);
+  box-shadow:inset 0 1px #ffffff0b,0 5px 12px #0003;
+}
+#tab-ludo .ludo-seat-card.red{border-left-color:#f45b69;}
+#tab-ludo .ludo-seat-card.green{border-left-color:#25c98b;}
+#tab-ludo .ludo-seat-card.yellow{border-left-color:#eac75c;}
+#tab-ludo .ludo-seat-card.blue{border-left-color:#62a8f1;}
+#tab-ludo .ludo-seat-avatar{
+  display:grid;place-items:center;flex:none;width:37px;height:37px;border:2px solid #ffffffbb;
+  border-radius:12px;background:linear-gradient(145deg,#f5e3a2,#bb943d);
+  color:#182719;font-size:17px;font-weight:950;text-transform:uppercase;
+}
+#tab-ludo .ludo-seat-card.red .ludo-seat-avatar{background:linear-gradient(145deg,#ffabb0,#c63d4b);color:#fff;}
+#tab-ludo .ludo-seat-card.green .ludo-seat-avatar{background:linear-gradient(145deg,#a2f0cf,#139b68);color:#fff;}
+#tab-ludo .ludo-seat-card.blue .ludo-seat-avatar{background:linear-gradient(145deg,#b4d8ff,#387ac4);color:#fff;}
+#tab-ludo .ludo-seat-card.yellow .ludo-seat-avatar{background:linear-gradient(145deg,#fff0a8,#d0a92d);}
+#tab-ludo .ludo-seat-details{display:flex;min-width:0;flex:1;flex-direction:column;gap:4px;}
+#tab-ludo .ludo-seat-details b{overflow:hidden;color:#f6f3e9;font-size:12px;text-overflow:ellipsis;white-space:nowrap;}
+#tab-ludo .ludo-seat-details small{color:#a9c3d4;font-size:8px;letter-spacing:.07em;}
+#tab-ludo .ludo-seat-ready{padding:4px 5px;border-radius:8px;background:#ffffff12;color:#c7e5f8;font-size:7px;font-weight:900;}
+#tab-ludo .ludo-board-card{
+  border-color:#376d9d;
+  background:linear-gradient(155deg,#0a2945,#06182c);
+}
+#tab-ludo .ludo-board-card .pg-board-wrap{
+  width:100%;max-width:none;padding:0;border:3px solid #d7c37d;border-radius:17px;
+  overflow:hidden;background:#0b3767;box-shadow:0 8px 22px #0007;
+}
+#tab-ludo .ludo-board-card .pg-ludo-canvas{width:100%;height:auto;aspect-ratio:1/1;display:block;border-radius:0;}
+#tab-ludo .ludo-board-card .ludo-board-live{color:#9fd4ff;}
+#tab-ludo .ludo-board-card .ludo-dice-readout{border-color:#7396b3;background:#092541;}
+#tab-ludo .ludo-board-card .ludo-roll-button{background:linear-gradient(145deg,#f7e39b,#c89b37);border-color:#ffefb4;}
+@media(max-width:380px){
+  #tab-ludo .ludo-history-panel{padding:12px;}
+  #tab-ludo .ludo-history-row{grid-template-columns:minmax(0,1fr) auto;gap:7px;}
+  #tab-ludo .ludo-history-status{grid-column:2;grid-row:1;}
+  #tab-ludo .ludo-history-stake{grid-column:1;grid-row:2;align-items:flex-start;}
+  #tab-ludo .ludo-history-date{grid-column:2;grid-row:2;text-align:right;}
+  #tab-ludo .ludo-seat-card{gap:6px;padding:8px;}
+  #tab-ludo .ludo-seat-avatar{width:31px;height:31px;font-size:14px;}
+  #tab-ludo .ludo-seat-details b{font-size:10px;}
+}
