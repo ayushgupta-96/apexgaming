@@ -82,7 +82,7 @@
 
     // Small neutral corner connectors keep the visual track continuous
     // without changing the server's 52-position token index mapping.
-    [[13,7],[7,13],[1,7],[5,0]].forEach(([x,y])=>{
+    [[13,7],[7,13],[1,7]].forEach(([x,y])=>{
       tile(ctx,x,y,size,"#fff","#8b9b91");
     });
     drawCenter(ctx,size);
