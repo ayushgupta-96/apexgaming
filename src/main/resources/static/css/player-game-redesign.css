@@ -922,3 +922,102 @@
   #tab-ludo .ludo-seat-avatar{width:31px;height:31px;font-size:14px;}
   #tab-ludo .ludo-seat-details b{font-size:10px;}
 }
+
+
+/* Compact live Ludo layout: prioritize the board over stacked information cards. */
+#tab-ludo .ludo-live-match{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding-top:6px;
+}
+#tab-ludo .ludo-live-match .ludo-match-topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  min-height:62px;
+  margin:0;
+  padding:9px 12px;
+  border:1px solid #267d58;
+  border-radius:15px 15px 0 0;
+  background:linear-gradient(120deg,#073522,#062619);
+}
+#tab-ludo .ludo-match-title{gap:9px;min-width:0;}
+#tab-ludo .ludo-match-die{width:38px;height:38px;min-width:38px;font-size:23px;}
+#tab-ludo .ludo-match-title strong{font-size:16px;line-height:1.15;}
+#tab-ludo .ludo-match-title small{font-size:10px;line-height:1.2;overflow-wrap:anywhere;}
+#tab-ludo .ludo-match-pot{min-width:92px;padding:6px 9px;border-radius:11px;}
+#tab-ludo .ludo-match-pot small{font-size:8px;letter-spacing:.1em;}
+#tab-ludo .ludo-match-pot strong{font-size:17px;line-height:1.15;}
+#tab-ludo .ludo-live-match .ludo-turn-banner{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:48px;
+  margin-top:-8px;
+  padding:7px 12px 9px;
+  border:1px solid #267d58;
+  border-top:0;
+  border-radius:0 0 15px 15px;
+  background:#062619;
+}
+#tab-ludo .ludo-turn-pulse{width:9px;height:9px;flex:none;}
+#tab-ludo .ludo-turn-banner>div{display:flex;align-items:center;gap:7px;min-width:0;}
+#tab-ludo .ludo-turn-banner>div small{font-size:8px;letter-spacing:.08em;}
+#tab-ludo .ludo-turn-banner>div strong{font-size:13px;line-height:1;}
+#tab-ludo .ludo-turn-banner .pg-turn-indicator{
+  margin-left:auto;padding:5px 8px;font-size:8px;line-height:1.15;
+  white-space:normal;text-align:center;
+}
+#tab-ludo .ludo-match-arena{display:flex;flex-direction:column;gap:8px;margin:0;}
+#tab-ludo .ludo-player-seats{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:7px;
+  margin:0;
+}
+#tab-ludo .ludo-seat-card{
+  min-height:52px;
+  gap:7px;
+  padding:6px 8px;
+  border-radius:11px;
+  box-shadow:none;
+}
+#tab-ludo .ludo-player-seats>:only-child{grid-column:1/-1;}
+#tab-ludo .ludo-seat-avatar{width:32px;height:32px;border-radius:50%;font-size:14px;}
+#tab-ludo .ludo-seat-details{gap:2px;}
+#tab-ludo .ludo-seat-details b{font-size:11px;}
+#tab-ludo .ludo-seat-details small{font-size:8px;}
+#tab-ludo .ludo-seat-ready{font-size:7px;padding:4px 6px;}
+#tab-ludo .ludo-board-card{
+  margin:0;
+  padding:8px;
+  border-radius:15px;
+}
+#tab-ludo .ludo-board-card .pg-board-heading{margin:0 2px 6px;min-height:22px;}
+#tab-ludo .ludo-board-card .pg-board-heading .pg-eyebrow{display:none;}
+#tab-ludo .ludo-board-card .pg-board-heading h2{font-size:16px;line-height:1.15;margin:0;}
+#tab-ludo .ludo-board-card .ludo-board-live{font-size:9px;}
+#tab-ludo .ludo-board-card .pg-board-wrap{width:100%;max-width:none;}
+#tab-ludo .ludo-board-card .pg-ludo-canvas{width:100%;height:auto;aspect-ratio:1/1;}
+#tab-ludo .ludo-dice-console{grid-template-columns:78px minmax(0,1fr);gap:7px;margin-top:8px;}
+#tab-ludo .ludo-dice-readout{min-height:58px;padding:7px;}
+#tab-ludo .ludo-dice-readout span{font-size:8px;}
+#tab-ludo .ludo-dice-readout b{font-size:19px;}
+#tab-ludo .ludo-roll-button{min-height:58px;padding:8px 10px;}
+#tab-ludo .ludo-roll-button strong{font-size:11px;}
+#tab-ludo .pg-token-heading{margin-top:8px;padding:8px 2px 2px;}
+#tab-ludo .pg-token-heading span{font-size:11px;}
+#tab-ludo .pg-token-heading small{font-size:9px;}
+#tab-ludo .pg-responsible-note{margin:8px 0 0;font-size:9px;line-height:1.35;}
+@media(max-width:380px){
+  #tab-ludo .ludo-live-match{gap:7px;}
+  #tab-ludo .ludo-match-title strong{font-size:14px;}
+  #tab-ludo .ludo-match-pot{min-width:82px;}
+  #tab-ludo .ludo-match-pot strong{font-size:15px;}
+  #tab-ludo .ludo-turn-banner{padding:6px 9px 8px;}
+  #tab-ludo .ludo-turn-banner .pg-turn-indicator{max-width:48%;font-size:7px;}
+  #tab-ludo .ludo-board-card{padding:6px;}
+  #tab-ludo .ludo-dice-console{grid-template-columns:70px minmax(0,1fr);}
+}
