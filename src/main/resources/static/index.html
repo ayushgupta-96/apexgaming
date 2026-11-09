@@ -223,6 +223,10 @@
         </div>
         <button class="pg-primary-action pg-create-match" type="button" onclick="createLudoMatch()">CREATE MATCH ROOM <span>→</span></button>
       </div>
+      <section class="ludo-history-panel" aria-label="Your recent Ludo matches">
+        <div class="ludo-history-heading"><div><span class="pg-eyebrow">YOUR ACTIVITY</span><h2>Bet history</h2></div><button type="button" class="ludo-history-refresh" onclick="loadLudoHistory()">↻ Refresh</button></div>
+        <div id="ludoHistoryList" class="ludo-history-list" aria-live="polite"><div class="ludo-history-empty">Your recent Ludo matches will appear here.</div></div>
+      </section>
     </section>
 
     <section id="ludoGameSection" class="pg-ludo-match ludo-live-match" style="display:none;">
