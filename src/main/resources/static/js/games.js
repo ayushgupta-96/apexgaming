@@ -128,46 +128,71 @@
     const dt=a.lastTs?Math.min(32,ts-a.lastTs):16;a.lastTs=ts;
     a.visual += (a.target-a.visual)*(1-Math.pow(.0015,dt/1000));
     if(a.phase==="BETTING") a.visual=1;
-    const p=clamp((a.visual-1)/18,0,1);
-    const ease=p*p*(3-2*p);
-    const startX=w*.06,startY=h*.86,endX=w*(.22+.67*ease),endY=h*(.83-.68*ease);
-    const controlX=w*(.42+.30*ease),controlY=h*(.87-.62*ease);
+
+    // Use a perceptual curve so the aircraft visibly travels during the
+    // early part of the round instead of remaining stuck at the launch point.
+    const progress=clamp(Math.sqrt(Math.max(0,a.visual-1)/4),0,1);
+    const ease=progress*progress*(3-2*progress);
+    const startX=w*.035,startY=h*.965;
+    const endX=w*(.12+.80*ease),endY=h*(.88-.70*ease);
+    const controlX=w*(.24+.38*ease),controlY=h*(1.02-.76*ease);
     c.clearRect(0,0,w,h);
 
-    const bg=c.createRadialGradient(w*.65,h*.2,0,w*.65,h*.2,w*.75);
-    bg.addColorStop(0,a.crashed?"rgba(255,65,90,.10)":"rgba(230,57,83,.10)");
-    bg.addColorStop(1,"rgba(0,0,0,0)");
+    // Deep navy radial arena with the dramatic fan rays from the reference.
+    const bg=c.createRadialGradient(w*.55,h*.50,0,w*.48,h*.52,w*.92);
+    bg.addColorStop(0,"#0b4160");
+    bg.addColorStop(.34,"#06283c");
+    bg.addColorStop(.72,"#02080d");
+    bg.addColorStop(1,"#010305");
     c.fillStyle=bg;c.fillRect(0,0,w,h);
 
-    c.save();c.globalAlpha=.12;c.strokeStyle="#8a9a92";c.lineWidth=1;
-    for(let y=.18;y<.9;y+=.16){c.beginPath();c.moveTo(0,h*y);c.lineTo(w,h*y);c.stroke();}
-    for(let x=.12;x<1;x+=.16){c.beginPath();c.moveTo(w*x,0);c.lineTo(w*x,h);c.stroke();}c.restore();
+    c.save();
+    const rayOriginX=w*.025,rayOriginY=h*.985;
+    const rayCount=19;
+    for(let i=0;i<rayCount;i++){
+      const angle=(-88+(176/rayCount)*i)*Math.PI/180;
+      const reach=Math.max(w,h)*1.8;
+      const ex=rayOriginX+Math.cos(angle)*reach;
+      const ey=rayOriginY+Math.sin(angle)*reach;
+      c.beginPath();c.moveTo(rayOriginX,rayOriginY);c.lineTo(ex,ey);
+      c.strokeStyle=i%2===0?"rgba(78,137,165,.105)":"rgba(0,0,0,.48)";
+      c.lineWidth=Math.max(8,w*.035);c.stroke();
+    }
+    c.restore();
 
-    c.save();c.beginPath();c.moveTo(startX,startY);c.quadraticCurveTo(controlX,controlY,endX,endY);c.lineTo(endX,startY);c.closePath();
-    const fill=c.createLinearGradient(0,endY,0,startY);fill.addColorStop(0,"rgba(239,65,91,.28)");fill.addColorStop(1,"rgba(239,65,91,0)");
+    // Flight curve and red area fill.
+    c.save();
+    c.beginPath();c.moveTo(startX,startY);
+    c.quadraticCurveTo(controlX,controlY,endX,endY);
+    c.lineTo(endX,h);c.lineTo(startX,h);c.closePath();
+    const fill=c.createLinearGradient(0,endY,0,h);
+    fill.addColorStop(0,a.crashed?"rgba(255,38,70,.48)":"rgba(255,34,67,.42)");
+    fill.addColorStop(1,"rgba(130,0,28,.06)");
     c.fillStyle=fill;c.fill();c.restore();
 
-    c.save();c.beginPath();c.moveTo(startX,startY);c.quadraticCurveTo(controlX,controlY,endX,endY);
-    c.strokeStyle=a.crashed?"#ff5169":"#ed405a";c.lineWidth=3.5;c.lineCap="round";c.shadowBlur=10;c.shadowColor="#ed405a";c.stroke();c.restore();
-
-    const dx=2*(1-p)*(controlX-startX)+2*p*(endX-controlX);
-    const dy=2*(1-p)*(controlY-startY)+2*p*(endY-controlY);
-    const angle=Math.atan2(dy,dx);
-    // Draw a subtle glowing flight marker and a short wake behind the aircraft.
     c.save();
-    const wake=c.createLinearGradient(endX-76,endY+20,endX-8,endY);
-    wake.addColorStop(0,"rgba(255,91,116,0)");
-    wake.addColorStop(1,"rgba(255,116,139,.38)");
-    c.strokeStyle=wake;c.lineWidth=5;c.lineCap="round";
-    c.beginPath();c.moveTo(endX-72,endY+19);c.quadraticCurveTo(endX-36,endY+9,endX-8,endY);c.stroke();
-    c.globalAlpha=.75;c.fillStyle="#ff9baa";c.shadowColor="#ff536f";c.shadowBlur=15;
-    c.beginPath();c.arc(endX,endY,4.2,0,Math.PI*2);c.fill();
-    c.restore();
-    planePath(c,endX,endY,clamp(w/330,1.05,1.55),angle,ts,a.phase);
+    c.beginPath();c.moveTo(startX,startY);
+    c.quadraticCurveTo(controlX,controlY,endX,endY);
+    c.strokeStyle=a.crashed?"#ff355d":"#ff174d";
+    c.lineWidth=Math.max(3.5,w*.008);c.lineCap="round";
+    c.shadowBlur=18;c.shadowColor="#ff174d";c.stroke();c.restore();
 
-    if(a.phase==="BETTING"){
-      c.save();c.fillStyle="rgba(240,207,104,.05)";c.beginPath();c.arc(w*.5,h*.52,72+Math.sin(ts/450)*3,0,Math.PI*2);c.fill();c.restore();
-    }
+    const dx=2*(1-progress)*(controlX-startX)+2*progress*(endX-controlX);
+    const dy=2*(1-progress)*(controlY-startY)+2*progress*(endY-controlY);
+    const angle=Math.atan2(dy,dx);
+
+    // Short luminous trail follows the aircraft, without changing the game curve.
+    c.save();
+    const wake=c.createLinearGradient(endX-w*.22,endY+h*.09,endX-w*.015,endY);
+    wake.addColorStop(0,"rgba(255,31,75,0)");
+    wake.addColorStop(1,"rgba(255,42,89,.72)");
+    c.strokeStyle=wake;c.lineWidth=Math.max(6,w*.014);c.lineCap="round";
+    c.beginPath();c.moveTo(endX-w*.20,endY+h*.08);
+    c.quadraticCurveTo(endX-w*.09,endY+h*.045,endX-w*.015,endY);c.stroke();
+    c.restore();
+
+    // Keep the plane prominent on narrow mobile arenas.
+    planePath(c,endX,endY,clamp(w/255,1.45,2.15),angle,ts,a.phase);
     a.raf=requestAnimationFrame(drawAviator);
   }
 
