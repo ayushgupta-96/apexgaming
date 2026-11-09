@@ -35,6 +35,17 @@ public class LudoController {
         return ResponseEntity.ok(ApiResponse.ok("Ludo match created. Waiting for opponent.", match));
     }
 
+    @PostMapping("/matchmaking/find")
+    @Operation(summary = "Find a random Ludo opponent for the selected stake and player count")
+    public ResponseEntity<ApiResponse<LudoMatch>> findRandomMatch(@Valid @RequestBody CreateLudoMatchRequest request) {
+        Long userId = SecurityUtils.getCurrentUserId();
+        LudoMatch match = ludoEngine.findRandomMatch(userId, request);
+        String message = match.getStatus() == LudoMatch.MatchStatus.IN_PROGRESS
+                ? "Ludo match found. Your game is ready."
+                : "Searching for players. Your stake is securely held while you wait.";
+        return ResponseEntity.ok(ApiResponse.ok(message, match));
+    }
+
     @PostMapping("/rooms/{matchUuid}/join")
     @Operation(summary = "Join an existing waiting Ludo match room")
     public ResponseEntity<ApiResponse<LudoMatch>> joinRoom(@PathVariable String matchUuid) {
