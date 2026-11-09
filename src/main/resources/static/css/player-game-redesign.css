@@ -809,3 +809,37 @@
  #tab-ludo .ludo-dice-console{grid-template-columns:82px minmax(0,1fr);gap:8px;}
  #tab-ludo .ludo-roll-button strong{font-size:11px;}
 }
+
+
+/* Ludo board sizing and simplified classic board presentation. */
+#tab-ludo .ludo-board-card{
+  padding:10px;
+}
+#tab-ludo .ludo-board-card .pg-board-wrap{
+  width:100%;
+  max-width:none;
+  margin:0 auto;
+  padding:3px;
+  border:1px solid #b99d52;
+  border-radius:10px;
+  background:#07180f;
+  box-shadow:none;
+  overflow:hidden;
+}
+#tab-ludo .ludo-board-card .pg-ludo-canvas{
+  display:block;
+  width:100%;
+  max-width:none;
+  height:auto;
+  aspect-ratio:1/1;
+  margin:0;
+  border-radius:4px;
+  object-fit:contain;
+}
+@media(min-width:600px){
+  #tab-ludo .ludo-board-card .pg-board-wrap{max-width:560px;}
+}
+@media(max-width:380px){
+  #tab-ludo .ludo-board-card{padding:8px;}
+  #tab-ludo .ludo-board-card .pg-board-wrap{padding:2px;border-radius:7px;}
+}
