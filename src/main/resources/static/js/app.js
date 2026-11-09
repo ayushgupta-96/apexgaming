@@ -592,6 +592,52 @@ async function loadLudoHistory(){
   }
 }
 
+function startLudoStatePolling(){
+  clearInterval(ludoStatePoll);
+  ludoStatePoll=setInterval(async()=>{
+    if(!currentLudoMatch?.matchUuid)return;
+    try{
+      const response=await fetch("/api/games/ludo/rooms/"+encodeURIComponent(currentLudoMatch.matchUuid)+"/state",{headers:{"Authorization":"Bearer "+token}});
+      const data=await safeJsonResponse(response);
+      if(data.success)updateLudoGameState(data.data);
+    }catch(error){console.warn("Ludo state poll failed",error);}
+  },2000);
+}
+
+async function findRandomLudoMatch(){
+  if(!token){openModal("loginModal");return;}
+  const button=document.querySelector('[onclick="findRandomLudoMatch()"]');
+  const stake=document.getElementById("ludoStakeSelect")?.value;
+  const maxPlayers=Number(document.getElementById("ludoPlayerCount")?.value||2);
+  if(button){button.disabled=true;button.textContent="FINDING PLAYERS…";}
+  try{
+    const response=await fetch("/api/games/ludo/matchmaking/find",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},
+      body:JSON.stringify({stakeAmount:stake,maxPlayers})
+    });
+    const data=await safeJsonResponse(response);
+    if(!data.success)throw new Error(data.message||"Unable to find a match");
+    currentLudoMatch=data.data;
+    const lobby=document.getElementById("ludoLobbySection");
+    const game=document.getElementById("ludoGameSection");
+    if(lobby)lobby.style.display="none";
+    if(game)game.style.display="block";
+    updateLudoGameState(data.data);
+    fetchWallet();
+    startLudoStatePolling();
+    if(data.data.status==="WAITING"){
+      const label=document.getElementById("ludoBoardTurnLabel");
+      if(label)label.textContent="SEARCHING FOR "+maxPlayers+" PLAYERS";
+    }
+  }catch(error){
+    console.error("Ludo matchmaking failed",error);
+    alert(error.message||"Unable to find a match right now.");
+  }finally{
+    if(button){button.disabled=false;button.innerHTML='FIND RANDOM MATCH <span>→</span>';}
+  }
+}
+
 async function createLudoMatch(){if(!token){openModal("loginModal");return;}const stake=document.getElementById("ludoStakeSelect")?.value;const maxPlayers=Number(document.getElementById("ludoPlayerCount")?.value||2);try{const res=await fetch("/api/games/ludo/rooms",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+token},body:JSON.stringify({stakeAmount:stake,maxPlayers})});const data=await safeJsonResponse(res);if(data.success){
   currentLudoMatch=data.data;
   document.getElementById("ludoLobbySection").style.display="none";
