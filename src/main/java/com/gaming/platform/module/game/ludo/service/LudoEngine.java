@@ -84,10 +84,10 @@ public class LudoEngine {
         );
 
         // Repeated taps/retries must not lock the same user's stake more than once.
-        Optional<LudoMatch> ownWaitingRoom = matchRepository.findOwnWaitingMatchmakingRoom(
-                request.getStakeAmount(), request.getMaxPlayers(), userId);
-        if (ownWaitingRoom.isPresent()) {
-            return ownWaitingRoom.get();
+        List<LudoMatch> ownWaitingRooms = matchRepository.findOwnWaitingMatchmakingRoom(
+                request.getStakeAmount(), request.getMaxPlayers(), userId, PageRequest.of(0, 1));
+        if (!ownWaitingRooms.isEmpty()) {
+            return ownWaitingRooms.get(0);
         }
 
         List<LudoMatch> available = matchRepository.findAvailableMatchmakingRoomsForUpdate(
