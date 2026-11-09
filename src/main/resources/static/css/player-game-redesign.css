@@ -1061,3 +1061,21 @@
 #tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-details b{font-size:10px;}
 #tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-details small{font-size:7px;}
 #tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-ready{font-size:7px;padding:3px 5px;}
+
+
+/* Ludo lobby actions: random queue is primary, private room remains secondary. */
+#tab-ludo .ludo-setup-panel .pg-private-create{
+  display:block;
+  width:100%;
+  min-height:52px;
+  margin-top:9px;
+  padding:12px 16px;
+  border:1px solid #d9bd7166;
+  border-radius:14px;
+  background:linear-gradient(145deg,#0d2c1d,#071b12);
+  color:#f2dda0;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.06em;
+}
+#tab-ludo .ludo-setup-panel .pg-create-match:disabled{opacity:.7;cursor:wait;}
