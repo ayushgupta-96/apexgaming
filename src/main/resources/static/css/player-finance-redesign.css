@@ -886,3 +886,63 @@ body.history-open {overflow:hidden;}
   opacity:1 !important;
   pointer-events:auto !important;
 }
+
+
+/* Deposit readability and safe text wrapping: QR, reference, UPI and UTR steps. */
+.deposit-screen .deposit-main{width:min(calc(100% - 28px),640px)!important;padding-bottom:18px;}
+.deposit-screen .deposit-intro{margin:23px 3px 17px;}
+.deposit-screen .deposit-intro-kicker{font-size:11px!important;line-height:1.4;letter-spacing:.16em;}
+.deposit-screen .deposit-intro h1{font-size:clamp(24px,6.5vw,29px)!important;line-height:1.16;overflow-wrap:anywhere;}
+.deposit-screen .deposit-intro p{font-size:14px!important;line-height:1.65;max-width:52ch;overflow-wrap:anywhere;}
+.deposit-screen .deposit-steps{gap:9px;margin-bottom:16px;}
+.deposit-screen .deposit-step{gap:8px;}
+.deposit-screen .deposit-step span{width:27px;height:27px;font-size:10px!important;flex:none;}
+.deposit-screen .deposit-step b{font-size:12px!important;}
+.deposit-screen .deposit-panel{padding:20px 17px!important;border-radius:21px;}
+.deposit-screen .deposit-section-heading{gap:10px;margin-bottom:12px;}
+.deposit-screen .deposit-step-label{font-size:10px!important;line-height:1.45;letter-spacing:.14em;}
+.deposit-screen .panel-title{font-size:20px!important;line-height:1.25;overflow-wrap:anywhere;}
+.deposit-screen .helper-text{font-size:14px!important;line-height:1.6;overflow-wrap:anywhere;}
+.deposit-screen .form-label{font-size:14px!important;line-height:1.4;}
+.deposit-screen .amounts-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;}
+.deposit-screen .amount-btn{min-width:0;min-height:49px;font-size:14px!important;white-space:normal;overflow-wrap:anywhere;}
+.deposit-screen .amount-input-wrapper{min-height:58px;}
+.deposit-screen .amount-field{font-size:19px!important;}
+.deposit-screen .deposit-field-hint{font-size:12px!important;line-height:1.5;overflow-wrap:anywhere;}
+.deposit-screen .btn-deposit-submit{min-height:58px;padding:12px 15px;font-size:15px!important;line-height:1.3;gap:10px;white-space:normal;}
+.deposit-screen .btn-deposit-submit>span:first-child{min-width:0;overflow-wrap:anywhere;}
+.deposit-screen .deposit-secure-note{font-size:12px!important;line-height:1.5;overflow-wrap:anywhere;}
+.deposit-screen #depositResultBox{margin-top:18px;padding:16px 13px;border-radius:17px;}
+.deposit-screen .deposit-result-heading h2{font-size:21px!important;line-height:1.25;overflow-wrap:anywhere;}
+.deposit-screen .deposit-result-heading p,.deposit-screen .deposit-utr-section>p{font-size:13px!important;line-height:1.65;overflow-wrap:anywhere;}
+.deposit-screen .deposit-reference-card{padding:14px;margin:15px 0;}
+.deposit-screen .deposit-reference-label{font-size:10px!important;line-height:1.5;letter-spacing:.12em;}
+.deposit-screen .reference-code{font-size:clamp(17px,5vw,21px)!important;line-height:1.3;overflow-wrap:anywhere;word-break:break-word;}
+.deposit-screen .upi-payment-box{padding:16px 13px!important;}
+.deposit-screen .qr-title{font-size:14px!important;line-height:1.4;}
+.deposit-screen .qr-holder{width:100%;display:flex;justify-content:center;padding:10px!important;}
+.deposit-screen .qr-holder img{display:block;width:min(100%,240px)!important;height:auto!important;aspect-ratio:1;object-fit:contain;}
+.deposit-screen .upi-id-label{font-size:10px!important;line-height:1.5;}
+.deposit-screen .upi-id-value{max-width:100%;font-size:14px!important;line-height:1.45;white-space:normal;overflow-wrap:anywhere;word-break:break-word;}
+.deposit-screen .deposit-utr-section{margin-top:18px;padding-top:17px;}
+.deposit-screen .deposit-utr-section h3{font-size:20px!important;line-height:1.25;overflow-wrap:anywhere;}
+.deposit-screen .deposit-utr-section .form-group{margin:15px 0 12px;}
+.deposit-screen .deposit-utr-section .form-label{font-size:14px!important;}
+.deposit-screen .deposit-utr-section .form-control{width:100%;min-width:0;min-height:56px;padding:0 13px;font-size:17px!important;letter-spacing:.035em;}
+.deposit-screen .btn-submit-utr{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:58px;padding:12px 14px;font-size:13px!important;line-height:1.35;white-space:normal;overflow-wrap:anywhere;}
+.deposit-screen .btn-submit-utr span{flex:none;}
+.deposit-screen .deposit-utr-note{font-size:12px!important;line-height:1.55;overflow-wrap:anywhere;}
+.deposit-screen .deposit-help-card{padding:17px 15px;border-radius:18px;}
+.deposit-screen .deposit-help-title b{font-size:15px!important;}
+.deposit-screen .deposit-help-title small{font-size:12px!important;}
+.deposit-screen .deposit-help-card ol{gap:13px;}
+.deposit-screen .deposit-help-card li>span{width:24px;height:24px;flex-basis:24px;font-size:11px;}
+.deposit-screen .deposit-help-card li p{font-size:13px!important;line-height:1.6;overflow-wrap:anywhere;}
+.deposit-screen .deposit-help-warning{font-size:12px!important;line-height:1.6;overflow-wrap:anywhere;}
+@media(max-width:360px){
+ .deposit-screen .deposit-main{width:calc(100% - 20px)!important;}
+ .deposit-screen .deposit-panel{padding:16px 12px!important;}
+ .deposit-screen .amounts-grid{gap:6px;}
+ .deposit-screen .amount-btn{font-size:12px!important;}
+ .deposit-screen .btn-submit-utr{font-size:12px!important;}
+}
