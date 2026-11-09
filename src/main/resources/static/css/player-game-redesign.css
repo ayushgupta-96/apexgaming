@@ -1021,3 +1021,43 @@
   #tab-ludo .ludo-board-card{padding:6px;}
   #tab-ludo .ludo-dice-console{grid-template-columns:70px minmax(0,1fr);}
 }
+
+
+/* In a live Ludo match, remove the redundant arena masthead and keep seats below the board. */
+#tab-ludo #ludoGameSection~.pg-responsible-note{margin-top:6px;}
+#tab-ludo .ludo-arena-topbar{margin-bottom:10px;}
+#tab-ludo #ludoGameSection[style*="display: block"]{}
+#tab-ludo .ludo-live-match .ludo-match-arena{display:flex;flex-direction:column;gap:7px;}
+#tab-ludo .ludo-live-match .ludo-board-card{order:1;}
+#tab-ludo .ludo-live-match .ludo-player-seats{
+  order:2;
+  display:flex;
+  flex-flow:row nowrap;
+  align-items:stretch;
+  justify-content:flex-start;
+  gap:7px;
+  width:100%;
+  margin:0;
+  padding:2px 1px 5px;
+  overflow-x:auto;
+  overscroll-behavior-x:contain;
+  scrollbar-width:thin;
+}
+#tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-card{
+  flex:0 0 148px;
+  width:148px;
+  min-width:148px;
+  min-height:52px;
+  margin:0;
+  padding:6px 8px;
+  border-radius:10px;
+}
+#tab-ludo .ludo-live-match .ludo-player-seats>:only-child{
+  flex:0 0 148px;
+  width:148px;
+  grid-column:auto;
+}
+#tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-avatar{width:30px;height:30px;}
+#tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-details b{font-size:10px;}
+#tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-details small{font-size:7px;}
+#tab-ludo .ludo-live-match .ludo-player-seats .ludo-seat-ready{font-size:7px;padding:3px 5px;}
