@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface AviatorBetRepository extends JpaRepository<AviatorBet, Long> {
     Optional<AviatorBet> findByBetId(Long betId);
 
-    @Query("SELECT ab FROM AviatorBet ab WHERE ab.bet.round.id = :roundId AND ab.cashedOut = false")
+    @Query("SELECT ab FROM AviatorBet ab JOIN FETCH ab.bet WHERE ab.bet.round.id = :roundId AND ab.cashedOut = false")
     List<AviatorBet> findActiveBetsInRound(@Param("roundId") Long roundId);
 }
