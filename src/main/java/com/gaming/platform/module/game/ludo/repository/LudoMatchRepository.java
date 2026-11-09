@@ -1,8 +1,8 @@
 package com.gaming.platform.module.game.ludo.repository;
 
 import com.gaming.platform.module.game.ludo.entity.LudoMatch;
+import com.gaming.platform.module.game.ludo.entity.LudoPlayer;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
