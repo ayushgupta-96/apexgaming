@@ -91,7 +91,7 @@ public class LudoEngine {
         }
 
         List<LudoMatch> available = matchRepository.findAvailableMatchmakingRoomsForUpdate(
-                request.getStakeAmount(), request.getMaxPlayers(), userId);
+                request.getStakeAmount(), request.getMaxPlayers(), userId, PageRequest.of(0, 1));
         if (!available.isEmpty()) {
             return joinMatchLocked(userId, available.get(0));
         }
