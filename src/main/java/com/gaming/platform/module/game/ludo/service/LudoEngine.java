@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,6 +48,7 @@ public class LudoEngine {
     private final UserRepository userRepository;
     private final LedgerService ledgerService;
     private final SimpMessagingTemplate messagingTemplate;
+    private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${rmg.games.ludo.house-commission-rate:0.08}")
@@ -57,19 +59,70 @@ public class LudoEngine {
 
     @Transactional
     public LudoMatch createMatch(Long userId, CreateLudoMatchRequest request) {
+        validateMatchRequest(request);
+        return createMatchInternal(userId, request, false);
+    }
+
+    /**
+     * Joins the oldest compatible public queue, or creates a new waiting queue room.
+     * A database row lock serializes each stake/player-count queue across app instances.
+     */
+    @Transactional
+    public LudoMatch findRandomMatch(Long userId, CreateLudoMatchRequest request) {
+        validateMatchRequest(request);
+        String queueKey = request.getStakeAmount().stripTrailingZeros().toPlainString()
+                + ":" + request.getMaxPlayers();
+
+        jdbcTemplate.update(
+                "INSERT INTO ludo_matchmaking_locks (lock_key) VALUES (?) ON CONFLICT (lock_key) DO NOTHING",
+                queueKey
+        );
+        jdbcTemplate.queryForObject(
+                "SELECT lock_key FROM ludo_matchmaking_locks WHERE lock_key = ? FOR UPDATE",
+                String.class,
+                queueKey
+        );
+
+        // Repeated taps/retries must not lock the same user's stake more than once.
+        Optional<LudoMatch> ownWaitingRoom = matchRepository.findOwnWaitingMatchmakingRoom(
+                request.getStakeAmount(), request.getMaxPlayers(), userId);
+        if (ownWaitingRoom.isPresent()) {
+            return ownWaitingRoom.get();
+        }
+
+        List<LudoMatch> available = matchRepository.findAvailableMatchmakingRoomsForUpdate(
+                request.getStakeAmount(), request.getMaxPlayers(), userId);
+        if (!available.isEmpty()) {
+            return joinMatchLocked(userId, available.get(0));
+        }
+
+        return createMatchInternal(userId, request, true);
+    }
+
+    private void validateMatchRequest(CreateLudoMatchRequest request) {
+        if (request == null || request.getStakeAmount() == null
+                || request.getStakeAmount().compareTo(BigDecimal.valueOf(20)) < 0) {
+            throw new BusinessException("Ludo stake must be at least ₹20.00");
+        }
+        if (request.getMaxPlayers() != 2 && request.getMaxPlayers() != 4) {
+            throw new BusinessException("Ludo supports 2-player or 4-player matches only");
+        }
+    }
+
+    private LudoMatch createMatchInternal(Long userId, CreateLudoMatchRequest request, boolean matchmaking) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BusinessException("User not found"));
 
         String matchUuid = "LUDO-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
 
-        // Lock player stake into Game Escrow
+        // Keep the existing idempotent escrow debit for each player and match.
         String idempotencyKey = "LUDO-STAKE-" + matchUuid + "-" + userId;
         ledgerService.placeBet(userId, "LUDO", matchUuid, request.getStakeAmount(), idempotencyKey);
 
         Map<String, int[]> initialBoard = new HashMap<>();
         initialBoard.put("RED", new int[]{-1, -1, -1, -1});
         initialBoard.put("GREEN", new int[]{-1, -1, -1, -1});
-        if (request.getMaxPlayers() > 2) {
+        if (request.getMaxPlayers() == 4) {
             initialBoard.put("YELLOW", new int[]{-1, -1, -1, -1});
             initialBoard.put("BLUE", new int[]{-1, -1, -1, -1});
         }
@@ -78,7 +131,7 @@ public class LudoEngine {
         try {
             serializedBoard = objectMapper.writeValueAsString(initialBoard);
         } catch (Exception e) {
-            serializedBoard = "{}";
+            throw new IllegalStateException("Unable to initialize Ludo board", e);
         }
 
         LudoMatch match = LudoMatch.builder()
@@ -87,6 +140,7 @@ public class LudoEngine {
                 .maxPlayers(request.getMaxPlayers())
                 .currentPlayers(1)
                 .status(LudoMatch.MatchStatus.WAITING)
+                .matchmaking(matchmaking)
                 .boardState(serializedBoard)
                 .totalPot(request.getStakeAmount())
                 .build();
@@ -107,13 +161,15 @@ public class LudoEngine {
 
     @Transactional
     public LudoMatch joinMatch(Long userId, String matchUuid) {
-        LudoMatch match = matchRepository.findByMatchUuid(matchUuid)
+        LudoMatch match = matchRepository.findByMatchUuidForUpdate(matchUuid)
                 .orElseThrow(() -> new BusinessException("Ludo match not found: " + matchUuid));
+        return joinMatchLocked(userId, match);
+    }
 
+    private LudoMatch joinMatchLocked(Long userId, LudoMatch match) {
         if (match.getStatus() != LudoMatch.MatchStatus.WAITING) {
             throw new BusinessException("Match is not in waiting state");
         }
-
         if (match.getCurrentPlayers() >= match.getMaxPlayers()) {
             throw new BusinessException("Match is already full");
         }
@@ -125,17 +181,17 @@ public class LudoEngine {
             throw new BusinessException("You have already joined this match");
         }
 
-        // Deduct stake into Game Escrow
-        String idempotencyKey = "LUDO-STAKE-" + matchUuid + "-" + userId;
-        ledgerService.placeBet(userId, "LUDO", matchUuid, match.getStakeAmount(), idempotencyKey);
+        String idempotencyKey = "LUDO-STAKE-" + match.getMatchUuid() + "-" + userId;
+        ledgerService.placeBet(userId, "LUDO", match.getMatchUuid(), match.getStakeAmount(), idempotencyKey);
 
         int seat = match.getCurrentPlayers();
-        String color = COLORS[seat];
-
+        if (seat < 0 || seat >= COLORS.length) {
+            throw new BusinessException("No available Ludo seat");
+        }
         LudoPlayer player = LudoPlayer.builder()
                 .match(match)
                 .user(user)
-                .color(color)
+                .color(COLORS[seat])
                 .seatIndex(seat)
                 .ready(true)
                 .connected(true)
@@ -145,7 +201,6 @@ public class LudoEngine {
         match.setCurrentPlayers(match.getCurrentPlayers() + 1);
         match.setTotalPot(match.getTotalPot().add(match.getStakeAmount()));
 
-        // Start match if room is full
         if (match.getCurrentPlayers().equals(match.getMaxPlayers())) {
             match.setStatus(LudoMatch.MatchStatus.IN_PROGRESS);
             match.setCurrentTurnColor("RED");
@@ -153,7 +208,9 @@ public class LudoEngine {
             match.setCurrentTurnUser(firstPlayer.getUser());
             match.setTurnExpiresAt(Instant.now().plus(15, ChronoUnit.SECONDS));
 
-            BigDecimal commission = match.getTotalPot().multiply(BigDecimal.valueOf(commissionRate)).setScale(2, RoundingMode.HALF_UP);
+            BigDecimal commission = match.getTotalPot()
+                    .multiply(BigDecimal.valueOf(commissionRate))
+                    .setScale(2, RoundingMode.HALF_UP);
             match.setCommissionAmount(commission);
             match.setWinnerPayout(match.getTotalPot().subtract(commission));
         }
