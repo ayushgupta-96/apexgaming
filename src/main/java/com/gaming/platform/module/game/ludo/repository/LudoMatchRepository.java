@@ -30,7 +30,7 @@ public interface LudoMatchRepository extends JpaRepository<LudoMatch, Long> {
     List<LudoMatch> findAvailableMatchmakingRoomsForUpdate(@Param("stake") BigDecimal stake, @Param("maxPlayers") Integer maxPlayers, @Param("userId") Long userId, Pageable pageable);
 
     @Query("select m from LudoMatch m where m.matchmaking = true and m.status = com.gaming.platform.module.game.ludo.entity.LudoMatch.MatchStatus.WAITING and m.stakeAmount = :stake and m.maxPlayers = :maxPlayers and exists (select p.id from LudoPlayer p where p.match = m and p.user.id = :userId)")
-    Optional<LudoMatch> findOwnWaitingMatchmakingRoom(@Param("stake") BigDecimal stake, @Param("maxPlayers") Integer maxPlayers, @Param("userId") Long userId);
+    List<LudoMatch> findOwnWaitingMatchmakingRoom(@Param("stake") BigDecimal stake, @Param("maxPlayers") Integer maxPlayers, @Param("userId") Long userId, Pageable pageable);
 
 }
 
