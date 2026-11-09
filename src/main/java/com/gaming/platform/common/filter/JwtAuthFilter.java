@@ -54,13 +54,25 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
+            String candidate = bearerToken.substring(7).trim();
+            return isCompactJwt(candidate) ? candidate : null;
         }
-        // Support WebSocket query param or token header
+        // Support WebSocket query param or token header.
         String tokenParam = request.getParameter("token");
         if (StringUtils.hasText(tokenParam)) {
-            return tokenParam;
+            String candidate = tokenParam.trim();
+            return isCompactJwt(candidate) ? candidate : null;
         }
         return null;
+    }
+
+    private boolean isCompactJwt(String candidate) {
+        if (!StringUtils.hasText(candidate)) return false;
+        String[] parts = candidate.split("\\.", -1);
+        return parts.length == 3
+                && StringUtils.hasText(parts[0])
+                && StringUtils.hasText(parts[1])
+                && StringUtils.hasText(parts[2])
+                && candidate.matches("[A-Za-z0-9_.-]+");
     }
 }
