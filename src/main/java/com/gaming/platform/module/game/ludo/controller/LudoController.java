@@ -20,6 +20,13 @@ public class LudoController {
 
     private final LudoEngine ludoEngine;
 
+    @GetMapping("/history")
+    @Operation(summary = "Get the authenticated player's recent Ludo matches")
+    public ResponseEntity<ApiResponse<java.util.List<LudoMatchHistoryDto>>> getPlayerHistory() {
+        Long userId = SecurityUtils.getCurrentUserId();
+        return ResponseEntity.ok(ApiResponse.ok(ludoEngine.getPlayerHistory(userId)));
+    }
+
     @PostMapping("/rooms")
     @Operation(summary = "Create a new Ludo match room with stake")
     public ResponseEntity<ApiResponse<LudoMatch>> createRoom(@Valid @RequestBody CreateLudoMatchRequest request) {
