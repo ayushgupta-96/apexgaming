@@ -37,6 +37,10 @@ public class LudoMatch {
     @Column(name = "stake_amount", nullable = false, precision = 12, scale = 2)
     private BigDecimal stakeAmount;
 
+    @Column(name = "is_matchmaking", nullable = false)
+    @Builder.Default
+    private boolean matchmaking = false;
+
     @Column(name = "max_players", nullable = false)
     @Builder.Default
     private Integer maxPlayers = 2; // 2 or 4 players
